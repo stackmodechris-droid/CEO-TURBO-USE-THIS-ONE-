@@ -109,7 +109,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
           <div className="mt-3 grid grid-cols-5 gap-2 sm:gap-3">
             {GALLERY.map((g, i) => (
               <button key={g.src + i} type="button" onClick={() => setImg(i)} aria-label={`Show photo ${i + 1}: ${g.alt}`} aria-current={i === img} className={cn("aspect-square overflow-hidden rounded-xl bg-white ring-2 transition-all duration-200 hover:-translate-y-0.5", i === img ? "ring-turbo" : "ring-transparent opacity-70 hover:opacity-100")}>
-                <img src={g.thumb} alt="" width={200} height={200} loading="lazy" decoding="async" className={cn("h-full w-full object-contain", g.tilt && "bg-[#0b1018] p-1.5")} />
+                <img src={g.thumb} alt={g.alt || "Review card variant"} width={200} height={200} loading="lazy" decoding="async" className={cn("h-full w-full object-contain", g.tilt && "bg-[#0b1018] p-1.5")} />
               </button>
             ))}
           </div>
@@ -270,7 +270,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
       {/* Sticky mobile buy bar */}
       <div className={cn("pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl transition-transform duration-300 lg:hidden", showBar ? "translate-y-0" : "translate-y-full")} aria-hidden={!showBar}>
         <div className="flex items-center gap-3">
-          <img src="/img/review-cards/card-blue-thumb.webp" alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-lg bg-white object-contain" />
+          <img src="/img/review-cards/card-blue-thumb.webp" alt="Blue review card variant thumbnail" width={44} height={44} className="h-11 w-11 shrink-0 rounded-lg bg-white object-contain" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{pack.label} · {style.label}</p>
             <p className="text-xs text-muted-foreground">{money2(pack.price)} · {REVIEW_CARD.shipping.free ? "free shipping" : REVIEW_CARD.shipping.processing}</p>

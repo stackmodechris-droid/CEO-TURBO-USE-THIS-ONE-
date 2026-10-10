@@ -182,7 +182,7 @@ export default function ReviewCardSetup() {
               </li>
             </ol>
             <div className="relative mx-auto aspect-square w-full max-w-[260px]" aria-hidden>
-              <img src="/img/review-cards/card-blue-cutout.webp" alt="" width={388} height={386} loading="lazy" className="absolute bottom-0 left-0 w-[72%] -rotate-6 drop-shadow-[0_24px_30px_rgba(0,0,0,0.6)]" />
+              <img src="/img/review-cards/card-blue-cutout.webp" alt="NFC Google review card shown next to iPhone with 'Write complete' message" width={388} height={386} loading="lazy" className="absolute bottom-0 left-0 w-[72%] -rotate-6 drop-shadow-[0_24px_30px_rgba(0,0,0,0.6)]" />
               <div className="animate-float absolute right-0 top-0 aspect-[9/19] w-[38%] rounded-[22%/10.5%] bg-[#0d1117] p-[4%] shadow-[inset_0_0_0_2px_rgba(255,255,255,0.15),0_30px_40px_-10px_rgba(0,0,0,0.8)]">
                 <div className="grid h-full place-items-center rounded-[17%/8%] bg-gradient-to-b from-[#123] to-[#0b1220] text-center text-[10px] font-semibold text-emerald-300">
                   <span>

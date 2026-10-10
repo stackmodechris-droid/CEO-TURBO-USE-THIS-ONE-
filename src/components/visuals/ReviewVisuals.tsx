@@ -86,7 +86,7 @@ export function TapDemo({ business, className }: { business?: string; className?
       <div className="absolute inset-0 rounded-[28px] bg-[radial-gradient(60%_60%_at_35%_45%,hsl(var(--turbo)/0.22),transparent)]" />
       {/* card */}
       <div className="td-card absolute left-[4%] top-[18%] w-[46%]">
-        <img src="/img/review-cards/card-blue-cutout.webp" alt="" width={388} height={386} loading="lazy" decoding="async" className="w-full drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)]" />
+        <img src="/img/review-cards/card-blue-cutout.webp" alt="NFC Google review card: tap your phone or scan the QR code to review us on Google" width={388} height={386} loading="lazy" decoding="async" className="w-full drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)]" />
         <span className="td-ring absolute left-[18%] top-[56%] h-[34%] w-[34%] rounded-full border-2 border-turbo" />
         <span className="td-ring td-ring-2 absolute left-[18%] top-[56%] h-[34%] w-[34%] rounded-full border-2 border-turbo" />
       </div>
