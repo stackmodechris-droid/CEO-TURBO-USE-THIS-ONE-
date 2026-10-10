@@ -1,0 +1,251 @@
+// Registry of every indexable URL: title, description, OG image and JSON-LD.
+// The prerender script, sitemap, llms.txt and client-side head updates all read from here.
+import { SITE, fromPriceLabel } from "@/config/site";
+import { CLIENTS } from "@/content/clients";
+import { SERVICES } from "@/content/services";
+import { AUDIENCES } from "@/content/audiences";
+import { GUIDES, guidePath } from "@/content/guides";
+import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS } from "@/content/faqs";
+import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
+import * as S from "./schema";
+
+export type PageMeta = {
+  path: string;
+  title: string;
+  description: string;
+  ogImage?: string;
+  noindex?: boolean;
+  priority: number;
+  changefreq: "weekly" | "monthly" | "yearly";
+  /** Section label used to group pages in llms.txt. */
+  group: "Core" | "Audiences" | "Services" | "Work" | "Guides" | "Company";
+  schema: S.JsonLd[];
+};
+
+/** Trim to a word boundary so meta descriptions stay within Google's ~155-character snippet. */
+const clip = (s: string, max = 155) => (s.length <= max ? s : `${s.slice(0, s.lastIndexOf(" ", max - 1))}…`);
+
+const titleCase = (s: string) => s.replace(/\b([a-z])/g, (c) => c.toUpperCase());
+
+const suffix = (t: string) => (t.length + 13 <= 64 ? `${t} | CEO Turbo` : t);
+
+const base = () => [S.organization(), S.website(), S.founder()];
+
+function build(): PageMeta[] {
+  const pages: PageMeta[] = [];
+
+  pages.push({
+    path: "/",
+    title: "CEO Turbo — Get More Customers, Reviews & Listeners",
+    description:
+      "CEO Turbo helps businesses and artists get more customers, reviews and listeners: websites, ads, Google profiles, review cards and a free Brand Boost call.",
+    priority: 1,
+    changefreq: "weekly",
+    group: "Core",
+    schema: [...base(), S.webPage("/", "CEO Turbo", SITE.description), S.brandBoost(), S.video("/"), S.auditTool(), S.faqPage(HOME_FAQS, "/")],
+  });
+
+  for (const a of AUDIENCES) {
+    const path = `/${a.slug}`;
+    pages.push({
+      path,
+      title: suffix(a.metaTitle),
+      description: a.metaDescription,
+      ogImage: `/og/${a.slug}.jpg`,
+      priority: 0.9,
+      changefreq: "monthly",
+      group: "Audiences",
+      schema: [...base(), S.webPage(path, a.h1, a.metaDescription), S.breadcrumbs([{ name: a.nav, path }]), S.faqPage(a.faqs, path)],
+    });
+  }
+
+  pages.push({
+    path: "/brand-boost",
+    title: "Brand Boost by CEO Turbo — Free 30-Minute Growth Call",
+    description:
+      "CEO Turbo Brand Boost: a free 30-minute call where we review your website, Google profile, reviews and ads live and map the fastest way to more customers.",
+    ogImage: "/og/brand-boost.jpg",
+    priority: 0.9,
+    changefreq: "monthly",
+    group: "Core",
+    schema: [...base(), S.webPage("/brand-boost", "Brand Boost by CEO Turbo", "Free 30-minute growth call."), S.brandBoost(), S.video("/brand-boost"), S.breadcrumbs([{ name: "Brand Boost call", path: "/brand-boost" }]), S.faqPage(BOOK_FAQS, "/brand-boost")],
+  });
+
+  pages.push({
+    path: "/free-audit",
+    title: "Free SEO, AEO & GEO Audit — Instant Report | CEO Turbo",
+    description:
+      "Type your business or artist name and get a free SEO, AEO & GEO report in 60 seconds: your visibility score, what's wrong and how to fix it.",
+    ogImage: "/og/free-audit.jpg",
+    priority: 0.9,
+    changefreq: "monthly",
+    group: "Core",
+    schema: [...base(), S.webPage("/free-audit", "Free SEO, AEO & GEO audit", "Free visibility audit"), S.auditTool(), S.breadcrumbs([{ name: "Free audit", path: "/free-audit" }]), S.faqPage(AUDIT_FAQS, "/free-audit")],
+  });
+
+  pages.push({
+    path: SHOP_PATH,
+    title: `Google Review Cards — NFC Tap + QR, from ${fromPriceLabel} | CEO Turbo`,
+    description: `NFC + QR Google review cards: customers tap their phone and your Google review form opens. No app, no subscription. From ${fromPriceLabel}, free US shipping.`,
+    ogImage: "/og/review-cards.jpg",
+    priority: 0.9,
+    changefreq: "weekly",
+    group: "Core",
+    schema: [...base(), S.webPage(SHOP_PATH, "Google review cards", "NFC + QR Google review cards", "ItemPage"), S.reviewCardProduct(), S.breadcrumbs([{ name: "Google review cards", path: SHOP_PATH }]), S.faqPage(SHOP_FAQS, SHOP_PATH)],
+  });
+
+  pages.push({
+    path: SETUP_PATH,
+    title: "Google Review Card Setup: Find Your Review Link | CEO Turbo",
+    description:
+      "Set up your NFC Google review card in 5 minutes: find your review link in Google Business Profile, write it with the free NFC Tools app and test it.",
+    ogImage: "/og/review-cards.jpg",
+    priority: 0.7,
+    changefreq: "monthly",
+    group: "Guides",
+    schema: [...base(), S.webPage(SETUP_PATH, "Google review card setup guide", "How to program an NFC Google review card"), S.breadcrumbs([{ name: "Google review cards", path: SHOP_PATH }, { name: "Setup guide", path: SETUP_PATH }]), S.faqPage(SETUP_FAQS, SETUP_PATH)],
+  });
+
+  pages.push({
+    path: "/services",
+    title: "Services — Websites, Ads, SEO, AEO & GEO | CEO Turbo",
+    description:
+      "Every CEO Turbo service: SEO, AEO and GEO, website design, Meta, Google, TikTok and X ads, Google Business Profile, social profiles and email.",
+    priority: 0.8,
+    changefreq: "monthly",
+    group: "Services",
+    schema: [...base(), S.webPage("/services", "Services", "CEO Turbo services", "CollectionPage"), S.breadcrumbs([{ name: "Services", path: "/services" }]), S.itemList("CEO Turbo services", SERVICES.map((s) => ({ name: s.name, path: `/services/${s.slug}` })))],
+  });
+
+  for (const s of SERVICES) {
+    const path = `/services/${s.slug}`;
+    pages.push({
+      path,
+      title: suffix(s.metaTitle),
+      description: s.metaDescription,
+      priority: 0.8,
+      changefreq: "monthly",
+      group: "Services",
+      schema: [...base(), S.webPage(path, s.h1, s.metaDescription), S.service(s), S.breadcrumbs([{ name: "Services", path: "/services" }, { name: s.name, path }]), S.faqPage(s.faqs, path)],
+    });
+  }
+
+  pages.push({
+    path: "/portfolio",
+    title: "Portfolio — 20 Client Websites We Built | CEO Turbo",
+    description:
+      "20 live websites for artists, local service businesses, Shopify stores and personal brands — with the conversion decisions behind each one.",
+    ogImage: "/og/portfolio.jpg",
+    priority: 0.8,
+    changefreq: "monthly",
+    group: "Work",
+    schema: [...base(), S.webPage("/portfolio", "Portfolio", "Client websites", "CollectionPage"), S.breadcrumbs([{ name: "Portfolio", path: "/portfolio" }]), S.itemList("CEO Turbo client websites", CLIENTS.map((c) => ({ name: c.name, path: `/portfolio/${c.slug}` })))],
+  });
+
+  for (const c of CLIENTS) {
+    const path = `/portfolio/${c.slug}`;
+    const where = c.location ? ` in ${c.location.split(",")[0]}` : "";
+    pages.push({
+      path,
+      title: suffix(`${c.name} — ${titleCase(c.industry)} Website`.length > 58 ? `${c.name} Website Case Study` : `${c.name} — ${titleCase(c.industry)} Website`),
+      description: clip(`${c.name}${where ? ` (${c.location})` : ""}: the ${c.industry.toLowerCase()} website CEO Turbo built, and the design decisions that turn visitors into customers.`),
+      ogImage: `/img/work/${c.slug}.webp`,
+      priority: 0.6,
+      changefreq: "yearly",
+      group: "Work",
+      schema: [...base(), S.webPage(path, `${c.name} case study`, c.overview), S.caseStudy(c), S.breadcrumbs([{ name: "Portfolio", path: "/portfolio" }, { name: c.name, path }])],
+    });
+  }
+
+  pages.push({
+    path: "/results",
+    title: "Results — Real Ad Dashboards & Search Console Data | CEO Turbo",
+    description:
+      "Unedited Meta Ads Manager and Google Search Console screenshots: 105 leads at $8.01 average, lowest $4.31, 165 artist profile visits at $0.32.",
+    ogImage: "/og/results.jpg",
+    priority: 0.8,
+    changefreq: "monthly",
+    group: "Work",
+    schema: [...base(), S.webPage("/results", "Results", "Ad and search results"), S.breadcrumbs([{ name: "Results", path: "/results" }])],
+  });
+
+  pages.push({
+    path: "/guides",
+    title: "Guides — SEO, AEO, GEO, Ads & Growth | CEO Turbo",
+    description: "Straight answers on SEO vs AEO vs GEO, Facebook lead costs, Google Business Profile, Spotify growth, Shopify conversions and getting more Google reviews.",
+    priority: 0.7,
+    changefreq: "weekly",
+    group: "Guides",
+    schema: [...base(), S.webPage("/guides", "Guides", "CEO Turbo guides", "CollectionPage"), S.breadcrumbs([{ name: "Guides", path: "/guides" }]), S.itemList("CEO Turbo guides", GUIDES.map((g) => ({ name: g.title, path: guidePath(g) })))],
+  });
+
+  for (const g of GUIDES) {
+    const path = guidePath(g);
+    pages.push({
+      path,
+      title: suffix(g.metaTitle),
+      description: g.metaDescription,
+      priority: 0.7,
+      changefreq: "monthly",
+      group: "Guides",
+      schema: [...base(), S.webPage(path, g.title, g.metaDescription), S.article(g), S.breadcrumbs([{ name: "Guides", path: "/guides" }, { name: g.title, path }]), S.faqPage(g.faqs, path)],
+    });
+  }
+
+  pages.push({
+    path: "/atlanta",
+    title: "Atlanta Marketing Agency — Websites, Ads & SEO | CEO Turbo",
+    description:
+      "Atlanta-based growth agency building websites, Meta and Google ads, Google Business Profiles and AI-search visibility for Georgia businesses and artists.",
+    priority: 0.7,
+    changefreq: "monthly",
+    group: "Company",
+    schema: [...base(), S.webPage("/atlanta", "CEO Turbo in Atlanta", "Atlanta marketing agency"), S.breadcrumbs([{ name: "Atlanta", path: "/atlanta" }])],
+  });
+
+  pages.push({
+    path: "/about",
+    title: "About Christopher Robinson & CEO Turbo",
+    description:
+      "Christopher Robinson (StackmodeChris) founded CEO Turbo to help artists, local businesses and stores win customers with websites, ads and AI search.",
+    priority: 0.6,
+    changefreq: "yearly",
+    group: "Company",
+    schema: [...base(), S.webPage("/about", "About CEO Turbo", "About Christopher Robinson and CEO Turbo", "AboutPage"), S.breadcrumbs([{ name: "About", path: "/about" }])],
+  });
+
+  pages.push({
+    path: "/contact",
+    title: "Contact CEO Turbo",
+    description: "Book a free Brand Boost call, order Google review cards, or reach CEO Turbo in Atlanta, Georgia.",
+    priority: 0.5,
+    changefreq: "yearly",
+    group: "Company",
+    schema: [...base(), S.webPage("/contact", "Contact CEO Turbo", "Contact", "ContactPage"), S.breadcrumbs([{ name: "Contact", path: "/contact" }])],
+  });
+
+  pages.push(
+    { path: "/privacy-policy", title: "Privacy Policy | CEO Turbo", description: "How CEO Turbo collects, uses and protects your information.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
+    { path: "/terms", title: "Terms & Conditions | CEO Turbo", description: "Terms for using ceoturbo.com and buying CEO Turbo products and services.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
+    { path: "/shipping-returns", title: "Shipping & Returns | CEO Turbo", description: "Shipping times, costs and the 30-day return and replacement policy for CEO Turbo Google review cards.", priority: 0.3, changefreq: "yearly", group: "Company", schema: base() },
+    // Ad landing + post-booking pages: kept out of search so they don't compete with /brand-boost.
+    { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
+    { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
+    { path: "/promptshop", title: "Prompt Shop — Coming Soon | CEO Turbo", description: "AI prompts, scanners and templates from CEO Turbo — coming soon.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Company", schema: base() },
+  );
+
+  return pages;
+}
+
+export const PAGES = build();
+export const pageFor = (path: string) => PAGES.find((p) => p.path === path);
+export const NOT_FOUND_META: PageMeta = {
+  path: "/404",
+  title: "Page not found | CEO Turbo",
+  description: "That page doesn't exist. Find what you need from the CEO Turbo homepage.",
+  noindex: true,
+  priority: 0,
+  changefreq: "yearly",
+  group: "Company",
+  schema: [],
+};
