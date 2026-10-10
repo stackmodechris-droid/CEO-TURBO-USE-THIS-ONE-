@@ -68,7 +68,7 @@ export default function Home() {
             </ul>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <BookButton note="Home video section">Get my free Brand Boost call</BookButton>
-              <Link to="/brand-boost" className="text-sm font-semibold text-turbo underline-offset-4 hover:underline">
+              <Link to="/brand-boost" className="inline-flex min-h-[44px] items-center text-sm font-semibold text-turbo underline-offset-4 hover:underline">
                 What happens on the call?
               </Link>
             </div>

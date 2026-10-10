@@ -51,7 +51,7 @@ const MENUS: Menu[] = [
 ];
 
 const linkCls = ({ isActive }: { isActive: boolean }) =>
-  cn("whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:text-foreground xl:px-3", isActive ? "text-foreground" : "text-muted-foreground");
+  cn("whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-white/5 hover:text-foreground xl:px-3", isActive ? "text-foreground" : "text-muted-foreground");
 
 export function Header({ focus = false }: { focus?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -72,7 +72,7 @@ export function Header({ focus = false }: { focus?: boolean }) {
   }, [open]);
 
   return (
-    <header className={cn("fixed inset-x-0 top-0 z-50 transition-colors duration-300", scrolled || open ? "bg-background/80 backdrop-blur-xl shadow-[0_1px_0_hsl(var(--border))]" : "bg-transparent")}>
+    <header className={cn("fixed inset-x-0 top-0 z-50 transition-colors duration-300", scrolled || open ? "bg-background/95 backdrop-blur-xl shadow-[0_1px_0_hsl(var(--border))]" : "bg-gradient-to-b from-background/90 to-transparent")}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2">
         Skip to content
       </a>
@@ -155,13 +155,13 @@ export function Header({ focus = false }: { focus?: boolean }) {
 function Dropdown({ menu, active }: { menu: Menu; active: boolean }) {
   return (
     <div className="group relative">
-      <Link to={menu.to} className={cn("flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:text-foreground xl:px-3", active ? "text-foreground" : "text-muted-foreground")}>
+      <Link to={menu.to} className={cn("flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-white/5 hover:text-foreground xl:px-3", active ? "text-foreground" : "text-muted-foreground")}>
         {menu.label} <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" aria-hidden />
       </Link>
       <div className={cn("invisible absolute left-1/2 top-full -translate-x-1/2 pt-2 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100", menu.wide ? "w-[560px]" : "w-[300px]")}>
-        <div className={cn("glass grid gap-1 rounded-2xl p-2", menu.wide && "grid-cols-2")}>
+        <div className={cn("grid gap-1 rounded-2xl border border-white/10 bg-[hsl(218_33%_7%)] p-2 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)]", menu.wide && "grid-cols-2")}>
           {menu.items.map((i) => (
-            <Link key={i.to} to={i.to} className="rounded-xl px-3 py-2.5 hover:bg-white/5">
+            <Link key={i.to} to={i.to} className="rounded-xl px-3 py-2.5 transition-colors hover:bg-white/10 focus-visible:bg-white/10">
               <span className="block text-sm font-semibold text-foreground">{i.label}</span>
               {i.sub && <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{i.sub}</span>}
             </Link>
