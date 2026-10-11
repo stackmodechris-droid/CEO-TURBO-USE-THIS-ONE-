@@ -29,3 +29,6 @@ dist-ssr
 .env.*
 !.env.example
 media-source/
+
+# Local MCP config (holds the Cal.com API key)
+.mcp.json
