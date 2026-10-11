@@ -14,6 +14,9 @@
     },
     "api/cal-webhook.js": {
       "maxDuration": 15
+    },
+    "api/shopify-webhook.js": {
+      "maxDuration": 15
     }
   },
   "redirects": [

@@ -22,6 +22,7 @@ Every lead and booking also lands in your **Google Sheet** with its ad click ids
 | `CAL_WEBHOOK_SECRET` | any long random string; use the same one in step 3 | Booked calls → Meta CAPI + Sheet |
 | `LEADS_WEBHOOK_URL`, `LEADS_WEBHOOK_SECRET` | `leads-google-sheet.md` | Leads in Google Sheets |
 | `VITE_UET_TAG_ID` | Microsoft Ads → Tools → UET tag → create → Tag ID | Microsoft Ads conversions |
+| `SHOPIFY_WEBHOOK_SECRET` | Shopify → Settings → Notifications → Webhooks (signing secret) | Paid card orders → Google Sheet (`leads-google-sheet.md`) |
 | `META_TEST_EVENT_CODE` *(temporary)* | Events Manager → Test events | See server events live while testing; delete it after |
 
 The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PIXEL_ID`.
@@ -35,7 +36,7 @@ The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PI
 ## 3. Cal.com (event type `ceoturbo-brandboost`)
 1. **Event → Advanced → Redirect on booking:** `https://ceoturbo.com/booked`, with **Forward parameters** turned **on**.
 2. **Settings → Developer → Webhooks → New:**
-   - URL: `https://ceoturbo.com/api/cal-webhook`
+   - URL: `https://www.ceoturbo.com/api/cal-webhook` (use **www**, the bare domain redirects)
    - Trigger: **Booking Created**
    - Secret: the `CAL_WEBHOOK_SECRET` value
 3. **Booking questions:** make **Phone number** required or optional-but-shown. Phone is the second-strongest match signal for Meta and Google.

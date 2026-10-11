@@ -41,8 +41,12 @@ export function parseBooking(body) {
     uid: str(p.uid, 120),
     name: str(att.name || val(r.name)),
     email: str(att.email || val(r.email)).toLowerCase(),
-    phone: str(att.phoneNumber || val(r.attendeePhoneNumber) || val(r.phone), 40),
+    // The booking form's "Phone Number" question is stored as aiAgentCallPhoneNumber.
+    phone: str(att.phoneNumber || val(r.attendeePhoneNumber) || val(r.aiAgentCallPhoneNumber) || val(r.phone), 40),
     startTime: str(p.startTime, 40),
+    endTime: str(p.endTime, 40),
+    timeZone: str(att.timeZone, 60),
+    meetingLink: str(p.metadata?.videoCallUrl || p.videoCallData?.url || (/^https?:/.test(p.location || "") ? p.location : ""), 300),
     title: str(p.title || p.eventTitle),
     notes: str(val(r.notes) || p.description, 500),
     source: str(meta.source, 80),
@@ -86,7 +90,7 @@ export default async function handler(req, res) {
         customData: { content_name: b.title || "Brand Boost call", lead_source: b.source || "cal.com" },
       }),
     ]),
-    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, event: b.title, notes: b.notes, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
+    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
   ]);
   return send(res, 200, { ok: true, meta: !!capi.sent, sheet: !!sheet.stored });
 }

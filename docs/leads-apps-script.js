@@ -53,7 +53,10 @@ const TABS = {
       Phone: "phone",
       Email: "email",
       "Call time": "startTime",
+      Ends: "endTime",
+      "Time zone": "timeZone",
       Event: "event",
+      "Meeting link": "meetingLink",
       Notes: "notes",
       "Booked from": "source",
       "Booking ID": "uid",
@@ -68,18 +71,24 @@ const TABS = {
       Phone: "phone",
       Email: "email",
       Company: "business",
-      Product: "product",
-      Style: "style",
-      Pack: "pack",
+      Type: "type",
+      "Order #": "orderNumber",
+      Items: "items",
+      Quantity: "quantity",
       Total: "total",
+      Payment: "paymentStatus",
+      "Ship to": "shipTo",
+      Pack: "pack",
+      Style: "style",
+      Product: "product",
       Note: "note",
     },
     ATTR,
-    { "Form page": "page" }
+    { "Form page": "page", "Order ID": "orderId" }
   ),
 };
 
-const TYPE_LABEL = { "audit-business": "Business", "audit-artist": "Artist" };
+const TYPE_LABEL = { "audit-business": "Business", "audit-artist": "Artist", "order-request": "Order request", "shopify-order": "Paid order" };
 
 function tabFor(type) {
   if (type === "booking") return "Booked Calls";
@@ -94,7 +103,7 @@ function display(field, value) {
   if (field === "phone") return String(value).replace(/^'(?=[=+\-@])/, "");
   if (field === "smsOptIn") return value === true || value === "true" ? "Yes" : "No";
   if (field === "type") return TYPE_LABEL[value] || value;
-  if (field === "receivedAt" || field === "startTime") {
+  if (field === "receivedAt" || field === "startTime" || field === "endTime") {
     const d = new Date(value);
     if (!isNaN(d)) return d;
   }
@@ -127,11 +136,13 @@ function doPost(e) {
     const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
 
     // A booking is only recorded once, even if Cal.com retries the webhook.
-    if (name === "Booked Calls" && data.uid) {
-      const idCol = headers.indexOf("Booking ID") + 1;
+    // Each booking / paid order is recorded once, even if Cal.com or Shopify retries the webhook.
+    const dedupe = name === "Booked Calls" ? ["Booking ID", data.uid] : name === "Card Orders" && data.type === "shopify-order" ? ["Order ID", data.orderId] : null;
+    if (dedupe && dedupe[1]) {
+      const idCol = headers.indexOf(dedupe[0]) + 1;
       if (idCol > 0 && sheet.getLastRow() > 1) {
         const ids = sheet.getRange(2, idCol, sheet.getLastRow() - 1, 1).getValues();
-        for (let i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(data.uid)) return ContentService.createTextOutput("duplicate");
+        for (let i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(dedupe[1])) return ContentService.createTextOutput("duplicate");
       }
     }
 

@@ -20,6 +20,13 @@ with headers, filters, a Status dropdown and colors). The script that fills it i
 Rows are matched to columns by header name, so you can reorder or hide columns. Booked calls are
 de-duplicated by Booking ID.
 
+## Paid card orders (Shopify) → Card Orders tab
+
+1. Shopify admin → **Settings → Notifications → Webhooks → Create webhook**.
+2. Event **Order payment**, format **JSON**, URL `https://www.ceoturbo.com/api/shopify-webhook`, latest API version. Save.
+3. At the top of that Webhooks page Shopify shows *"Your webhooks will be signed with ..."*. Copy that value into Vercel as `SHOPIFY_WEBHOOK_SECRET` and redeploy.
+4. Orders land on **Card Orders** with the buyer, items, ship-to, total and the ad click ids from the cart. Retries never duplicate (Order ID). Meta's Purchase still comes from the Facebook & Instagram app, so this endpoint sends nothing to Meta.
+
 ## 2. Add the environment variables in Vercel
 
 Project → Settings → Environment Variables:
