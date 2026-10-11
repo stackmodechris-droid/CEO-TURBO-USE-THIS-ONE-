@@ -2,14 +2,16 @@
 // If you add a new third-party script, iframe or API, allow its origin here.
 export const CSP = [
   "default-src 'self'",
-  "script-src 'self' https://app.cal.com https://cal.com https://www.googletagmanager.com https://connect.facebook.net",
+  // Tag Manager + GA4 + Google Ads, Meta Pixel, Microsoft UET
+  "script-src 'self' https://app.cal.com https://cal.com https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://connect.facebook.net https://bat.bing.com",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   "img-src 'self' data: blob: https:",
   "media-src 'self'",
-  "frame-src https://app.cal.com https://cal.com https://*.cal.com https://www.facebook.com",
-  "connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com https://www.google-analytics.com https://*.google-analytics.com https://www.facebook.com",
-  "form-action 'self' https://cal.com https://app.cal.com",
+  "frame-src https://app.cal.com https://cal.com https://*.cal.com https://www.facebook.com https://www.googletagmanager.com https://td.doubleclick.net https://bid.g.doubleclick.net",
+  // + Shopify Storefront API (headless checkout)
+  "connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://www.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.facebook.com https://connect.facebook.net https://bat.bing.com https://uweee2-sc.myshopify.com",
+  "form-action 'self' https://cal.com https://app.cal.com https://www.facebook.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "object-src 'none'",

@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { AlertTriangle, Check, Copy, Download, ExternalLink, Mail, MapPin, Search, X } from "lucide-react";
 import { checkReviewLink, googleMapsUrl, googleSearchUrl, recallBusiness, rememberBusiness, type LinkCheck } from "@/lib/review-link";
-import { track } from "@/lib/cal";
+import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
 /** Draws a crisp, print-ready QR code for the review link (generated in the browser — nothing is uploaded). */

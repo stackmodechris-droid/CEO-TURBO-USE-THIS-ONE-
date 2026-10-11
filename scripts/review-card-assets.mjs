@@ -1,8 +1,9 @@
 // Builds the Google review card product images and share images from the supplier
-// photos in scripts/review-cards/. Run with: node scripts/review-card-assets.mjs
+// photos in scripts/review-cards/ and the card artwork in src/lib/card-faces.ts. Run with: node scripts/review-card-assets.mjs
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { cardBack, cardFront } from "../src/lib/card-faces.ts";
 
 const SRC = path.resolve("scripts/review-cards");
 const OUT = path.resolve("public/img/review-cards");
@@ -13,30 +14,60 @@ const src = (f) => path.join(SRC, f);
 const webp = { quality: 86, effort: 6 };
 
 // 1) Gallery photos — kept on their white studio background, like a real product listing.
+//    tap-review: the supplier's "4.9 · 1,980 reviews" badge isn't ours, so it's cut out and the
+//    compatibility strip below it is stacked straight under the hero part.
 const gallery = {
-  "tap-review": "tap-review.png",
-  "front-back": "front-back.png",
-  "card-blue": "card-blue.png",
-  "blue-black": "blue-black.png",
+  specs: "specs.png",
+  "retail-counter": "retail-counter.webp",
+  "how-it-works": "how-it-works.png",
+  stack: "stack.png",
+  size: "size.png",
 };
-for (const [name, file] of Object.entries(gallery)) {
-  await sharp(src(file)).flatten({ background: "#ffffff" }).webp(webp).toFile(path.join(OUT, `${name}.webp`));
-  await sharp(src(file)).flatten({ background: "#ffffff" }).resize({ width: 200 }).webp({ quality: 80 }).toFile(path.join(OUT, `${name}-thumb.webp`));
+const save = async (name, input) => {
+  await sharp(input).flatten({ background: "#ffffff" }).webp(webp).toFile(path.join(OUT, `${name}.webp`));
+  await sharp(input).flatten({ background: "#ffffff" }).resize({ width: 200, height: 200, fit: "contain", background: "#ffffff" }).webp({ quality: 80 }).toFile(path.join(OUT, `${name}-thumb.webp`));
+  const m = await sharp(input).metadata();
+  console.log(name, m.width, m.height);
+};
+for (const [name, file] of Object.entries(gallery)) await save(name, src(file));
+{
+  const top = await sharp(src("tap-review.png")).extract({ left: 0, top: 0, width: 566, height: 500 }).png().toBuffer();
+  const strip = await sharp(src("tap-review.png")).extract({ left: 0, top: 612, width: 566, height: 100 }).png().toBuffer();
+  const joined = await sharp({ create: { width: 566, height: 600, channels: 3, background: "#ffffff" } })
+    .composite([{ input: top, left: 0, top: 0 }, { input: strip, left: 0, top: 500 }])
+    .png()
+    .toBuffer();
+  await save("tap-review", joined);
 }
 
-// 2) Transparent cut-out of the blue card for the 3D tilt hero (rounded corners masked).
-const box = { left: 31, top: 41, width: 388, height: 386 };
-const radius = 30;
-const mask = Buffer.from(
-  `<svg width="${box.width}" height="${box.height}"><rect x="0" y="0" width="${box.width}" height="${box.height}" rx="${radius}" ry="${radius}" fill="#fff"/></svg>`,
-);
-const cutout = await sharp(src("card-blue.png"))
-  .flatten({ background: "#ffffff" })
-  .extract(box)
-  .composite([{ input: mask, blend: "dest-in" }])
-  .png()
-  .toBuffer();
-await sharp(cutout).webp({ ...webp, alphaQuality: 100 }).toFile(path.join(OUT, "card-blue-cutout.webp"));
+// 2) Clean renders of both sides (no text overlays) — feed images, share images and thumbnails.
+const face = (svg, width) => sharp(Buffer.from(svg)).resize({ width }).png().toBuffer();
+const front = await face(cardFront(), 520);
+const back = await face(cardBack(), 520);
+const shadowFor = (w, h) =>
+  Buffer.from(`<svg width="${w + 120}" height="${h + 120}" xmlns="http://www.w3.org/2000/svg"><defs><filter id="b"><feGaussianBlur stdDeviation="22"/></filter></defs><rect x="60" y="80" width="${w}" height="${h}" rx="40" fill="#000" fill-opacity=".28" filter="url(#b)"/></svg>`);
+const tilt = async (buf, deg) => sharp(buf).rotate(deg, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
+const pair = async (bgColor, size) => {
+  const b = await tilt(back, 8);
+  const f = await tilt(front, -6);
+  const fm = await sharp(f).metadata();
+  const bm = await sharp(b).metadata();
+  const sh = await sharp(shadowFor(520, 822)).png().toBuffer();
+  return sharp({ create: { width: 1200, height: 1200, channels: 4, background: bgColor } })
+    .composite([
+      { input: sh, left: 520, top: 110 },
+      { input: b, left: 1200 - bm.width - 110, top: 140 },
+      { input: sh, left: 120, top: 200 },
+      { input: f, left: 150, top: 1200 - fm.height - 90 },
+    ])
+    .flatten({ background: bgColor })
+    .resize({ width: size })
+    .png()
+    .toBuffer();
+};
+const pairWhite = await pair("#ffffff", 1200);
+await sharp(pairWhite).jpeg({ quality: 90, mozjpeg: true }).toFile(path.join(OUT, "feed-white.jpg"));
+await sharp(pairWhite).resize({ width: 200 }).webp({ quality: 80 }).toFile(path.join(OUT, "card-3d-thumb.webp"));
 
 // 3) Share images (1200×630) for the shop and the free audit.
 const W = 1200;
@@ -78,14 +109,16 @@ const shadow = (w, h) =>
 
 // Shop share image: tilted card + headline
 {
-  const card = await sharp(cutout).resize({ width: 420 }).rotate(-8, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
+  const b = await sharp(back).resize({ width: 250 }).rotate(10, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
+  const card = await sharp(front).resize({ width: 270 }).rotate(-8, { background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
   const meta = await sharp(card).metadata();
   const glow = await sharp(shadow(meta.width - 60, meta.height - 60)).png().toBuffer();
   await sharp(bg("#1a9fff"))
     .composite([
       { input: glow, left: 700, top: 20 },
-      { input: card, left: 740, top: 70 },
-      { input: text(["More 5-star", "Google reviews."], "Tap. Review. Done. NFC + QR review cards.", "Shop review cards"), left: 0, top: 0 },
+      { input: b, left: 900, top: 50 },
+      { input: card, left: 730, top: 110 },
+      { input: text(["More 5-star", "Google reviews."], "Tap. Review. Done. NFC Google review cards.", "Shop review cards"), left: 0, top: 0 },
     ])
     .jpeg({ quality: 86, mozjpeg: true })
     .toFile(path.join(OG, "review-cards.jpg"));

@@ -1,9 +1,10 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle, ArrowRight, Building2, Check, ChevronDown, Loader2, Lock, Mic2, RotateCcw, Search, Sparkles, X } from "lucide-react";
-import { openBooking, track } from "@/lib/cal";
+import { openBooking } from "@/lib/cal";
+import { attribution, track } from "@/lib/track";
 import { BOOKING, fromPriceLabel } from "@/config/site";
-import { ScoreGauge } from "@/components/visuals/ReviewVisuals";
+import { CardFace, ScoreGauge } from "@/components/visuals/ReviewVisuals";
 import { cn } from "@/lib/utils";
 
 type Kind = "business" | "artist";
@@ -139,13 +140,13 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
 
     setStage("scan");
     scrollTop();
-    track("audit_lead", { kind: form.kind, source });
+    const leadEventId = track("generate_lead", { lead_source: "free_check", kind: form.kind, source, value: 0, currency: "USD" }, { user: { email: form.email, phone: form.phone, name: form.name } });
     const minWait = new Promise((r) => setTimeout(r, 4200));
     try {
       const res = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, elapsedMs: Date.now() - (started.current || Date.now()), page: window.location.pathname }),
+        body: JSON.stringify({ ...form, elapsedMs: Date.now() - (started.current || Date.now()), page: window.location.pathname, eventId: leadEventId, attribution: attribution() }),
       });
       const data = await res.json().catch(() => ({}));
       await minWait;
@@ -486,7 +487,7 @@ export function AuditReport({ report: r, form: f, source, onRestart }: { report:
 
       {lowReviews && (
         <Link to="/google-review-cards" className="group panel mt-4 grid items-center gap-5 overflow-hidden p-5 sm:grid-cols-[120px_1fr_auto] sm:p-6">
-          <img src="/img/review-cards/card-blue-cutout.webp" alt="NFC Google review card" width={388} height={386} loading="lazy" className="mx-auto w-24 -rotate-6 transition-transform duration-300 group-hover:rotate-0 group-hover:scale-105 sm:w-28" />
+          <CardFace className="mx-auto w-16 -rotate-6 drop-shadow-[0_14px_18px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:rotate-0 group-hover:scale-105 sm:w-20" />
           <div>
             <p className="font-semibold">Reviews are holding you back.</p>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Put a tap-to-review card on your counter. Customers tap their phone and your Google review form opens — no searching, no app.</p>

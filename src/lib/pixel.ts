@@ -1,8 +1,9 @@
-// Meta Pixel. Set VITE_META_PIXEL_ID in Vercel (Settings → Environment Variables) and redeploy.
+// Meta Pixel (id in src/lib/track.ts; VITE_META_PIXEL_ID overrides it).
 // Loads after the page is interactive so it never slows first paint; PageView fires on every route.
+import { PIXEL_ID as pixelId, newEventId } from "@/lib/track";
 type Fbq = ((...args: unknown[]) => void) & { callMethod?: (...a: unknown[]) => void; queue: unknown[]; loaded: boolean; version: string; push: unknown };
 
-const PIXEL_ID = import.meta.env.VITE_META_PIXEL_ID as string | undefined;
+const PIXEL_ID = pixelId();
 let started = false;
 
 export function startPixel() {
@@ -24,9 +25,9 @@ export function startPixel() {
   s.src = "https://connect.facebook.net/en_US/fbevents.js";
   document.head.appendChild(s);
   n("init", PIXEL_ID);
-  n("track", "PageView");
+  n("track", "PageView", {}, { eventID: newEventId("pv") });
 }
 
 export function pixelPageView() {
-  (window as unknown as { fbq?: Fbq }).fbq?.("track", "PageView");
+  (window as unknown as { fbq?: Fbq }).fbq?.("track", "PageView", {}, { eventID: newEventId("pv") });
 }

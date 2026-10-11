@@ -5,6 +5,11 @@ import App from "./App";
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/space-grotesk/wght.css";
 import "./index.css";
+import { startGtm } from "./lib/gtm";
+import { captureAttribution } from "./lib/track";
+
+captureAttribution();
+startGtm();
 
 const container = document.getElementById("root")!;
 const app = (

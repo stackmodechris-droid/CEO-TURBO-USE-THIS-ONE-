@@ -1,7 +1,8 @@
-// POST /api/lead — review card order requests (used until a checkout link is configured)
+// POST /api/lead — review card order requests (fallback when Shopify checkout is unreachable)
 // and any other simple lead form.
 import { cleanLead, forwardLead, isBot } from "./_lib/leads.js";
 import { readJson, send, clientIp, rateLimited, sameOrigin } from "./_lib/http.js";
+import { buildEvent, cleanAttribution, sendMetaEvents } from "./_lib/meta-capi.js";
 
 const text = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f<>]/g, " ").trim().slice(0, max) : "");
 
@@ -24,6 +25,19 @@ export default async function handler(req, res) {
   const { lead, error } = cleanLead(body);
   if (error) return send(res, 400, { error });
 
+  const attr = cleanAttribution(body.attribution);
+  const capi = sendMetaEvents([
+    buildEvent({
+      eventName: "Lead",
+      eventId: text(body.eventId, 120),
+      url: `https://ceoturbo.com${text(body.page, 120) || "/"}`,
+      user: { email: lead.email, phone: lead.phone, name: lead.name },
+      attribution: attr,
+      ip: clientIp(req),
+      userAgent: req.headers["user-agent"],
+      customData: { lead_source: text(body.type, 30) || "order-request" },
+    }),
+  ]);
   const { stored } = await forwardLead({
     type: text(body.type, 30) || "order-request",
     ...lead,
@@ -33,6 +47,8 @@ export default async function handler(req, res) {
     total: text(body.total, 20),
     note: text(body.note, 500),
     page: text(body.page, 120),
+    ...attr,
   });
+  await capi;
   return send(res, 200, { ok: true, stored: !!stored });
 }

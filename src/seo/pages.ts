@@ -4,7 +4,7 @@ import { SITE, fromPriceLabel } from "@/config/site";
 import { CLIENTS } from "@/content/clients";
 import { SERVICES } from "@/content/services";
 import { AUDIENCES } from "@/content/audiences";
-import { GUIDES, guidePath } from "@/content/guides";
+import { GUIDES, guideImage, guidePath } from "@/content/guides";
 import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import * as S from "./schema";
@@ -85,13 +85,13 @@ function build(): PageMeta[] {
 
   pages.push({
     path: SHOP_PATH,
-    title: `Google Review Cards — NFC Tap + QR, from ${fromPriceLabel} | CEO Turbo`,
-    description: `NFC + QR Google review cards: customers tap their phone and your Google review form opens. No app, no subscription. From ${fromPriceLabel}, free US shipping.`,
+    title: `NFC Google Review Cards — Tap to Review, from ${fromPriceLabel} | CEO Turbo`,
+    description: `Customers tap their phone and your Google review form opens. iPhone & Android, no app, no subscription. From ${fromPriceLabel}, free US shipping.`,
     ogImage: "/og/review-cards.jpg",
     priority: 0.9,
     changefreq: "weekly",
     group: "Core",
-    schema: [...base(), S.webPage(SHOP_PATH, "Google review cards", "NFC + QR Google review cards", "ItemPage"), S.reviewCardProduct(), S.breadcrumbs([{ name: "Google review cards", path: SHOP_PATH }]), S.faqPage(SHOP_FAQS, SHOP_PATH)],
+    schema: [...base(), S.webPage(SHOP_PATH, "Google review cards", "NFC Google review cards", "ItemPage"), S.reviewCardProduct(), S.breadcrumbs([{ name: "Google review cards", path: SHOP_PATH }]), S.faqPage(SHOP_FAQS, SHOP_PATH)],
   });
 
   pages.push({
@@ -185,6 +185,7 @@ function build(): PageMeta[] {
       path,
       title: suffix(g.metaTitle),
       description: g.metaDescription,
+      ogImage: guideImage(g).src,
       priority: 0.7,
       changefreq: "monthly",
       group: "Guides",

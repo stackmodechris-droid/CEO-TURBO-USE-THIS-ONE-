@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Check, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { cardBack, cardFront } from "@/lib/card-faces";
 
 /** Plays CSS animations only while the element is on screen (saves battery on phones). */
 export function useInView<T extends Element>(rootMargin = "100px") {
@@ -61,6 +62,101 @@ export function TiltCard({ src, alt, className, priority = false, children }: { 
   );
 }
 
+const FRONT_SVG = cardFront();
+const BACK_SVG = cardBack();
+
+/**
+ * The review card in real 3D, both sides drawn as vector art: it sways, flips to show the
+ * black NFC back and comes round again. With `tap`, a phone glides in, taps, NFC rings
+ * pulse and the stars light up. Mouse tilts it (and pauses the loop); a tap flips it.
+ * Transform-only and paused off screen. Reduced motion settles on the front.
+ */
+export function ReviewCard3D({ className, tap = false, priority = false }: { className?: string; tap?: boolean; priority?: boolean }) {
+  const [ref, inView] = useInView<HTMLDivElement>();
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const [flipped, setFlipped] = useState(false);
+  const frame = useRef(0);
+
+  const onMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse" || !tiltRef.current) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      const el = tiltRef.current!;
+      el.style.setProperty("--rx", `${(0.5 - y) * 24}deg`);
+      el.style.setProperty("--ry", `${(x - 0.5) * 34}deg`);
+      el.style.setProperty("--gx", `${x * 100}%`);
+      el.style.setProperty("--gy", `${y * 100}%`);
+      el.dataset.active = "true";
+    });
+  };
+  const onLeave = () => {
+    cancelAnimationFrame(frame.current);
+    const el = tiltRef.current;
+    if (!el) return;
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
+    el.dataset.active = "false";
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn("rc-stage relative mx-auto select-none", tap && "pr-[16%]", className)}
+      data-play={inView}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      role="img"
+      aria-label="NFC Google review card turning in 3D: white “Review Us On Google” front and black NFC back"
+    >
+      <button type="button" onClick={() => setFlipped((f) => !f)} className="relative block w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-turbo focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-[8%/5%]" aria-label={flipped ? "Show the front of the card" : "Show the back of the card"} {...(priority ? { "data-priority": "true" } : {})}>
+        <div ref={tiltRef} className="rc-tilt" data-active="false">
+          <div className="rc-flip" data-flipped={flipped}>
+            <div className="rc-spin">
+              <div className="rc-card">
+                {[-2, -1, 0, 1, 2].map((z) => (
+                  <span key={z} className="rc-edge" style={{ transform: `translateZ(${z}px)` }} aria-hidden />
+                ))}
+                <div className="rc-face" dangerouslySetInnerHTML={{ __html: FRONT_SVG }} />
+                <div className="rc-face rc-back" dangerouslySetInnerHTML={{ __html: BACK_SVG }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </button>
+      <div className="rc-shadow pointer-events-none absolute inset-x-[14%] -bottom-[7%] h-[8%] rounded-[50%]" aria-hidden />
+      {tap && (
+        <>
+          <span className="rc-ring pointer-events-none absolute left-[22%] top-[66%] h-[26%] w-[42%] rounded-full border-2 border-turbo" aria-hidden />
+          <span className="rc-ring rc-ring-2 pointer-events-none absolute left-[22%] top-[66%] h-[26%] w-[42%] rounded-full border-2 border-turbo" aria-hidden />
+          <div className="rc-phone pointer-events-none absolute -right-[2%] top-[50%] w-[36%]" aria-hidden>
+            <div className="relative aspect-[9/19] w-full rounded-[22%/10.5%] bg-[#0d1117] p-[5%] shadow-[0_40px_60px_-20px_rgba(0,0,0,0.85),inset_0_0_0_2px_rgba(255,255,255,0.16)]">
+              <div className="relative h-full w-full overflow-hidden rounded-[17%/8%] bg-white px-[9%] pt-[26%] text-[#202124]">
+                <span className="absolute left-1/2 top-[2.5%] h-[3.2%] w-[32%] -translate-x-1/2 rounded-full bg-black" />
+                <p className="text-[clamp(6px,1.3vw,11px)] font-semibold leading-tight">Rate and review</p>
+                <div className="mt-[14%] flex justify-between">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star key={i} className="rc-pstar aspect-square h-auto w-[17%]" style={{ animationDelay: `${i * 0.1}s` }} strokeWidth={1.6} />
+                  ))}
+                </div>
+                <span className="mt-[16%] block h-[18%] rounded-md border border-[#dadce0]" />
+                <span className="mt-[12%] block rounded-full bg-[#1a73e8] py-[5%] text-center text-[clamp(6px,1.1vw,9px)] font-semibold text-white">Post</span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Flat vector card face (front or back) for small static spots. */
+export function CardFace({ side = "front", className }: { side?: "front" | "back"; className?: string }) {
+  return <div className={cn("[&>svg]:block [&>svg]:h-auto [&>svg]:w-full", className)} dangerouslySetInnerHTML={{ __html: side === "front" ? FRONT_SVG : BACK_SVG }} />;
+}
+
 /** NFC rings that pulse out from a point. */
 export function NfcRings({ className }: { className?: string }) {
   return (
@@ -86,7 +182,7 @@ export function TapDemo({ business, className }: { business?: string; className?
       <div className="absolute inset-0 rounded-[28px] bg-[radial-gradient(60%_60%_at_35%_45%,hsl(var(--turbo)/0.22),transparent)]" />
       {/* card */}
       <div className="td-card absolute left-[4%] top-[18%] w-[46%]">
-        <img src="/img/review-cards/card-blue-cutout.webp" alt="NFC Google review card: tap your phone or scan the QR code to review us on Google" width={388} height={386} loading="lazy" decoding="async" className="w-full drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)]" />
+        <div className="mx-auto w-[64%] drop-shadow-[0_30px_40px_rgba(0,0,0,0.55)]" dangerouslySetInnerHTML={{ __html: FRONT_SVG }} />
         <span className="td-ring absolute left-[18%] top-[56%] h-[34%] w-[34%] rounded-full border-2 border-turbo" />
         <span className="td-ring td-ring-2 absolute left-[18%] top-[56%] h-[34%] w-[34%] rounded-full border-2 border-turbo" />
       </div>

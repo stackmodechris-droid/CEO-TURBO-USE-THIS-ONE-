@@ -2,7 +2,8 @@ import type { MouseEvent, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { BOOKING, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
-import { openBooking, track } from "@/lib/cal";
+import { openBooking } from "@/lib/cal";
+import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
 type Variant = "ignite" | "chrome" | "link";

@@ -1,16 +1,23 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent, type TouchEvent } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, BadgeCheck, Check, ChevronLeft, ChevronRight, Loader2, Lock, Search, ShieldCheck, Smartphone, Truck, Zap, Repeat } from "lucide-react";
-import { REVIEW_CARD, checkoutHref, hasCheckout, money2, packSavings, type ReviewPack, type ReviewStyle } from "@/config/site";
+import { REVIEW_CARD, money2, packSavings, packSku, type ReviewPack } from "@/config/site";
 import { GALLERY, INCLUDED, PRODUCT_POINTS, SETUP_PATH } from "@/content/review-cards";
-import { TiltCard } from "@/components/visuals/ReviewVisuals";
+import { CardFace, ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { BookButton } from "@/components/cta/Actions";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { googleSearchUrl, rememberBusiness } from "@/lib/review-link";
-import { track } from "@/lib/cal";
+import { attribution, track, type Ecommerce } from "@/lib/track";
+import { createCheckout, loadVariants } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
 const POINT_ICONS = [Smartphone, Zap, Repeat, BadgeCheck];
+
+const ecommerceFor = (pack: ReviewPack): Ecommerce => ({
+  currency: REVIEW_CARD.currency,
+  value: pack.price,
+  items: [{ item_id: packSku(pack), item_name: REVIEW_CARD.fullName, item_variant: pack.label, price: pack.price, quantity: 1 }],
+});
 
 function addBusinessDays(from: Date, days: number) {
   const d = new Date(from);
@@ -25,20 +32,33 @@ const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "n
 
 /** The product listing: gallery, options, business lookup and buy button — styled like a Shopify PDP. */
 export function BuyBox({ business, onBusiness }: { business: string; onBusiness: (v: string) => void }) {
-  const [styleId, setStyleId] = useState<ReviewStyle["id"]>("blue");
   const [packId, setPackId] = useState<ReviewPack["id"]>("2");
   const [img, setImg] = useState(0);
   const [eta, setEta] = useState<string | null>(null);
   const [orderOpen, setOrderOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
+  const [busy, setBusy] = useState(false);
   const buyRef = useRef<HTMLAnchorElement>(null);
   const touchX = useRef<number | null>(null);
   const uid = useId();
 
-  const style = REVIEW_CARD.styles.find((s) => s.id === styleId)!;
   const pack = REVIEW_CARD.packs.find((p) => p.id === packId)!;
-  const live = hasCheckout(pack);
   const perCard = pack.price / pack.qty;
+
+  // Shopping-ad / feed links (?pack=5) open with that pack picked; view_item fires once.
+  useEffect(() => {
+    const pk = REVIEW_CARD.packs.find((x) => x.id === new URLSearchParams(window.location.search).get("pack"));
+    if (pk) setPackId(pk.id);
+    track("view_item", { content_name: REVIEW_CARD.fullName }, { ecommerce: ecommerceFor(pk ?? REVIEW_CARD.packs.find((x) => x.id === "2")!) });
+    // Back from Shopify checkout (bfcache): re-enable the button.
+    const onShow = (e: PageTransitionEvent) => e.persisted && setBusy(false);
+    window.addEventListener("pageshow", onShow);
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    const warm = () => void loadVariants().catch(() => {});
+    if (ric) ric(warm);
+    else setTimeout(warm, 1200);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
 
   // Delivery estimate depends on today's date, so it's computed in the browser only.
   useEffect(() => {
@@ -55,10 +75,6 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
     return () => io.disconnect();
   }, []);
 
-  const pickStyle = (s: ReviewStyle) => {
-    setStyleId(s.id);
-    setImg(s.image);
-  };
   const go = (dir: number) => setImg((i) => (i + dir + GALLERY.length) % GALLERY.length);
   const onTouchStart = (e: TouchEvent) => (touchX.current = e.touches[0].clientX);
   const onTouchEnd = (e: TouchEvent) => {
@@ -68,14 +84,24 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
     touchX.current = null;
   };
 
-  const onBuy = (e: MouseEvent<HTMLAnchorElement>) => {
-    rememberBusiness(business);
-    track(live ? "card_checkout" : "order_request_open", { value: pack.price, currency: REVIEW_CARD.currency, style: style.id, pack: pack.id });
-    if (live) return;
+  const onBuy = async (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    setOrderOpen(true);
+    if (busy) return;
+    rememberBusiness(business);
+    const ecommerce = ecommerceFor(pack);
+    track("add_to_cart", { pack: pack.id }, { ecommerce });
+    setBusy(true);
+    try {
+      const { url } = await createCheckout(pack, business);
+      track("begin_checkout", { pack: pack.id, checkout: "shopify" }, { ecommerce });
+      // Give the pixels a beat to send before leaving the page.
+      setTimeout(() => window.location.assign(url), 250);
+    } catch {
+      setBusy(false);
+      setOrderOpen(true);
+    }
   };
-  const buyHref = live ? checkoutHref(pack, style.id) : "#order";
+  const buyHref = "#buy";
   const item = GALLERY[img];
 
   return (
@@ -84,16 +110,16 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
         {/* Gallery */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <div className="group relative aspect-square overflow-hidden rounded-3xl ring-1 ring-white/10" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            {item.tilt ? (
-              <div key={img} className="img-in absolute inset-0 grid place-items-center bg-[radial-gradient(70%_70%_at_50%_40%,hsl(var(--turbo)/0.35),transparent_70%),linear-gradient(180deg,hsl(218_32%_11%),hsl(220_38%_5%))] p-[14%]">
-                <TiltCard src={item.src} alt={item.alt} priority className="w-full" />
+            {item.live3d ? (
+              <div key={img} className="img-in absolute inset-0 grid place-items-center bg-[radial-gradient(70%_70%_at_50%_40%,hsl(var(--turbo)/0.35),transparent_70%),linear-gradient(180deg,hsl(218_32%_11%),hsl(220_38%_5%))] px-[24%] py-[9%]">
+                <ReviewCard3D className="w-full max-w-[300px]" />
               </div>
             ) : (
               <div key={img} className="img-in absolute inset-0 grid place-items-center bg-white p-[6%]">
                 <img src={item.src} alt={item.alt} width={item.w} height={item.h} className="max-h-full w-auto object-contain transition-transform duration-500 group-hover:scale-[1.04]" decoding="async" />
               </div>
             )}
-            <span className="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur">NFC + QR</span>
+            <span className="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur">NFC · iPhone & Android</span>
             <button type="button" onClick={() => go(-1)} aria-label="Previous photo" className="absolute left-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-black/60 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/80 focus-visible:opacity-100 group-hover:opacity-100">
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -106,10 +132,10 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
               ))}
             </div>
           </div>
-          <div className="mt-3 grid grid-cols-5 gap-2 sm:gap-3">
+          <div className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2.5">
             {GALLERY.map((g, i) => (
               <button key={g.src + i} type="button" onClick={() => setImg(i)} aria-label={`Show photo ${i + 1}: ${g.alt}`} aria-current={i === img} className={cn("aspect-square overflow-hidden rounded-xl bg-white ring-2 transition-all duration-200 hover:-translate-y-0.5", i === img ? "ring-turbo" : "ring-transparent opacity-70 hover:opacity-100")}>
-                <img src={g.thumb} alt={g.alt || "Review card variant"} width={200} height={200} loading="lazy" decoding="async" className={cn("h-full w-full object-contain", g.tilt && "bg-[#0b1018] p-1.5")} />
+                <img src={g.thumb} alt={g.alt || "Review card variant"} width={200} height={200} loading="lazy" decoding="async" className={cn("h-full w-full object-contain", g.live3d && "bg-[#0b1018]")} />
               </button>
             ))}
           </div>
@@ -119,7 +145,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
         <div>
           <p className="chip">CEO Turbo · Google review cards</p>
           <h1 className="mt-4 text-[34px] font-bold leading-[1.02] sm:text-5xl">
-            Google Review Tap Card <span className="text-turbo-grad">— tap, review, done.</span>
+            NFC Google Review Card <span className="text-turbo-grad">— tap, review, done.</span>
           </h1>
           <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
             Customers tap their phone on the card and your Google review form opens. No searching for your listing, no app — “I'll leave you a review” becomes a review before they walk out.
@@ -147,20 +173,17 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
             })}
           </ul>
 
-          {/* Style */}
-          <div className="mt-7">
-            <div className="flex items-baseline justify-between">
-              <p id={`${uid}-style`} className="text-xs font-semibold uppercase tracking-[0.14em] text-chrome">Card style</p>
-              <p className="text-sm text-muted-foreground">{style.label}</p>
+          {/* Both sides */}
+          <div className="mt-7 flex items-center gap-4 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5">
+            <div className="flex shrink-0 -space-x-3" aria-hidden>
+              <CardFace className="w-11 -rotate-6 drop-shadow-[0_8px_10px_rgba(0,0,0,0.5)]" />
+              <CardFace side="back" className="w-11 rotate-6 drop-shadow-[0_8px_10px_rgba(0,0,0,0.5)]" />
             </div>
-            <div role="radiogroup" aria-labelledby={`${uid}-style`} className="mt-3 grid grid-cols-2 gap-2">
-              {REVIEW_CARD.styles.map((s) => (
-                <button key={s.id} type="button" role="radio" aria-checked={styleId === s.id} onClick={() => pickStyle(s)} className="opt">
-                  <span className="h-9 w-9 shrink-0 rounded-lg ring-1 ring-white/20" style={{ background: s.swatch }} aria-hidden />
-                  <span className="text-sm font-semibold">{s.label}</span>
-                  {styleId === s.id && <Check className="ml-auto h-4 w-4 text-turbo" aria-hidden />}
-                </button>
-              ))}
+            <div className="min-w-0 text-sm">
+              <p className="font-semibold">Double-sided: white front, black NFC back</p>
+              <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+                {REVIEW_CARD.specs.chip} · {REVIEW_CARD.specs.material} · {REVIEW_CARD.specs.size}
+              </p>
             </div>
           </div>
 
@@ -179,6 +202,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
                       <span className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                         {p.label}
                         {save > 0 && <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">Save {money2(save)}</span>}
+                        {p.popular && <span className="rounded-full bg-turbo/15 px-2 py-0.5 text-[11px] font-semibold text-turbo">Most popular</span>}
                         {p.id === "5" && <span className="rounded-full bg-[hsl(var(--ignite)/0.15)] px-2 py-0.5 text-[11px] font-semibold text-[hsl(var(--ignite-hot))]">Best value</span>}
                       </span>
                       <span className="block text-xs text-muted-foreground">{p.note}</span>
@@ -220,7 +244,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
           <div id="buy" className="mt-6 rounded-2xl p-4 ring-1 ring-white/10 sm:p-5" style={{ background: "linear-gradient(180deg, hsl(218 30% 10%), hsl(220 34% 7%))" }}>
             <div className="flex items-center justify-between gap-4 text-sm">
               <span className="text-muted-foreground">
-                {style.label} · {pack.label}
+                {REVIEW_CARD.fullName} · {pack.label}
               </span>
               <span className="font-display text-lg font-bold tabular-nums">{money2(pack.price)}</span>
             </div>
@@ -232,9 +256,18 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
                 </li>
               ))}
             </ul>
-            <a ref={buyRef} href={buyHref} onClick={onBuy} rel="noopener" className="btn-ignite btn-shine mt-5 w-full !py-4 !text-base">
-              {live ? "Buy now" : "Order now"} — {money2(pack.price)} <ArrowRight className="h-4 w-4" aria-hidden />
+            <a ref={buyRef} href={buyHref} onClick={onBuy} aria-busy={busy} className="btn-ignite btn-shine mt-5 w-full !py-4 !text-base">
+              {busy ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Opening secure checkout…
+                </>
+              ) : (
+                <>
+                  Buy now — {money2(pack.price)} <ArrowRight className="h-4 w-4" aria-hidden />
+                </>
+              )}
             </a>
+            <p className="mt-2 text-center text-xs text-muted-foreground">Apple Pay · Google Pay · Shop Pay · all major cards</p>
             <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
               <Truck className="mt-0.5 h-4 w-4 shrink-0 text-chrome" aria-hidden />
               <span>
@@ -252,7 +285,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
             </p>
             <p className="mt-2 flex items-start gap-2 text-xs text-muted-foreground">
               <Lock className="mt-0.5 h-4 w-4 shrink-0 text-chrome" aria-hidden />
-              {live ? "Secure checkout by Stripe. We never see your card number." : "We confirm your order and text or email you a secure payment link — nothing is charged until you pay."}
+              Secure checkout powered by Shopify. We never see your card number.
             </p>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
@@ -270,24 +303,26 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
       {/* Sticky mobile buy bar */}
       <div className={cn("pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl transition-transform duration-300 lg:hidden", showBar ? "translate-y-0" : "translate-y-full")} aria-hidden={!showBar}>
         <div className="flex items-center gap-3">
-          <img src="/img/review-cards/card-blue-thumb.webp" alt="Blue review card variant thumbnail" width={44} height={44} className="h-11 w-11 shrink-0 rounded-lg bg-white object-contain" />
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-white/5" aria-hidden>
+            <CardFace className="w-6" />
+          </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{pack.label} · {style.label}</p>
+            <p className="truncate text-sm font-semibold">{pack.label} · NFC review card</p>
             <p className="text-xs text-muted-foreground">{money2(pack.price)} · {REVIEW_CARD.shipping.free ? "free shipping" : REVIEW_CARD.shipping.processing}</p>
           </div>
-          <a href={buyHref} onClick={onBuy} tabIndex={showBar ? 0 : -1} rel="noopener" className="btn-ignite !px-5 !py-3 !text-sm">
-            {live ? "Buy now" : "Order"}
+          <a href={buyHref} onClick={onBuy} tabIndex={showBar ? 0 : -1} aria-busy={busy} className="btn-ignite !px-5 !py-3 !text-sm">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Opening checkout" /> : "Buy now"}
           </a>
         </div>
       </div>
 
-      <OrderDialog open={orderOpen} onOpenChange={setOrderOpen} pack={pack} style={style} business={business} />
+      <OrderDialog open={orderOpen} onOpenChange={setOrderOpen} pack={pack} business={business} />
     </>
   );
 }
 
-/** Shown while a pack has no checkout link yet: captures the order so it can be invoiced. */
-function OrderDialog({ open, onOpenChange, pack, style, business }: { open: boolean; onOpenChange: (v: boolean) => void; pack: ReviewPack; style: ReviewStyle; business: string }) {
+/** Fallback if Shopify checkout can't be reached: captures the order so it can be invoiced. */
+function OrderDialog({ open, onOpenChange, pack, business }: { open: boolean; onOpenChange: (v: boolean) => void; pack: ReviewPack; business: string }) {
   const [f, setF] = useState({ name: "", email: "", phone: "", business: "", company_site: "" });
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [err, setErr] = useState("");
@@ -312,13 +347,14 @@ function OrderDialog({ open, onOpenChange, pack, style, business }: { open: bool
     setErr("");
     setState("sending");
     try {
+      const eventId = `lead_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, type: "order-request", product: REVIEW_CARD.name, style: style.label, pack: pack.label, total: money2(pack.price), elapsedMs: Date.now() - opened.current, page: window.location.pathname }),
+        body: JSON.stringify({ ...f, eventId, attribution: attribution(), type: "order-request", product: REVIEW_CARD.name, pack: pack.label, total: money2(pack.price), elapsedMs: Date.now() - opened.current, page: window.location.pathname }),
       });
       if (!res.ok) throw new Error(String(res.status));
-      track("order_request", { value: pack.price, currency: REVIEW_CARD.currency, style: style.id, pack: pack.id });
+      track("generate_lead", { lead_source: "order_request", value: pack.price, currency: REVIEW_CARD.currency, pack: pack.id }, { eventId, user: { email: f.email, phone: f.phone, name: f.name } });
       rememberBusiness(f.business);
       setState("done");
     } catch {
@@ -336,7 +372,7 @@ function OrderDialog({ open, onOpenChange, pack, style, business }: { open: bool
             </span>
             <DialogTitle className="mt-4 text-2xl font-bold">Order received</DialogTitle>
             <DialogDescription className="mt-2 leading-relaxed text-muted-foreground">
-              We'll text or email your secure payment link for {pack.label} ({style.label}, {money2(pack.price)}) shortly. Your cards ship as soon as it's paid.
+              We'll text or email your secure payment link for {pack.label} ({money2(pack.price)}) shortly. Your cards ship as soon as it's paid.
             </DialogDescription>
             <Link to={SETUP_PATH} onClick={() => onOpenChange(false)} className="btn-chrome mt-6">
               Preview the setup guide
@@ -346,7 +382,7 @@ function OrderDialog({ open, onOpenChange, pack, style, business }: { open: bool
           <form onSubmit={submit} noValidate>
             <DialogTitle className="text-2xl font-bold">Order your review cards</DialogTitle>
             <DialogDescription className="mt-1 text-sm text-muted-foreground">
-              {pack.label} · {style.label} · <span className="font-semibold text-foreground">{money2(pack.price)}</span>
+              {pack.label} · <span className="font-semibold text-foreground">{money2(pack.price)}</span>
               {REVIEW_CARD.shipping.free ? " · free shipping" : ""}
             </DialogDescription>
             <div className="mt-5 grid gap-3">

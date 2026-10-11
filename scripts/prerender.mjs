@@ -10,7 +10,7 @@ const SSR = path.resolve("dist-ssr/entry-server.js");
 const SITE = "https://ceoturbo.com";
 const TODAY = new Date().toISOString().slice(0, 10);
 
-const { render, head, pages, guides } = await import(pathToFileURL(SSR).href);
+const { render, head, pages, guides, merchantFeed } = await import(pathToFileURL(SSR).href);
 const assets = await readdir(path.join(DIST, "assets"));
 const fontPreloads = assets
   .filter((f) => /^(inter|space-grotesk)-latin-wght-normal-.*\.woff2$/.test(f))
@@ -56,6 +56,10 @@ await writeFile(
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
 );
 
+// Merchant Center feed (Google + Microsoft Shopping): /feeds/products.xml
+await mkdir(path.join(DIST, "feeds"), { recursive: true });
+await writeFile(path.join(DIST, "feeds", "products.xml"), merchantFeed());
+
 // llms.txt — a plain-language map of the site for AI assistants (llmstxt.org format)
 const groups = ["Core", "Audiences", "Services", "Work", "Guides", "Company"];
 const section = (g) => {
@@ -65,7 +69,7 @@ const section = (g) => {
 };
 const llms = `# CEO Turbo
 
-> CEO Turbo (ceoturbo.com) is an Atlanta, Georgia growth agency founded by Christopher Robinson (StackmodeChris). It builds websites, runs Meta, Google, TikTok and X ads, sets up and optimizes Google Business Profiles and social media profiles, designs promotional email campaigns, and does SEO, AEO and GEO for independent artists, local service businesses and Shopify stores. It offers a free online SEO, AEO and GEO visibility audit (https://ceoturbo.com/free-audit) and sells NFC + QR Google review cards that open a business's Google review form with one tap (https://ceoturbo.com/google-review-cards). Free 30-minute "Brand Boost" growth calls are booked at https://cal.com/stackmodechris/ceoturbo-brandboost.
+> CEO Turbo (ceoturbo.com) is an Atlanta, Georgia growth agency founded by Christopher Robinson (StackmodeChris). It builds websites, runs Meta, Google, TikTok and X ads, sets up and optimizes Google Business Profiles and social media profiles, designs promotional email campaigns, and does SEO, AEO and GEO for independent artists, local service businesses and Shopify stores. It offers a free online SEO, AEO and GEO visibility audit (https://ceoturbo.com/free-audit) and sells NFC Google review cards (from $24.99, ships from Atlanta) that open a business's Google review form with one tap (https://ceoturbo.com/google-review-cards). Free 30-minute "Brand Boost" growth calls are booked at https://cal.com/stackmodechris/ceoturbo-brandboost.
 
 Key facts:
 - 20 live client websites, including Mor Handy, Appliance King, OJ Junk Removal, Kingstone Landscaping, Phoenix Freedom Firearms, BIGZO, 7UVHAVIN and Beyond Labels Gifts.

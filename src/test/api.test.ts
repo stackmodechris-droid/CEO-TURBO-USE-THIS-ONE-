@@ -3,6 +3,49 @@ import { describe, it, expect } from "vitest";
 import { isPrivateIp, normalizeUrl, fetchPage } from "../../api/_lib/fetch-page.js";
 import { parseHtml, blockedAiBots, scoreChecks, platformFor } from "../../api/_lib/audit.js";
 import { cleanLead, isBot } from "../../api/_lib/leads.js";
+import { buildEvent, hashedUser, cleanAttribution } from "../../api/_lib/meta-capi.js";
+import { validSignature, parseBooking } from "../../api/cal-webhook.js";
+import { createHash, createHmac } from "node:crypto";
+
+const sha = (v: string) => createHash("sha256").update(v).digest("hex");
+
+describe("Meta Conversions API payload", () => {
+  it("normalizes and hashes personal data the way Meta requires", () => {
+    const u = hashedUser({ email: "  Jo@Example.COM ", phone: "(404) 555-0123", name: "Jo Ann Smith", city: "Atlanta" });
+    expect(u.em).toEqual([sha("jo@example.com")]);
+    expect(u.ph).toEqual([sha("14045550123")]);
+    expect(u.fn).toEqual([sha("jo")]);
+    expect(u.ln).toEqual([sha("ann smith")]);
+    expect(u.ct).toEqual([sha("atlanta")]);
+  });
+
+  it("keeps the browser event id for de-duplication and passes fbp/fbc unhashed", () => {
+    const e = buildEvent({ eventName: "Lead", eventId: "generate_lead_abc", url: "https://ceoturbo.com/free-audit", user: { email: "a@b.co" }, attribution: { fbp: "fb.1.1.2", fbclid: "XYZ" }, ip: "1.2.3.4", userAgent: "UA" });
+    expect(e).toMatchObject({ event_name: "Lead", event_id: "generate_lead_abc", action_source: "website", user_data: { fbp: "fb.1.1.2", client_ip_address: "1.2.3.4", client_user_agent: "UA" } });
+    expect(e.user_data.fbc).toMatch(/^fb\.1\.\d+\.XYZ$/);
+    expect(JSON.stringify(e)).not.toContain("a@b.co");
+  });
+
+  it("drops unknown attribution keys", () => {
+    expect(cleanAttribution({ gclid: "g1", evil: "x", fbp: 3 })).toEqual({ gclid: "g1" });
+  });
+});
+
+describe("Cal.com booking webhook", () => {
+  const body = JSON.stringify({ triggerEvent: "BOOKING_CREATED", payload: { uid: "u1", attendees: [{ name: "Jo", email: "JO@x.co" }], responses: { attendeePhoneNumber: { value: "+14045550123" } }, metadata: { source: "Ad page hero", fbp: "fb.1.2.3", junk: "x" } } });
+
+  it("rejects missing or forged signatures", () => {
+    expect(validSignature(body, undefined, "s3cret")).toBe(false);
+    expect(validSignature(body, "deadbeef", "s3cret")).toBe(false);
+    expect(validSignature(body, createHmac("sha256", "other").update(body).digest("hex"), "s3cret")).toBe(false);
+    expect(validSignature(body, createHmac("sha256", "s3cret").update(body).digest("hex"), "")).toBe(false);
+    expect(validSignature(body, createHmac("sha256", "s3cret").update(body).digest("hex"), "s3cret")).toBe(true);
+  });
+
+  it("reads the booker and our tracking metadata", () => {
+    expect(parseBooking(JSON.parse(body))).toMatchObject({ uid: "u1", name: "Jo", email: "jo@x.co", phone: "+14045550123", source: "Ad page hero", attribution: { fbp: "fb.1.2.3" } });
+  });
+});
 
 describe("audit fetcher safety", () => {
   it("blocks private, loopback and cloud-metadata addresses", () => {

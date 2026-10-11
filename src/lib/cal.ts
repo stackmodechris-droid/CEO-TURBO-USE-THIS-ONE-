@@ -1,6 +1,9 @@
 // Cal.com embed loader. The script loads on idle (or on first click) so it never
 // competes with the page's first paint, and every booking opens as an on-page modal.
 import { BOOKING } from "@/config/site";
+import { attribution, track, trackBooked } from "@/lib/track";
+
+export { track, trackBooked };
 
 type CalFn = ((...args: unknown[]) => void) & {
   loaded?: boolean;
@@ -68,7 +71,14 @@ export function loadCal(): Promise<boolean> {
     const script = document.querySelector<HTMLScriptElement>(`script[src="${EMBED_SRC}"]`);
     if (!script) return resolve(false);
     // Real bookings (not just calendar opens) are the conversion Meta should optimize for.
-    Cal.ns[BOOKING.namespace]("on", { action: "bookingSuccessful", callback: () => trackBooked("embed") });
+    Cal.ns[BOOKING.namespace]("on", {
+      action: "bookingSuccessfulV2",
+      callback: (e: { detail?: { data?: Record<string, unknown> } }) => {
+        const d = e?.detail?.data ?? {};
+        const uid = typeof d.uid === "string" ? d.uid : undefined;
+        trackBooked("embed", uid, bookerFrom(d));
+      },
+    });
     script.addEventListener("load", () => resolve(true), { once: true });
     script.addEventListener("error", () => resolve(false), { once: true });
   });
@@ -89,7 +99,16 @@ const calConfig = (source?: string, prefill?: string, person?: Person) => ({
   ...(person?.email ? { email: person.email } : {}),
   ...(source ? { "metadata[source]": source } : {}),
   "metadata[page]": typeof window !== "undefined" ? window.location.pathname : "",
+  // Read by api/cal-webhook.js so the server-side Meta "Schedule" matches this browser.
+  ...attributionMeta(),
 });
+
+function attributionMeta() {
+  if (typeof window === "undefined") return {};
+  const a = attribution();
+  const keep = ["fbp", "fbc", "gclid", "msclkid", "utm_source", "utm_campaign"] as const;
+  return Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!]));
+}
 
 /** Opens the Brand Boost booking modal; falls back to the Cal.com page if the embed can't load. */
 export async function openBooking(source?: string, prefill?: string, person?: Person) {
@@ -115,27 +134,13 @@ export async function mountInlineBooking(elementId: string, source?: string, pre
   return true;
 }
 
-type Gtag = (...args: unknown[]) => void;
-
-/** Fires to GA4 / Meta Pixel when they're installed; no-op otherwise. */
-export function track(event: string, params: Record<string, unknown> = {}) {
-  if (typeof window === "undefined") return;
-  const w = window as unknown as { gtag?: Gtag; fbq?: Gtag; dataLayer?: unknown[] };
-  w.gtag?.("event", event, params);
-  if (event === "booking_open") w.fbq?.("trackCustom", "BookingOpen", params);
-  if (event === "booking_complete") w.fbq?.("track", "Schedule", params);
-  if (event === "audit_lead" || event === "order_request") w.fbq?.("track", "Lead", params);
-  if (event === "card_checkout") w.fbq?.("track", "InitiateCheckout", params);
-  w.dataLayer?.push({ event, ...params });
-}
-
-/** A confirmed booking, counted once per session whether it came from the embed or the /booked redirect. */
-export function trackBooked(via: string) {
-  try {
-    if (sessionStorage.getItem("ct_booked")) return;
-    sessionStorage.setItem("ct_booked", "1");
-  } catch {
-    /* storage blocked: still count it */
-  }
-  track("booking_complete", { via });
+/** Best-effort booker details from the Cal.com success payload (field names vary by version). */
+function bookerFrom(d: Record<string, unknown>) {
+  const attendees = (d.attendees ?? (d.booking as Record<string, unknown> | undefined)?.attendees) as { email?: string; name?: string; phoneNumber?: string }[] | undefined;
+  const a = Array.isArray(attendees) ? attendees[0] : undefined;
+  const responses = (d.responses ?? {}) as Record<string, unknown>;
+  const email = a?.email ?? (typeof responses.email === "string" ? responses.email : undefined);
+  const name = a?.name ?? (typeof responses.name === "string" ? responses.name : undefined);
+  const phone = a?.phoneNumber ?? (typeof responses.attendeePhoneNumber === "string" ? responses.attendeePhoneNumber : undefined);
+  return email || phone ? { email, name, phone } : undefined;
 }

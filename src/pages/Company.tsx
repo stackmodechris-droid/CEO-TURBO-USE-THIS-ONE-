@@ -89,7 +89,7 @@ export function Contact() {
             </div>
             <div className="panel flex flex-col p-6">
               <h2 className="text-xl font-semibold">Get more Google reviews</h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">NFC + QR review cards, from {fromPriceLabel}. Customers tap and your review form opens.</p>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">NFC Google review cards, from {fromPriceLabel}. Customers tap and your review form opens.</p>
               <ShopCardsButton className="mt-6">Shop review cards</ShopCardsButton>
             </div>
             <div className="panel flex flex-col p-6">

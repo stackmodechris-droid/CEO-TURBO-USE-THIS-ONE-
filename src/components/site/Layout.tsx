@@ -7,6 +7,8 @@ import { pageFor, NOT_FOUND_META } from "@/seo/pages";
 import { applyHead } from "@/seo/head";
 import { loadCal } from "@/lib/cal";
 import { startPixel, pixelPageView } from "@/lib/pixel";
+import { gtmPageView } from "@/lib/gtm";
+import { startUet } from "@/lib/uet";
 
 /** Ad landing pages: no menu or footer links to leak clicks — one job, one button. */
 const FOCUS_PATHS = new Set(["/book", "/booked"]);
@@ -27,6 +29,7 @@ export function Layout({ children }: { children: ReactNode }) {
     applyHead(meta);
     window.scrollTo(0, 0);
     pixelPageView();
+    gtmPageView(pathname);
   }, [pathname]);
 
   // Warm up the booking embed on the visitor's first interaction, so the first "Book" tap
@@ -34,8 +37,12 @@ export function Layout({ children }: { children: ReactNode }) {
   // Meta Pixel loads once the page is idle (ad clicks still get their PageView).
   useEffect(() => {
     const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: object) => number }).requestIdleCallback;
-    if (ric) ric(startPixel, { timeout: 2500 });
-    else setTimeout(startPixel, 1500);
+    const start = () => {
+      startPixel();
+      startUet();
+    };
+    if (ric) ric(start, { timeout: 2500 });
+    else setTimeout(start, 1500);
   }, []);
 
   useEffect(() => {

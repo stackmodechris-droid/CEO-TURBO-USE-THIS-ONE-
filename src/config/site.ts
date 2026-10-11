@@ -54,56 +54,65 @@ export const PITCH_VIDEO = {
 } as const;
 
 /**
- * The Google review card (NFC tap + QR) — dropshipped, programmed by the buyer.
- *
- * checkoutUrl: paste one Stripe Payment Link per pack (Stripe → Payment Links → New).
- * In each link, turn on "Collect shipping address" and add a custom text field
- * "Business name". The site appends ?client_reference_id=<style>_<pack> so every
- * payment shows which card style was picked. While a pack's link is empty, its
- * Buy button opens an order-request form instead (lead goes to LEADS_WEBHOOK_URL).
- *
- * Check `shipping` and `guarantee` against your supplier before running ads.
+ * The Google review card (NFC, NTAG215) — shipped blank from Atlanta, programmed by the buyer.
+ * Checkout runs on Shopify: the site's own buy box creates a Shopify cart through the
+ * Storefront API and sends the buyer to Shopify checkout (src/lib/shopify.ts).
+ * Variant ids are looked up by option value, so the Shopify product needs one option
+ * "Pack" with values "1 card" / "2 cards" / "5 cards" — see docs/shopify-listing.md.
  */
-export type ReviewPack = { id: "1" | "2" | "5"; qty: number; price: number; label: string; note: string; checkoutUrl: string };
+export const SHOPIFY = {
+  domain: "uweee2-sc.myshopify.com",
+  /** Public Storefront API token (safe in the browser; it can only read products and create carts). */
+  storefrontToken: "3f8f3d3f7a28ffdf9423ef07ce7e1c8e",
+  productId: "15410641502443",
+  apiVersion: "2025-07",
+} as const;
+
+export type ReviewPack = { id: "1" | "2" | "5"; qty: number; price: number; label: string; note: string; shopifyOption: string; popular?: boolean };
 
 const REVIEW_PACKS: ReviewPack[] = [
-  { id: "1", qty: 1, price: 27.99, label: "1 card", note: "Your front counter", checkoutUrl: "" },
-  { id: "2", qty: 2, price: 44.99, label: "2 cards", note: "Counter + door, or shop + truck", checkoutUrl: "" },
-  { id: "5", qty: 5, price: 89.99, label: "5 cards", note: "Every station, chair or location", checkoutUrl: "" },
+  { id: "1", qty: 1, price: 24.99, label: "1 card", note: "Your front counter", shopifyOption: "1 card" },
+  { id: "2", qty: 2, price: 39.99, label: "2 cards", note: "Counter + door, or shop + truck", shopifyOption: "2 cards", popular: true },
+  { id: "5", qty: 5, price: 79.99, label: "5 cards", note: "Every station, chair or location", shopifyOption: "5 cards" },
 ];
 
 export const REVIEW_CARD = {
   name: "Google Review Tap Card",
-  fullName: "NFC + QR Google Review Card",
-  sku: "CT-REVIEW-NFC",
+  fullName: "NFC Google Review Card",
+  sku: "CT-NFC-REVIEW",
   currency: "USD",
-  styles: [
-    { id: "blue", label: "Classic Blue", swatch: "linear-gradient(135deg,#3b7bf0 0 55%,#ffffff 55%)", image: 0 },
-    { id: "black", label: "Midnight Black", swatch: "linear-gradient(135deg,#0b0b0d 0 55%,#2a2a2e 55%)", image: 4 },
-  ],
+  /** One double-sided card: white matte "Review Us On Google" front, black NFC back. */
+  finish: "White front · black back",
+  image: "/img/review-cards/feed-white.jpg",
   packs: REVIEW_PACKS,
+  specs: {
+    chip: "NTAG215 NFC chip",
+    memory: "504 bytes user memory",
+    material: "Waterproof PVC, matte finish",
+    size: "85.5 × 54 mm (credit-card size), 0.76 mm thick",
+  },
   shipping: {
     free: true,
     label: "Free US shipping",
-    processing: "Ships in 1–3 business days",
-    delivery: "Arrives 7–12 business days after it ships",
+    processing: "Ships in 1–2 business days from Atlanta, GA",
+    delivery: "Arrives 2–5 business days after it ships (USPS)",
     /** Total business days from order to doorstep, used for the "get it by" estimate. */
-    minDays: 8,
-    maxDays: 15,
+    minDays: 3,
+    maxDays: 7,
   },
-  guarantee: "If a card won't program or scan, we replace it or refund you — just tell us within 30 days of delivery.",
+  guarantee: "If a card won't program or tap, we replace it or refund you — just tell us within 30 days of delivery.",
   returnDays: 30,
 } as const;
 
-export type ReviewStyle = (typeof REVIEW_CARD.styles)[number];
 
 export const fromPrice = Math.min(...REVIEW_CARD.packs.map((p) => p.price));
 export const fromPriceLabel = `$${fromPrice.toFixed(2)}`;
 export const money2 = (n: number) => `$${n.toFixed(2)}`;
 export const packSavings = (p: ReviewPack) => Math.max(0, +(p.qty * REVIEW_CARD.packs[0].price - p.price).toFixed(2));
-export const hasCheckout = (p: ReviewPack) => p.checkoutUrl.length > 0;
-export const checkoutHref = (p: ReviewPack, style: ReviewStyle["id"]) =>
-  `${p.checkoutUrl}${p.checkoutUrl.includes("?") ? "&" : "?"}client_reference_id=${style}_${p.id}`;
+/** Merchant feed / ad link that opens the product page with this variant preselected. */
+export const packPath = (pack: ReviewPack["id"]) => `/google-review-cards?pack=${pack}`;
+/** SKU shared by Shopify, the Merchant feed, JSON-LD and ad events (CT-NFC-REVIEW-2 …). */
+export const packSku = (p: ReviewPack) => `${REVIEW_CARD.sku}-${p.qty}`;
 
 /** Google review link setup: the free app buyers use to write their link to the card. */
 export const NFC_APP = {

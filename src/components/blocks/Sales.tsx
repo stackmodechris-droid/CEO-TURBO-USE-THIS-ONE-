@@ -8,9 +8,10 @@ import { clientsIn } from "@/content/clients";
 import { SITE, BOOKING, PITCH_VIDEO, fromPriceLabel } from "@/config/site";
 import { BookButton } from "@/components/cta/Actions";
 import { SCENES } from "@/components/visuals/Scenes";
-import { NfcRings, TiltCard } from "@/components/visuals/ReviewVisuals";
+import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
-import { mountInlineBooking, track } from "@/lib/cal";
+import { mountInlineBooking } from "@/lib/cal";
+import { track } from "@/lib/track";
 
 const SERVICE_ICON: Record<Service["icon"], typeof Globe> = {
   search: Search,
@@ -110,7 +111,7 @@ export function ReviewCardPromo({ headingLevel = "h2", title = "Turn “I'll lea
   const H = headingLevel;
   const points = [
     "Customers tap their phone — your Google review form opens",
-    "Works on iPhone and Android, plus a QR code for any camera",
+    "Works on every iPhone XS+ and NFC Android phone",
     "No app for customers, no subscription",
     "Program it yourself in minutes with our setup guide",
   ];
@@ -118,9 +119,7 @@ export function ReviewCardPromo({ headingLevel = "h2", title = "Turn “I'll lea
     <div className="grid items-center gap-12 lg:grid-cols-2">
       <div className="relative mx-auto w-full max-w-[420px]">
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-turbo/20 blur-3xl" aria-hidden />
-        <TiltCard src="/img/review-cards/card-blue-cutout.webp" alt="NFC Google review card: tap your phone or scan the QR code to review us on Google">
-          <NfcRings className="left-[12%] top-[62%] h-[28%] w-[28%]" />
-        </TiltCard>
+        <ReviewCard3D tap className="w-full max-w-[340px]" />
       </div>
       <div>
         <p className="text-sm font-medium text-turbo">Google review cards · from {fromPriceLabel}</p>

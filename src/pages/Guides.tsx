@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { GUIDES, guideBySlug, guidePath, type Guide } from "@/content/guides";
+import { GUIDES, guideBySlug, guideImage, guidePath, type Guide } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
 import { SITE } from "@/config/site";
 import { BookButton } from "@/components/cta/Actions";
@@ -20,11 +20,14 @@ export function GuidesHub() {
           <ul className="mt-12 grid gap-5 md:grid-cols-2">
             {GUIDES.map((g) => (
               <li key={g.slug}>
-                <Link to={guidePath(g)} className="panel flex h-full flex-col p-6 transition-shadow hover:shadow-[0_0_0_1px_hsl(var(--turbo)/0.5)]">
+                <Link to={guidePath(g)} className="panel flex h-full flex-col overflow-hidden transition-shadow hover:shadow-[0_0_0_1px_hsl(var(--turbo)/0.5)]">
+                  <img src={guideImage(g).src} alt="" width={1200} height={630} loading="lazy" decoding="async" className="aspect-[1200/630] w-full object-cover" />
+                  <div className="flex flex-1 flex-col p-6">
                   <p className="text-sm text-muted-foreground">{g.readMinutes} min read</p>
                   <h2 className="mt-2 text-xl font-semibold leading-snug">{g.title}</h2>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{g.summary}</p>
                   <span className="mt-5 text-sm font-semibold text-turbo">Read the guide ›</span>
+                  </div>
                 </Link>
               </li>
             ))}
@@ -61,6 +64,7 @@ function GuideArticle({ g }: { g: Guide }) {
             · Updated <time dateTime={g.updated}>{fmt(g.updated)}</time> · {g.readMinutes} min read
           </p>
           <DirectAnswer>{g.summary}</DirectAnswer>
+          <img src={guideImage(g).src} alt={guideImage(g).alt} width={1200} height={630} {...({ fetchpriority: "high" } as Record<string, string>)} decoding="async" className="mt-8 aspect-[1200/630] w-full rounded-2xl object-cover ring-1 ring-white/10" />
           <nav aria-label="In this guide" className="mt-8 rounded-2xl border border-border p-5">
             <p className="text-sm font-semibold">In this guide</p>
             <ol className="mt-3 grid gap-1.5 text-sm text-muted-foreground sm:grid-cols-2">

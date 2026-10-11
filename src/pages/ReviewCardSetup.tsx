@@ -4,7 +4,7 @@ import { AlertTriangle, Check, Laptop, Lock, MessageSquareQuote, Play, Smartphon
 import { Breadcrumbs, FAQList } from "@/components/blocks/Basics";
 import { BookButton } from "@/components/cta/Actions";
 import { ReviewLinkTool } from "@/components/shop/ReviewLinkTool";
-import { NfcRings } from "@/components/visuals/ReviewVisuals";
+import { CardFace, NfcRings } from "@/components/visuals/ReviewVisuals";
 import { NFC_APP } from "@/config/site";
 import { RULES, SETUP_FAQS, SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ const STEPS = [
   { id: "link", title: "Get your Google review link" },
   { id: "app", title: `Download ${NFC_APP.name}` },
   { id: "write", title: "Write the link to your card" },
-  { id: "test", title: "Test the tap and the QR" },
+  { id: "test", title: "Test the tap" },
   { id: "lock", title: "Lock it (optional)" },
   { id: "place", title: "Place it and start asking" },
 ];
@@ -182,7 +182,7 @@ export default function ReviewCardSetup() {
               </li>
             </ol>
             <div className="relative mx-auto aspect-square w-full max-w-[260px]" aria-hidden>
-              <img src="/img/review-cards/card-blue-cutout.webp" alt="NFC Google review card shown next to iPhone with 'Write complete' message" width={388} height={386} loading="lazy" className="absolute bottom-0 left-0 w-[72%] -rotate-6 drop-shadow-[0_24px_30px_rgba(0,0,0,0.6)]" />
+              <CardFace className="absolute bottom-0 left-[6%] w-[46%] -rotate-6 drop-shadow-[0_24px_30px_rgba(0,0,0,0.6)]" />
               <div className="animate-float absolute right-0 top-0 aspect-[9/19] w-[38%] rounded-[22%/10.5%] bg-[#0d1117] p-[4%] shadow-[inset_0_0_0_2px_rgba(255,255,255,0.15),0_30px_40px_-10px_rgba(0,0,0,0.8)]">
                 <div className="grid h-full place-items-center rounded-[17%/8%] bg-gradient-to-b from-[#123] to-[#0b1220] text-center text-[10px] font-semibold text-emerald-300">
                   <span>
@@ -201,9 +201,9 @@ export default function ReviewCardSetup() {
             <li>Close {NFC_APP.name} and unlock your phone.</li>
             <li>Tap the card. On iPhone a banner pops up at the top — tap it. Android opens the link right away.</li>
             <li>Your review form should open with stars ready to tap. Don't post a review of your own business — just check it opens.</li>
-            <li>Try a second phone if you can (a staff member's), and scan the QR code with the camera.</li>
+            <li>Try a second phone if you can (a staff member's), ideally one iPhone and one Android.</li>
           </ol>
-          <p className="mt-4 text-sm text-muted-foreground">If the QR code on your card doesn't open your review page, download the QR from the finder in step 1 and use it on a sticker, sign or receipt.</p>
+          <p className="mt-4 text-sm text-muted-foreground">Want a QR code too, for receipts or older phones? Download the QR from the finder in step 1 and print it on a sticker, sign or receipt.</p>
         </Step>
 
         <Step n={5} id="lock" title={STEPS[4].title} done={done.includes("lock")} onToggle={toggle}>

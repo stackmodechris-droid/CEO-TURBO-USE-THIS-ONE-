@@ -8,6 +8,7 @@ import App from "./App";
 import { PAGES, pageFor, NOT_FOUND_META } from "./seo/pages";
 import { renderHead } from "./seo/head";
 import { GUIDES, guidePath } from "./content/guides";
+export { merchantFeed } from "./seo/feed";
 
 export function render(url: string): Promise<string> {
   return new Promise((resolve, reject) => {

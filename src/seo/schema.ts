@@ -1,11 +1,11 @@
 // JSON-LD builders. Every node references the shared Organization/Person/WebSite
 // by @id so search engines and AI systems see one consistent entity graph.
-import { SITE, BOOKING, REVIEW_CARD, PITCH_VIDEO } from "@/config/site";
+import { SITE, BOOKING, REVIEW_CARD, PITCH_VIDEO, packPath, packSku } from "@/config/site";
 import { GALLERY, SHOP_PATH } from "@/content/review-cards";
 import type { FAQ, Service } from "@/content/services";
 import type { Client } from "@/content/clients";
 import type { Guide } from "@/content/guides";
-import { guidePath } from "@/content/guides";
+import { guideImage, guidePath } from "@/content/guides";
 
 const abs = (path: string) => (path.startsWith("http") ? path : `${SITE.url}${path}`);
 
@@ -125,44 +125,61 @@ export const service = (s: Service): JsonLd => ({
   },
 });
 
+const CARD_DESCRIPTION =
+  "NFC Google review card for any business with a Google Business Profile. Customers tap their phone on the card and your Google review form opens — no app, no searching. Works with iPhone XS and newer and NFC Android phones. NTAG215 chip, waterproof PVC, credit-card size (85.5 × 54 mm). White “Review Us On Google” front, black NFC back. You program it once in about two minutes with the free NFC Tools app.";
+
+const cardOffer = (p: (typeof REVIEW_CARD.packs)[number]) => ({
+  "@type": "Offer",
+  url: abs(packPath(p.id)),
+  price: p.price.toFixed(2),
+  priceCurrency: REVIEW_CARD.currency,
+  availability: "https://schema.org/InStock",
+  itemCondition: "https://schema.org/NewCondition",
+  seller: { "@id": ORG_ID },
+  shippingDetails: {
+    "@type": "OfferShippingDetails",
+    shippingRate: { "@type": "MonetaryAmount", value: 0, currency: REVIEW_CARD.currency },
+    shippingDestination: { "@type": "DefinedRegion", addressCountry: "US" },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 2, unitCode: "DAY" },
+      transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
+    },
+  },
+  hasMerchantReturnPolicy: {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "US",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: REVIEW_CARD.returnDays,
+    returnMethod: "https://schema.org/ReturnByMail",
+    returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+  },
+});
+
+/** One product group, one variant per pack — mirrors the Shopify variants and the Merchant feed. */
 export const reviewCardProduct = (): JsonLd => ({
-  "@type": "Product",
+  "@type": "ProductGroup",
   "@id": PRODUCT_ID,
   name: REVIEW_CARD.fullName,
-  sku: REVIEW_CARD.sku,
-  description:
-    "An NFC + QR review card for any business with a Google Business Profile. Customers tap their phone (or scan the QR code) and your Google review form opens — no app needed. You program it once with the free NFC Tools app.",
-  image: GALLERY.filter((g) => !g.tilt).map((g) => abs(g.src)),
+  productGroupID: REVIEW_CARD.sku,
+  description: CARD_DESCRIPTION,
+  image: [abs("/img/review-cards/feed-white.jpg"), ...GALLERY.filter((g) => !g.live3d).map((g) => abs(g.src))],
   brand: { "@type": "Brand", name: SITE.name },
-  category: "Business & Industrial > Signage",
-  offers: REVIEW_CARD.packs.map((p) => ({
-    "@type": "Offer",
-    name: p.label,
-    url: abs(SHOP_PATH),
-    price: p.price.toFixed(2),
-    priceCurrency: REVIEW_CARD.currency,
-    eligibleQuantity: { "@type": "QuantitativeValue", value: p.qty },
-    availability: "https://schema.org/InStock",
-    itemCondition: "https://schema.org/NewCondition",
-    seller: { "@id": ORG_ID },
-    shippingDetails: {
-      "@type": "OfferShippingDetails",
-      shippingRate: { "@type": "MonetaryAmount", value: 0, currency: REVIEW_CARD.currency },
-      shippingDestination: { "@type": "DefinedRegion", addressCountry: "US" },
-      deliveryTime: {
-        "@type": "ShippingDeliveryTime",
-        handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
-        transitTime: { "@type": "QuantitativeValue", minValue: 7, maxValue: 12, unitCode: "DAY" },
-      },
-    },
-    hasMerchantReturnPolicy: {
-      "@type": "MerchantReturnPolicy",
-      applicableCountry: "US",
-      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-      merchantReturnDays: REVIEW_CARD.returnDays,
-      returnMethod: "https://schema.org/ReturnByMail",
-      returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
-    },
+  category: "Business & Industrial > Retail > Retail Display Props & Models",
+  material: "PVC",
+  url: abs(SHOP_PATH),
+  color: "White/Black",
+  variesBy: ["https://schema.org/size"],
+  hasVariant: REVIEW_CARD.packs.map((p) => ({
+    "@type": "Product",
+    sku: packSku(p),
+    mpn: packSku(p),
+    name: `${REVIEW_CARD.fullName} – ${p.label}`,
+    description: CARD_DESCRIPTION,
+    image: abs(REVIEW_CARD.image),
+    size: p.label,
+    brand: { "@type": "Brand", name: SITE.name },
+    offers: cardOffer(p),
   })),
 });
 
@@ -206,7 +223,7 @@ export const article = (g: Guide): JsonLd => ({
   author: { "@id": PERSON_ID },
   publisher: { "@id": ORG_ID },
   mainEntityOfPage: abs(guidePath(g)),
-  image: abs(SITE.ogImage),
+  image: { "@type": "ImageObject", url: abs(guideImage(g).src), width: 1200, height: 630, caption: guideImage(g).alt },
   inLanguage: "en-US",
 });
 

@@ -43,7 +43,7 @@ const MENUS: Menu[] = [
     label: "Review cards",
     to: SHOP_PATH,
     items: [
-      { to: SHOP_PATH, label: "Shop review cards", sub: `Tap-to-review NFC + QR — from ${fromPriceLabel}` },
+      { to: SHOP_PATH, label: "Shop review cards", sub: `Tap-to-review NFC cards — from ${fromPriceLabel}` },
       { to: SETUP_PATH, label: "Card setup guide", sub: "Program your card in 5 minutes" },
       { to: "/how-to-get-more-google-reviews", label: "Get more Google reviews", sub: "The playbook that works" },
     ],

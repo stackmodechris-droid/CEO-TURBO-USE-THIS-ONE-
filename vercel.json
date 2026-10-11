@@ -11,6 +11,9 @@
     },
     "api/lead.js": {
       "maxDuration": 15
+    },
+    "api/cal-webhook.js": {
+      "maxDuration": 15
     }
   },
   "redirects": [
@@ -21,11 +24,6 @@
     },
     {
       "source": "/brand-strategy-call",
-      "destination": "/brand-boost",
-      "permanent": true
-    },
-    {
-      "source": "/book",
       "destination": "/brand-boost",
       "permanent": true
     },
@@ -111,7 +109,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://app.cal.com https://cal.com https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; media-src 'self'; frame-src https://app.cal.com https://cal.com https://*.cal.com https://www.facebook.com; connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com https://www.google-analytics.com https://*.google-analytics.com https://www.facebook.com; form-action 'self' https://cal.com https://app.cal.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+          "value": "default-src 'self'; script-src 'self' https://app.cal.com https://cal.com https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://connect.facebook.net https://bat.bing.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; media-src 'self'; frame-src https://app.cal.com https://cal.com https://*.cal.com https://www.facebook.com https://www.googletagmanager.com https://td.doubleclick.net https://bid.g.doubleclick.net; connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://www.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.facebook.com https://connect.facebook.net https://bat.bing.com https://uweee2-sc.myshopify.com; form-action 'self' https://cal.com https://app.cal.com https://www.facebook.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
         },
         {
           "key": "Strict-Transport-Security",
@@ -194,6 +192,15 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/feeds/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
         }
       ]
     }

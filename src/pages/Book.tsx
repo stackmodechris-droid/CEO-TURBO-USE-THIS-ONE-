@@ -11,7 +11,7 @@ import { BookingSection, BrandBoostSteps, Founder, VideoPitch } from "@/componen
 import { ProofStats, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
 import { FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
-import { trackBooked } from "@/lib/cal";
+import { trackBooked } from "@/lib/track";
 
 const SHOWCASE = ["mor-handy", "kingstone-landscaping", "bigzo"];
 
@@ -144,7 +144,16 @@ export default function Book() {
 }
 
 export function Booked() {
-  useEffect(() => trackBooked("redirect"), []);
+  // Cal.com → event → Advanced → "Redirect on booking" to https://ceoturbo.com/booked with
+  // "Forward parameters" on, so the booking uid (dedup with the server-side event) and email arrive here.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const uid = q.get("uid") || q.get("bookingUid") || undefined;
+    const email = q.get("email") || undefined;
+    const name = q.get("name") || undefined;
+    trackBooked("redirect", uid, email ? { email, name } : undefined);
+    if (q.toString()) window.history.replaceState(null, "", window.location.pathname);
+  }, []);
   return (
     <section className="relative overflow-hidden pb-24 pt-28 sm:pt-36">
       <div className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[900px] -translate-x-1/2 glow-turbo opacity-70" aria-hidden />

@@ -2,6 +2,7 @@
 import { runAudit } from "./_lib/audit.js";
 import { cleanLead, forwardLead, isBot } from "./_lib/leads.js";
 import { readJson, send, clientIp, rateLimited, sameOrigin } from "./_lib/http.js";
+import { buildEvent, cleanAttribution, sendMetaEvents } from "./_lib/meta-capi.js";
 
 const pick = (v, allowed) => (allowed.includes(v) ? v : "");
 const text = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f<>]/g, " ").trim().slice(0, max) : "");
@@ -48,6 +49,21 @@ export default async function handler(req, res) {
     console.error("[audit] failed", e?.message);
   }
 
+  // Server-side Meta "Lead", de-duplicated with the browser Pixel via the shared event id.
+  const attr = cleanAttribution(body.attribution);
+  const capi = sendMetaEvents([
+    buildEvent({
+      eventName: "Lead",
+      eventId: text(body.eventId, 120),
+      url: `https://ceoturbo.com${text(body.page, 120) || "/free-audit"}`,
+      user: { email: lead.email, phone: lead.phone, name: lead.name, city: input.city },
+      attribution: attr,
+      ip: clientIp(req),
+      userAgent: req.headers["user-agent"],
+      customData: { lead_source: "free_check", content_name: kind === "artist" ? "Artist visibility check" : "Business visibility check" },
+    }),
+  ]);
+
   const failing = report ? report.checks.filter((c) => report.top.includes(c.id)).map((c) => c.label) : [];
   await forwardLead({
     type: kind === "artist" ? "audit-artist" : "audit-business",
@@ -65,7 +81,9 @@ export default async function handler(req, res) {
     reviewsScore: report?.scores.reviews ?? "",
     topIssues: failing.join(" | "),
     page: text(body.page, 120),
+    ...attr,
   });
+  await capi;
 
   if (!report) return send(res, 503, { error: "audit" });
   return send(res, 200, { report });

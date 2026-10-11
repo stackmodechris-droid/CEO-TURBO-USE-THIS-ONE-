@@ -11,7 +11,10 @@ import { GUIDES } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
 import { SERVICES } from "@/content/services";
 import { CSP } from "@/config/headers";
-import { BOOKING, REVIEW_CARD, checkoutHref, packSavings } from "@/config/site";
+import { BOOKING, REVIEW_CARD, packSavings, packPath } from "@/config/site";
+import { merchantFeed, feedItems } from "@/seo/feed";
+import { reviewCardProduct } from "@/seo/schema";
+import { findVariant } from "@/lib/shopify";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { checkReviewLink } from "@/lib/review-link";
 
@@ -106,9 +109,37 @@ describe("review card store", () => {
     for (const p of rest) expect(p.price / p.qty).toBeLessThan(one.price);
   });
 
-  it("tags every checkout with the chosen style and pack", () => {
-    const pack = { ...REVIEW_CARD.packs[1], checkoutUrl: "https://buy.stripe.com/test_123" };
-    expect(checkoutHref(pack, "black")).toBe("https://buy.stripe.com/test_123?client_reference_id=black_2");
+  it("maps every pack to its Shopify variant, and refuses to guess", () => {
+    const v = (pack: string) => ({ id: `gid://shopify/ProductVariant/${pack}`, availableForSale: true, price: { amount: "1" }, selectedOptions: [{ name: "Pack", value: pack }] });
+    const variants = ["1 card", "2 cards", "5-Pack"].map(v);
+    expect(REVIEW_CARD.packs.map((p) => findVariant(variants, p)?.variant.id)).toEqual(["gid://shopify/ProductVariant/1 card", "gid://shopify/ProductVariant/2 cards", "gid://shopify/ProductVariant/5-Pack"]);
+    expect(findVariant([{ ...v("x"), selectedOptions: [{ name: "Title", value: "Default Title" }] }], REVIEW_CARD.packs[0])).toBeNull();
+  });
+
+  it("feeds Google/Microsoft Merchant Center one item per variant at the page price", () => {
+    const items = feedItems();
+    expect(items).toHaveLength(REVIEW_CARD.packs.length);
+    expect(new Set(items.map((i) => i.id)).size).toBe(items.length);
+    for (const i of items) {
+      expect(i.title.length).toBeLessThanOrEqual(150);
+      expect(existsSync(pub(new URL(i.image).pathname))).toBe(true);
+    }
+    const xml = merchantFeed();
+    expect(xml).toContain('xmlns:g="http://base.google.com/ns/1.0"');
+    expect(xml).toContain(`<g:link>https://ceoturbo.com${packPath("5")}</g:link>`);
+    expect(xml).toContain("<g:price>39.99 USD</g:price>");
+    expect(xml).not.toMatch(/&(?!amp;|lt;|gt;|quot;)/);
+  });
+
+  it("describes the product as a ProductGroup with a priced offer per variant", () => {
+    const p = reviewCardProduct() as { "@type": string; hasVariant: { sku: string; image: string; offers: { price: string; url: string } }[] };
+    expect(p["@type"]).toBe("ProductGroup");
+    expect(p.hasVariant).toHaveLength(REVIEW_CARD.packs.length);
+    for (const v of p.hasVariant) {
+      expect(Number(v.offers.price)).toBeGreaterThan(0);
+      expect(v.offers.url).toMatch(/^https:\/\/ceoturbo\.com\/google-review-cards\?pack=\d$/);
+      expect(existsSync(pub(new URL(v.image).pathname))).toBe(true);
+    }
   });
 
   it("only accepts direct Google review links", () => {
