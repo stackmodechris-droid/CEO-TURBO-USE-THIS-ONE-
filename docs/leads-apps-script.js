@@ -4,6 +4,7 @@
 // sheet: rows are matched by header NAME, not position. Setup steps: docs/leads-google-sheet.md
 
 const SECRET = "PASTE_YOUR_LEADS_WEBHOOK_SECRET_HERE"; // same value as LEADS_WEBHOOK_SECRET in Vercel
+const SHEET_ID = "1sToqSfGp6eDAowaqvmtKxDPUHqDGNUruWsnIUzkr1GI"; // FREE Lead Magnet Leads (works even if this script is not attached to the sheet)
 
 // header label shown in the sheet  ->  field name sent by the website
 const ATTR = {
@@ -114,7 +115,7 @@ function doPost(e) {
   try {
     const name = tabFor(data.type);
     const map = TABS[name];
-    const book = SpreadsheetApp.getActiveSpreadsheet();
+    const book = SpreadsheetApp.openById(SHEET_ID);
     let sheet = book.getSheetByName(name);
     if (!sheet) {
       sheet = book.insertSheet(name);
