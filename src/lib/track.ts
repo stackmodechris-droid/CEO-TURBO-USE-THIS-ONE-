@@ -1,11 +1,13 @@
 // One event layer for every ad platform.
 //
 // Every call pushes a GA4-style event (with a unique event_id) to the dataLayer, where Google Tag
-// Manager (GTM-KRPRZ67Z) routes it to GA4 and Google Ads (docs/gtm-container.json). Microsoft UET and
+// Manager (GTM-KRPRZ67Z) routes it to Google Ads (docs/gtm-container.json), and sends the same event to
+// GA4 through the direct Google tag (src/lib/ga.ts). Microsoft UET and
 // the Meta Pixel are fired from code below, so do NOT add UET or Meta tags in GTM (double counting).
 // The Meta Pixel gets the matching standard event with the same id as eventID, so the server-side
 // Conversions API copy (api/_lib/meta-capi.js) is de-duplicated instead of double counted.
 
+import { gaEvent } from "@/lib/ga";
 import { uetEvent } from "@/lib/uet";
 
 type Fn = (...args: unknown[]) => void;
@@ -103,6 +105,8 @@ export function track(event: string, params: Record<string, unknown> = {}, opts:
   });
   // Don't let one lead's details ride along on later events.
   if (user) w.dataLayer.push({ user_data: undefined });
+
+  gaEvent(event, { event_id, ...params, ...(ecommerce ?? {}) });
 
   uetEvent(event, { value: ecommerce?.value ?? params.value, currency: ecommerce?.currency ?? params.currency, lead_source: params.lead_source }, user);
 

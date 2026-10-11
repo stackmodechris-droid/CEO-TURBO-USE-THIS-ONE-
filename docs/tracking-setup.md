@@ -44,13 +44,12 @@ The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PI
 ## 4. Google Tag Manager (GTM-KRPRZ67Z, already installed on every page)
 1. GTM → Admin → **Import container** → choose `docs/gtm-container.json` → workspace *Default* → **Merge → Rename conflicting**.
 2. Variables → set the constants:
-   - `Const - GA4 Measurement ID` → `G-…`
    - `Const - Google Ads Conversion ID` → the number after `AW-`
    - `Const - Ads Label - Booked call` / `Const - Ads Label - Lead` → labels from Google Ads → Goals → Conversions → each action → *Use Google Tag Manager*.
 3. In Google Ads, create those conversion actions first: **Booked call** (category *Book appointment*, Primary) and **Lead** (category *Submit lead form*, Primary or Secondary). Count: **One**.
 4. **Enhanced conversions:** Google Ads → Goals → Settings → Enhanced conversions → on → method **Google Tag Manager**. The site already pushes `user_data` (email/phone) on every lead and booking.
 5. **Preview** → book a test call or run a free check → confirm the tags fire → **Submit / Publish**.
-6. If the import is rejected, build it by hand with the same names: the Google tag (All Pages), Conversion Linker, a GA4 event tag with `{{Event}}` on the custom-event regex, and two Google Ads Conversion tags on `book_call` and `generate_lead` with Order ID `{{DLV - event_id}}`.
+6. GA4 (`G-XDWPSVBW53`) is the direct Google tag in `src/lib/ga.ts`, NOT in GTM: never add a Google tag / GA4 tag to the container (double counting). If the import is rejected, build by hand: Conversion Linker and two Google Ads Conversion tags on `book_call` and `generate_lead` with Order ID `{{DLV - event_id}}`.
 
 ## 5. Shopify (purchases)
 1. **Apps → Facebook & Instagram** (by Meta): connect pixel **3232222473609236**, Data sharing **Maximum**. That gives you Purchase via Pixel + Conversions API. Don't add Meta anywhere else on Shopify.

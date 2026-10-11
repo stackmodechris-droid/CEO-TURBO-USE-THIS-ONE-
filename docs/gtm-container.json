@@ -20,24 +20,6 @@
       {
         "accountId": "0",
         "containerId": "0",
-        "tagId": "1",
-        "name": "Google tag - GA4",
-        "type": "googtag",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "tagId",
-            "value": "{{Const - GA4 Measurement ID}}"
-          }
-        ],
-        "firingTriggerId": [
-          "2147479553"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT"
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
         "tagId": "2",
         "name": "Conversion Linker",
         "type": "gclidw",
@@ -65,164 +47,6 @@
         ],
         "firingTriggerId": [
           "2147479553"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT"
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "tagId": "3",
-        "name": "GA4 - page_view (SPA route change)",
-        "type": "gaawe",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "eventName",
-            "value": "page_view"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "measurementIdOverride",
-            "value": "{{Const - GA4 Measurement ID}}"
-          },
-          {
-            "type": "LIST",
-            "key": "eventSettingsTable",
-            "list": [
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameter",
-                    "value": "page_location"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameterValue",
-                    "value": "{{DLV - page_location}}"
-                  }
-                ]
-              },
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameter",
-                    "value": "page_title"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameterValue",
-                    "value": "{{DLV - page_title}}"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "firingTriggerId": [
-          "10"
-        ],
-        "tagFiringOption": "ONCE_PER_EVENT"
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "tagId": "4",
-        "name": "GA4 - site events",
-        "type": "gaawe",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "eventName",
-            "value": "{{Event}}"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "measurementIdOverride",
-            "value": "{{Const - GA4 Measurement ID}}"
-          },
-          {
-            "type": "BOOLEAN",
-            "key": "sendEcommerceData",
-            "value": "true"
-          },
-          {
-            "type": "TEMPLATE",
-            "key": "getEcommerceDataFrom",
-            "value": "dataLayer"
-          },
-          {
-            "type": "LIST",
-            "key": "eventSettingsTable",
-            "list": [
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameter",
-                    "value": "event_id"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameterValue",
-                    "value": "{{DLV - event_id}}"
-                  }
-                ]
-              },
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameter",
-                    "value": "lead_source"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameterValue",
-                    "value": "{{DLV - lead_source}}"
-                  }
-                ]
-              },
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameter",
-                    "value": "value"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameterValue",
-                    "value": "{{DLV - value}}"
-                  }
-                ]
-              },
-              {
-                "type": "MAP",
-                "map": [
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameter",
-                    "value": "currency"
-                  },
-                  {
-                    "type": "TEMPLATE",
-                    "key": "parameterValue",
-                    "value": "{{DLV - currency}}"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "firingTriggerId": [
-          "13"
         ],
         "tagFiringOption": "ONCE_PER_EVENT"
       },
@@ -357,30 +181,6 @@
       {
         "accountId": "0",
         "containerId": "0",
-        "triggerId": "10",
-        "name": "CE - virtual_page_view",
-        "type": "CUSTOM_EVENT",
-        "customEventFilter": [
-          {
-            "type": "EQUALS",
-            "parameter": [
-              {
-                "type": "TEMPLATE",
-                "key": "arg0",
-                "value": "{{_event}}"
-              },
-              {
-                "type": "TEMPLATE",
-                "key": "arg1",
-                "value": "virtual_page_view"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
         "triggerId": "11",
         "name": "CE - book_call",
         "type": "CUSTOM_EVENT",
@@ -425,47 +225,9 @@
             ]
           }
         ]
-      },
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "triggerId": "13",
-        "name": "CE - GA4 site events",
-        "type": "CUSTOM_EVENT",
-        "customEventFilter": [
-          {
-            "type": "MATCH_REGEX",
-            "parameter": [
-              {
-                "type": "TEMPLATE",
-                "key": "arg0",
-                "value": "{{_event}}"
-              },
-              {
-                "type": "TEMPLATE",
-                "key": "arg1",
-                "value": "^(generate_lead|book_call|booking_open|audit_start|audit_complete|view_item|add_to_cart|begin_checkout|video_play|shop_click|review_link_valid)$"
-              }
-            ]
-          }
-        ]
       }
     ],
     "variable": [
-      {
-        "accountId": "0",
-        "containerId": "0",
-        "variableId": "100",
-        "name": "Const - GA4 Measurement ID",
-        "type": "c",
-        "parameter": [
-          {
-            "type": "TEMPLATE",
-            "key": "value",
-            "value": "G-XDWPSVBW53"
-          }
-        ]
-      },
       {
         "accountId": "0",
         "containerId": "0",

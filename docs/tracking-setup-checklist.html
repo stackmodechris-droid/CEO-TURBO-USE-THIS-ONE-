@@ -30,8 +30,8 @@
 <b>How your data flows</b>
 <table>
 <tr><th>Conversion</th><th>Where it happens</th><th>Meta</th><th>Google (GA4 + Ads)</th><th>Microsoft Ads</th><th>Google Sheet tab</th></tr>
-<tr><td>Free check lead</td><td>/free-audit</td><td>Lead (browser + server)</td><td>generate_lead via GTM</td><td>submit_lead_form</td><td>Free Check Leads</td></tr>
-<tr><td>Booked call</td><td>Cal.com on your site</td><td>Schedule (browser + server)</td><td>book_call via GTM</td><td>book_appointment</td><td>Booked Calls</td></tr>
+<tr><td>Free check lead</td><td>/free-audit</td><td>Lead (browser + server)</td><td>generate_lead (GA4 direct tag + Ads via GTM)</td><td>submit_lead_form</td><td>Free Check Leads</td></tr>
+<tr><td>Booked call</td><td>Cal.com on your site</td><td>Schedule (browser + server)</td><td>book_call (GA4 direct tag + Ads via GTM)</td><td>book_appointment</td><td>Booked Calls</td></tr>
 <tr><td>Card purchase</td><td>Shopify checkout</td><td>Purchase (Facebook &amp; Instagram app)</td><td>purchase (Shopify custom pixel)</td><td>purchase (Shopify custom pixel)</td><td>Card Orders</td></tr>
 </table>
 <p>Every lead keeps its ad click IDs (gclid, msclkid, fbclid) and UTMs in the sheet, so you can see which ad produced it.</p>
@@ -131,7 +131,7 @@
 <ul>
 <li>tagmanager.google.com → open GTM-KRPRZ67Z → Admin → <b>Export Container</b> (backup).</li>
 <li>Admin → <b>Import Container</b> → <code>docs/gtm-container.json</code> → Existing workspace → <b>Merge</b> → "Rename conflicting tags, triggers, variables" → Confirm.</li>
-<li>Variables: set Const GA4 Measurement ID, Const Google Ads Conversion ID, and the two Ads labels (Booked call, Lead) if I haven't already.</li>
+<li>Variables: set Const Google Ads Conversion ID and the two Ads labels (Booked call, Lead) if I haven't already. <b>GA4 is not in GTM</b>: it is installed directly on the site (G-XDWPSVBW53), so never add a Google tag or GA4 tag to the container.</li>
 <li>Enhanced conversions: create a <b>User-Provided Data</b> variable (Manual configuration): Email = dataLayer <code>user_data.email</code>, Phone = <code>user_data.phone_number</code>. In both Google Ads tags, tick "Include user-provided data" and choose it.</li>
 <li><b>Preview</b> → enter https://www.ceoturbo.com → book a test call and run a free check. "Google Ads – Booked call" fires once on <code>book_call</code>; "Google Ads – Lead" once on <code>generate_lead</code>.</li>
 <li>Make sure there is <b>no</b> Meta or Microsoft tag in the container (the site already fires them; adding them double counts).</li>

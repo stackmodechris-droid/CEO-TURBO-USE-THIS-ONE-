@@ -1,6 +1,9 @@
 // Google Tag Manager (GTM-KRPRZ67Z). Loaded from code instead of an inline <script> so the site's
 // Content-Security-Policy can keep blocking inline scripts. GTM routes the dataLayer events from
-// src/lib/track.ts to GA4 and Google Ads (UET and Meta fire from code) — see docs/gtm-container.json.
+// src/lib/track.ts to Google Ads (GA4 is the direct Google tag in src/lib/ga.ts; UET and Meta fire from
+// code) — see docs/gtm-container.json.
+import { gaPageView } from "@/lib/ga";
+
 export const GTM_ID = "GTM-KRPRZ67Z";
 
 export function startGtm() {
@@ -16,9 +19,10 @@ export function startGtm() {
   document.head.appendChild(s);
 }
 
-/** Client-side route change → GA4 page_view (and UET page load) via the "virtual_page_view" trigger. */
+/** Client-side route change → GA4 page_view (direct tag) and the dataLayer "virtual_page_view" for GTM. */
 export function gtmPageView(path: string) {
   const w = window as unknown as { dataLayer?: unknown[] };
+  gaPageView(path);
   w.dataLayer = w.dataLayer || [];
   w.dataLayer.push({ event: "virtual_page_view", page_path: path, page_location: window.location.href, page_title: document.title });
 }
