@@ -22,11 +22,11 @@ await writeFile("public/icon-192.png", await icon(192));
 await writeFile("public/icon-512.png", await icon(512));
 await writeFile("public/icon-maskable-512.png", await icon(512, { radius: 0, pad: 0.22 }));
 await writeFile("public/apple-touch-icon.png", await icon(180, { radius: 0, pad: 0.12 }));
-await writeFile("public/favicon-48.png", await icon(48, { pad: 0.08 }));
+await writeFile("public/favicon-48.png", await icon(48, { pad: 0.05 }));
 
 // favicon.ico with PNG-encoded 16, 32 and 48 px images.
 const sizes = [16, 32, 48];
-const pngs = await Promise.all(sizes.map((s) => icon(s, { pad: s < 32 ? 0.04 : 0.08 })));
+const pngs = await Promise.all(sizes.map((s) => icon(s, { pad: s < 32 ? 0.02 : 0.05 })));
 const header = Buffer.alloc(6 + 16 * sizes.length);
 header.writeUInt16LE(0, 0);
 header.writeUInt16LE(1, 2);
