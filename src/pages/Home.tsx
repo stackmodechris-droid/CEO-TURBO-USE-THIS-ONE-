@@ -21,7 +21,7 @@ export default function Home() {
         eyebrow="CEO Turbo · Review products + growth for businesses & artists"
         title={
           <>
-            <span className="text-chrome-grad">We help you get more customers,</span> <span className="text-turbo-grad">more reviews &amp; more listeners.</span>
+            <span className="text-chrome-grad">We will help you get more customers,</span> <span className="text-turbo-grad">more reviews &amp; more listeners.</span>
           </>
         }
         lede="Websites, ads, Google profiles and tap-to-review cards that turn strangers into paying customers and fans. Start free: see exactly how people find you — and where you're losing them — in 60 seconds."
