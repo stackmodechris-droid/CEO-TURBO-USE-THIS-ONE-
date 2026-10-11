@@ -74,6 +74,7 @@ export default async function handler(req, res) {
     gbp: input.gbp,
     reviews: input.reviews,
     press: input.press,
+    nameRank: input.nameRank,
     score: report ? report.overall : "",
     seo: report?.scores.seo ?? "",
     aeo: report?.scores.aeo ?? "",
