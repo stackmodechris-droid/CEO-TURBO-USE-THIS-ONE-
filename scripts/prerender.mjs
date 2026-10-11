@@ -73,7 +73,7 @@ const llms = `# CEO Turbo
 
 Key facts:
 - 20 live client websites, including Mor Handy, Appliance King, OJ Junk Removal, Kingstone Landscaping, Phoenix Freedom Firearms, BIGZO, 7UVHAVIN and Beyond Labels Gifts.
-- Meta lead campaigns (Jul–Aug 2026): 105 leads for $841.26, $8.01 average cost per lead, lowest $4.31.
+- Meta lead campaigns (Jul–Oct 2026): 147 leads for $1,103.43, $7.51 average cost per lead, lowest $4.31.
 - Artist profile campaign (BIGZO): 165 profile visits at $0.32 each.
 - Based at 8735 Dunwoody Place #12143, Atlanta, GA 30350; serves clients across the United States.
 

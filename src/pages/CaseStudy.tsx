@@ -4,7 +4,7 @@ import { clientBySlug, CLIENTS, CATEGORY_LABEL, domainOf } from "@/content/clien
 import { AD_RESULTS } from "@/content/results";
 import { adsForClient } from "@/content/ads";
 import { AUDIENCES } from "@/content/audiences";
-import { BrowserShot, ResultCard, AdGallery, WorkGrid } from "@/components/blocks/Proof";
+import { BrowserShot, FeaturedResult, ResultCard, AdGallery, WorkGrid } from "@/components/blocks/Proof";
 import { BookingSection } from "@/components/blocks/Sales";
 import { Breadcrumbs } from "@/components/blocks/Basics";
 import { BookButton } from "@/components/cta/Actions";
@@ -110,6 +110,14 @@ export default function CaseStudy() {
             </ol>
           </div>
         </section>
+
+        {c.slug === "appliance-king" && (
+          <section className="section border-t border-border" aria-label="Featured result">
+            <div className="container-x">
+              <FeaturedResult />
+            </div>
+          </section>
+        )}
 
         {(results.length > 0 || ads.length > 0) && (
           <section className="section border-t border-border" aria-labelledby="ads">

@@ -161,7 +161,7 @@ function build(): PageMeta[] {
     path: "/results",
     title: "Results — Real Ad Dashboards & Search Console Data | CEO Turbo",
     description:
-      "Unedited Meta Ads Manager and Google Search Console screenshots: 105 leads at $8.01 average, lowest $4.31, 165 artist profile visits at $0.32.",
+      "Unedited Meta Ads Manager and Google Search Console screenshots: 147 leads at $7.51 average, lowest $4.31, 165 artist profile visits at $0.32.",
     ogImage: "/og/results.jpg",
     priority: 0.8,
     changefreq: "monthly",

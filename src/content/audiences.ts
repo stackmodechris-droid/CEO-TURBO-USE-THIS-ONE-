@@ -97,7 +97,7 @@ export const AUDIENCES: Audience[] = [
     faqs: [
       { q: "What's the fastest way for a local business to get more customers?", a: "Run a lead-form or search ad around one strong offer for immediate leads, and fix your Google Business Profile at the same time so organic map-pack calls build underneath." },
       { q: "Do you work with barbershops and salons?", a: "Yes. For appointment businesses we focus on the booking link everywhere — Google profile, Instagram and website — plus a tap-to-review card at every chair and before/after content." },
-      { q: "How much do Facebook leads cost for local services?", a: "On our recent home-service campaigns: $4.31 for computer repair, $5.36 for carpet cleaning, $7.36 for appliance repair and $19.91 for outlet replacement." },
+      { q: "How much do Facebook leads cost for local services?", a: "On our recent home-service campaigns: $4.31 for computer repair, $5.36 for carpet cleaning, $6.51 for appliance repair and $19.91 for outlet replacement." },
       { q: "Do I need a website if I have a Google Business Profile?", a: "Your profile gets you into Maps; your website closes the job and ranks for the searches Maps doesn't cover. Google also uses your website to understand what your profile offers." },
       { q: "Which areas do you serve?", a: "We work with businesses across the US. Our current clients are in Atlanta and North Georgia, Macon, the Denver metro and the Washington DC area." },
     ],

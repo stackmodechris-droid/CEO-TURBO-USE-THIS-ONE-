@@ -52,7 +52,7 @@ export const CLIENTS: Client[] = [
     location: "Macon, Georgia",
     promise: "Start with the symptom — Appliance King reviews the brand, condition and job scope before the visit.",
     overview:
-      "Appliance King repairs washers, dryers, refrigerators, freezers and dishwashers around Macon. People searching for appliance repair search by the broken machine, so the site is organized the same way. Their washer-and-dryer Meta campaign produced 13 form leads at $7.36 each.",
+      "Appliance King repairs washers, dryers, refrigerators, freezers and dishwashers around Macon. People searching for appliance repair search by the broken machine, so the site is organized the same way. Their Meta lead-form campaign has produced 55 form leads at $6.51 each, and the business owner says a few hundred dollars of ad spend turned into thousands in revenue.",
     decisions: [
       { title: "Services listed as symptoms people search", body: "Washer repair, dryer repair, refrigerator & freezer repair — each a clear row that matches how people type it into Google." },
       { title: "Phone number in the header", body: "478-273-7539 is visible on every page next to the estimate button, because appliance emergencies get phoned in." },

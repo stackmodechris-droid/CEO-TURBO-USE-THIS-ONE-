@@ -54,11 +54,11 @@ export const AD_RESULTS: AdResult[] = [
     key: "appliance-king",
     client: "Appliance King",
     clientSlug: "appliance-king",
-    campaign: "Washer & dryer repair — lead form",
+    campaign: "Appliance repair — lead form",
     metric: "Leads",
-    count: 13,
-    costPer: 7.36,
-    spent: 95.73,
+    count: 55,
+    costPer: 6.51,
+    spent: 357.9,
     image: "/img/results/appliance-king.webp",
   },
   {
@@ -141,3 +141,27 @@ export const GSC = {
 
 export const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
+
+/** Appliance King Facebook page insights, 2026 view (activity starts in July when the ads launched). */
+export const APPLIANCE_KING_PAGE = {
+  views: "59.4K",
+  viewers: "26.6K",
+  interactions: "151",
+  linkClicks: "778",
+  visits: "1.4K",
+  follows: "186",
+  image: "/img/results/appliance-king-page.webp",
+};
+
+/** Featured proof. The revenue line is the owner's own statement, not a dashboard number. */
+export const FEATURED_RESULT = {
+  clientSlug: "appliance-king",
+  client: "Appliance King",
+  headline: "A few hundred dollars of ads turned into thousands in revenue.",
+  note: "Per the business owner. The lead numbers below come straight from Meta Ads Manager.",
+  did: [
+    "Built the Meta lead-form ad and the lead form",
+    "Optimized their Facebook & social profile",
+    "Optimized their Google Business Profile",
+  ],
+};
