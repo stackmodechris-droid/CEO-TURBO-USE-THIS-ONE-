@@ -5,6 +5,7 @@ import { parseHtml, blockedAiBots, scoreChecks, platformFor } from "../../api/_l
 import { cleanLead, isBot } from "../../api/_lib/leads.js";
 import { buildEvent, hashedUser, cleanAttribution } from "../../api/_lib/meta-capi.js";
 import { validSignature, parseBooking } from "../../api/cal-webhook.js";
+import { validSignature as shopifySig, parseOrder } from "../../api/shopify-webhook.js";
 import { createHash, createHmac } from "node:crypto";
 
 const sha = (v: string) => createHash("sha256").update(v).digest("hex");
@@ -122,5 +123,19 @@ describe("lead validation", () => {
     expect(isBot({ company_site: "http://spam" })).toBe(true);
     expect(isBot({ elapsedMs: 200 })).toBe(true);
     expect(isBot({ elapsedMs: 9000 })).toBe(false);
+  });
+});
+
+describe("Shopify order webhook", () => {
+  const body = JSON.stringify({ id: 1 });
+  it("verifies the base64 HMAC signature", () => {
+    expect(shopifySig(body, createHmac("sha256", "s").update(body).digest("base64"), "s")).toBe(true);
+    expect(shopifySig(body, createHmac("sha256", "x").update(body).digest("base64"), "s")).toBe(false);
+    expect(shopifySig(body, undefined, "s")).toBe(false);
+    expect(shopifySig(body, createHmac("sha256", "s").update(body).digest("base64"), "")).toBe(false);
+  });
+  it("maps an order and its ad click ids to the sheet record", () => {
+    const r = parseOrder({ id: 9, name: "#1001", email: "A@B.com", total_price: "49.00", currency: "USD", financial_status: "paid", line_items: [{ title: "Card", quantity: 2 }], note_attributes: [{ name: "gclid", value: "g1" }, { name: "Business name", value: "Joe" }] });
+    expect(r).toMatchObject({ type: "shopify-order", orderId: "9", email: "a@b.com", quantity: 2, total: "49.00 USD", gclid: "g1", business: "Joe" });
   });
 });
