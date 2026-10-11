@@ -107,10 +107,10 @@ export const SERVICES: Service[] = [
     icon: "meta",
     metaTitle: "Facebook & Instagram Ads Management — Leads From $4.31",
     metaDescription:
-      "Meta ads setup, creative and management for local businesses, stores and artists: 105 leads at about $8 each, lowest $4.31. See the dashboards.",
+      "Meta ads setup, creative and management for local businesses, stores and artists: 147 leads at about $7.50 each, lowest $4.31. See the dashboards.",
     h1: "Facebook and Instagram ads that bring leads, not just likes",
     answer:
-      "CEO Turbo sets up and manages Meta ads on Facebook and Instagram — pixel and conversion tracking, audiences, lead forms and the ad creative itself. Across seven recent lead campaigns our clients got 105 form leads for $841 in total spend: about $8 per lead, with the best campaign at $4.31.",
+      "CEO Turbo sets up and manages Meta ads on Facebook and Instagram — pixel and conversion tracking, audiences, lead forms and the ad creative itself. Across seven recent lead campaigns our clients got 147 form leads for $1,103 in total spend: about $7.50 per lead, with the best campaign at $4.31.",
     outcome: "Booked jobs and buyers from a budget you control.",
     bestFor: ["Local services that need booked jobs this month", "Stores with a product people buy on impulse", "Artists building a real listener and follower base"],
     includes: [

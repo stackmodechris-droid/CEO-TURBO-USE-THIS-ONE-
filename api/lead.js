@@ -35,7 +35,10 @@ export default async function handler(req, res) {
       attribution: attr,
       ip: clientIp(req),
       userAgent: req.headers["user-agent"],
-      customData: { lead_source: text(body.type, 30) || "order-request" },
+      customData: {
+        lead_source: text(body.type, 30) || "order-request",
+        ...(Number(body.value) > 0 ? { value: Number(body.value), currency: "USD" } : {}),
+      },
     }),
   ]);
   const { stored } = await forwardLead({

@@ -68,8 +68,8 @@ describe("assets", () => {
 
 describe("reported numbers", () => {
   it("matches the Meta dashboards", () => {
-    expect(AD_TOTALS.leads).toBe(105);
-    expect(AD_TOTALS.leadSpend).toBeCloseTo(841.26, 2);
+    expect(AD_TOTALS.leads).toBe(147);
+    expect(AD_TOTALS.leadSpend).toBeCloseTo(1103.43, 2);
     expect(AD_TOTALS.lowestCpl).toBe(4.31);
   });
 });

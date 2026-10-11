@@ -120,9 +120,9 @@ export const GUIDES: Guide[] = [
     title: "How much do Facebook ads cost per lead for a local business? (Real 2026 data)",
     metaTitle: "Facebook Ads Cost Per Lead for Local Businesses — Real 2026 Data",
     metaDescription:
-      "Real Meta lead-form results from 7 campaigns: $4.31 to $19.91 per lead, $8.01 average across 105 leads — and what drove the cheapest ones.",
+      "Real Meta lead-form results from 7 campaigns: $4.31 to $19.91 per lead, $7.51 average across 147 leads — and what drove the cheapest ones.",
     summary:
-      "Across seven Meta lead-form campaigns we ran in July–August 2026, clients got 105 leads for $841.26 — an average of $8.01 per lead. The cheapest was $4.31 (computer repair); the most expensive was $19.91 (outlet replacement).",
+      "Across seven Meta lead-form campaigns we ran in July–October 2026, clients got 147 leads for $1,103.43 — an average of $7.51 per lead. The cheapest was $4.31 (computer repair); the most expensive was $19.91 (outlet replacement).",
     audience: "local",
     published: DATE,
     updated: DATE,
@@ -131,14 +131,14 @@ export const GUIDES: Guide[] = [
       {
         h2: "What does a Facebook lead cost for a local service business?",
         answer:
-          "In our July–August 2026 campaigns, Meta lead-form ads for local services cost between $4.31 and $19.91 per lead, averaging $8.01 across 105 leads and $841.26 in spend. Meta's own peer benchmarks on those dashboards showed median costs of $7.26 and $12.75 per lead for similar ad sets.",
+          "In our July–October 2026 campaigns, Meta lead-form ads for local services cost between $4.31 and $19.91 per lead, averaging $7.51 across 147 leads and $1,103.43 in spend. Meta's own peer benchmarks on those dashboards showed median costs of $7.26 and $12.75 per lead for similar ad sets.",
         table: {
           head: ["Campaign", "Leads", "Cost per lead", "Spend"],
           rows: [
             ["Computer repair (Stackmode)", "12", "$4.31", "$51.77"],
             ["Water system (Ryan Pool Enagic)", "29", "$4.89", "$141.70"],
             ["Carpet cleaning (Mor Handy)", "13", "$5.36", "$69.72"],
-            ["Appliance repair (Appliance King)", "13", "$7.36", "$95.73"],
+            ["Appliance repair (Appliance King)", "55", "$6.51", "$357.90"],
             ["Lead form set 1 (Stackmode)", "16", "$7.48", "$119.64"],
             ["Lead form set 3 (Stackmode)", "8", "$10.50", "$84.01"],
             ["Outlet replacement (Mor Handy)", "14", "$19.91", "$278.69"],
@@ -175,7 +175,7 @@ export const GUIDES: Guide[] = [
     faqs: [
       { q: "What is a good cost per lead on Facebook for home services?", a: "Under the peer medians Meta showed us — $7.26 to $12.75 — is a strong result. Our best home-service campaign hit $4.31." },
       { q: "Is Google Ads cheaper than Facebook for leads?", a: "Usually not per lead, but Google leads come from people already searching, so they often convert to jobs at a higher rate. Compare cost per booked job." },
-      { q: "Where is this data from?", a: "Meta Ads Manager performance overviews for CEO Turbo client campaigns in July–August 2026. Screenshots are on our results page." },
+      { q: "Where is this data from?", a: "Meta Ads Manager performance overviews for CEO Turbo client campaigns in July–October 2026. Screenshots are on our results page." },
     ],
     related: [
       { label: "See the ad dashboards", to: "/results" },

@@ -4,7 +4,7 @@ import { BookButton } from "@/components/cta/Actions";
 import { AuditHero } from "@/components/audit/AuditHero";
 import { SiteWall } from "@/components/visuals/SiteWall";
 import { SearchScene } from "@/components/visuals/Scenes";
-import { ProofStats, WorkGrid, AdResultsGrid, AdGallery, GSCProof } from "@/components/blocks/Proof";
+import { ProofStats, FeaturedResult, WorkGrid, AdResultsGrid, AdGallery, GSCProof } from "@/components/blocks/Proof";
 import { PathPicker, ServiceGrid, ReviewCardPromo, BrandBoostSteps, Founder, BookingSection, VideoPitch } from "@/components/blocks/Sales";
 import { SectionHeader, FAQList } from "@/components/blocks/Basics";
 import { HOME_FAQS } from "@/content/faqs";
@@ -21,7 +21,7 @@ export default function Home() {
         eyebrow="CEO Turbo · Review products + growth for businesses & artists"
         title={
           <>
-            <span className="text-chrome-grad">We help you get more customers,</span> <span className="text-turbo-grad">more reviews &amp; more listeners.</span>
+            <span className="text-chrome-grad">We will help you get more customers,</span> <span className="text-turbo-grad">more reviews &amp; more listeners.</span>
           </>
         }
         lede="Websites, ads, Google profiles and tap-to-review cards that turn strangers into paying customers and fans. Start free: see exactly how people find you — and where you're losing them — in 60 seconds."
@@ -47,6 +47,12 @@ export default function Home() {
       <section className="pb-8" aria-label="Results at a glance">
         <div className="container-x">
           <ProofStats />
+        </div>
+      </section>
+
+      <section className="pb-16" aria-label="Featured client result">
+        <div className="container-x">
+          <FeaturedResult />
         </div>
       </section>
 

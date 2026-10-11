@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { AD_RESULTS, AD_TOTALS, money } from "@/content/results";
 import { ADS } from "@/content/ads";
-import { AdResultsGrid, AdGallery, GSCProof } from "@/components/blocks/Proof";
+import { AdResultsGrid, AdGallery, GSCProof, FeaturedResult } from "@/components/blocks/Proof";
 import { BookingSection } from "@/components/blocks/Sales";
 import { SectionHeader, Breadcrumbs, DirectAnswer } from "@/components/blocks/Basics";
 import { BookButton } from "@/components/cta/Actions";
@@ -17,11 +17,17 @@ export default function Results() {
           <SectionHeader
             as="h1"
             title="Real results, straight from the dashboards"
-            lede="No cherry-picked case-study graphics. These are unedited Meta Ads Manager and Google Search Console screenshots from client and in-house campaigns, July–August 2026."
+            lede="No cherry-picked case-study graphics. These are unedited Meta Ads Manager and Google Search Console screenshots from client and in-house campaigns, July–October 2026."
           />
           <DirectAnswer label="The numbers">
             Across {AD_TOTALS.campaigns} Meta lead campaigns, CEO Turbo clients got {AD_TOTALS.leads} leads for {money(AD_TOTALS.leadSpend)} — {money(AD_TOTALS.avgCpl)} per lead on average, with the best at {money(AD_TOTALS.lowestCpl)}. An artist profile campaign drove 165 visits at $0.32 each, and stackmode.net reached 3.34K Google impressions.
           </DirectAnswer>
+        </div>
+      </section>
+
+      <section className="pb-4" aria-label="Featured client result">
+        <div className="container-x">
+          <FeaturedResult />
         </div>
       </section>
 

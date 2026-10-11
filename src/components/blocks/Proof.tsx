@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Check } from "lucide-react";
+import { BookButton } from "@/components/cta/Actions";
 import { CLIENTS, CATEGORY_LABEL, domainOf, type Category, type Client } from "@/content/clients";
-import { AD_RESULTS, AD_TOTALS, GSC, money, type AdResult } from "@/content/results";
+import { AD_RESULTS, AD_TOTALS, GSC, APPLIANCE_KING_PAGE, FEATURED_RESULT, money, type AdResult } from "@/content/results";
 import type { AdCreative } from "@/content/ads";
 import { cn } from "@/lib/utils";
 
@@ -193,5 +194,74 @@ export function GSCProof() {
         </dl>
       </figcaption>
     </figure>
+  );
+}
+
+/** Lead proof: the Appliance King result, with the two dashboards it comes from. */
+export function FeaturedResult() {
+  const ad = AD_RESULTS.find((r) => r.key === "appliance-king")!;
+  const pg = APPLIANCE_KING_PAGE;
+  const reach = [
+    { v: pg.views, l: "page views" },
+    { v: pg.viewers, l: "viewers" },
+    { v: pg.linkClicks, l: "link clicks" },
+    { v: pg.follows, l: "new follows" },
+  ];
+  return (
+    <div className="panel overflow-hidden p-6 sm:p-8">
+      <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+          <p className="text-sm font-medium text-turbo">
+            Best result · <Link to={`/portfolio/${FEATURED_RESULT.clientSlug}`} className="underline-offset-4 hover:underline">{FEATURED_RESULT.client}</Link>
+          </p>
+          <h2 className="h-section mt-2">{FEATURED_RESULT.headline}</h2>
+          <p className="mt-2 text-xs text-muted-foreground">{FEATURED_RESULT.note}</p>
+          <dl className="mt-6 grid grid-cols-3 gap-3">
+            {[
+              { v: String(ad.count), l: "leads from the form ad" },
+              { v: money(ad.costPer), l: "per lead" },
+              { v: money(ad.spent), l: "ad spend" },
+            ].map((x) => (
+              <div key={x.l}>
+                <dd className="font-display text-3xl font-bold text-chrome-grad sm:text-4xl">{x.v}</dd>
+                <dt className="mt-1 text-xs text-muted-foreground">{x.l}</dt>
+              </div>
+            ))}
+          </dl>
+          <dl className="mt-6 grid grid-cols-4 gap-3 border-t border-border pt-5">
+            {reach.map((x) => (
+              <div key={x.l}>
+                <dd className="font-display text-xl font-bold text-turbo">{x.v}</dd>
+                <dt className="text-xs text-muted-foreground">{x.l}</dt>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-6 text-sm font-semibold">What we set up</p>
+          <ul className="mt-2 space-y-2">
+            {FEATURED_RESULT.did.map((d) => (
+              <li key={d} className="flex items-start gap-2 text-[15px]">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-turbo" aria-hidden /> {d}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6">
+            <BookButton />
+          </div>
+        </div>
+        <div className="grid gap-4">
+          {[
+            { src: ad.image, alt: `Meta Ads Manager: Appliance King lead form, ${ad.count} leads at ${money(ad.costPer)} each, ${money(ad.spent)} spent`, label: "Meta Ads Manager" },
+            { src: pg.image, alt: "Appliance King Facebook page insights: 59.4K views, 26.6K viewers, 778 link clicks, 186 follows", label: "Facebook page insights" },
+          ].map((i) => (
+            <a key={i.src} href={i.src} target="_blank" rel="noopener" className="block overflow-hidden rounded-xl border border-border bg-white/[0.02]">
+              <img src={i.src.replace(".webp", "-600.webp")} alt={i.alt} loading="lazy" decoding="async" width={600} className="h-auto max-h-80 w-full object-cover object-top" />
+              <span className="flex items-center gap-1 px-4 py-2 text-xs text-muted-foreground">
+                {i.label} <ArrowUpRight className="h-3 w-3" />
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
