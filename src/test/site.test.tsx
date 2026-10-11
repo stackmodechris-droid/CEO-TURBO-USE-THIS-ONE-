@@ -62,7 +62,7 @@ describe("assets", () => {
   it("has every ad creative, dashboard and share image", () => {
     ADS.forEach((a) => expect(existsSync(pub(`/img/ads/${a.slug}.webp`)), a.slug).toBe(true));
     AD_RESULTS.forEach((r) => expect(existsSync(pub(r.image)), r.key).toBe(true));
-    PAGES.filter((p) => p.ogImage).forEach((p) => expect(existsSync(pub(p.ogImage!)), p.path).toBe(true));
+    PAGES.filter((p) => p.ogImage).forEach((p) => expect(existsSync(pub(p.ogImage!.split("?")[0])), p.path).toBe(true));
   });
 });
 

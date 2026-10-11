@@ -198,6 +198,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
                     <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-full ring-2", packId === p.id ? "ring-turbo" : "ring-white/25")} aria-hidden>
                       {packId === p.id && <span className="h-2.5 w-2.5 rounded-full bg-turbo" />}
                     </span>
+                    <img src={`/img/review-cards/pack-${p.qty}-thumb.webp`} alt="" width={48} height={48} loading="lazy" decoding="async" className="h-12 w-12 shrink-0 rounded-lg bg-white object-contain" />
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                         {p.label}

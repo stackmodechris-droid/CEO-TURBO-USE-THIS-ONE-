@@ -87,7 +87,7 @@ function build(): PageMeta[] {
     path: SHOP_PATH,
     title: `NFC Google Review Cards — Tap to Review, from ${fromPriceLabel} | CEO Turbo`,
     description: `Customers tap their phone and your Google review form opens. iPhone & Android, no app, no subscription. From ${fromPriceLabel}, free US shipping.`,
-    ogImage: "/og/review-cards.jpg",
+    ogImage: "/og/review-cards.jpg?v=2",
     priority: 0.9,
     changefreq: "weekly",
     group: "Core",
@@ -99,7 +99,7 @@ function build(): PageMeta[] {
     title: "Google Review Card Setup: Find Your Review Link | CEO Turbo",
     description:
       "Set up your NFC Google review card in 5 minutes: find your review link in Google Business Profile, write it with the free NFC Tools app and test it.",
-    ogImage: "/og/review-cards.jpg",
+    ogImage: "/og/review-cards.jpg?v=2",
     priority: 0.7,
     changefreq: "monthly",
     group: "Guides",

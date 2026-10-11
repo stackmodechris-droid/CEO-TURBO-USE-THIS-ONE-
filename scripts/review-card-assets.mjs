@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { cardBack, cardFront } from "../src/lib/card-faces.ts";
+import { fromPriceLabel } from "../src/config/site.ts";
 
 const SRC = path.resolve("scripts/review-cards");
 const OUT = path.resolve("public/img/review-cards");
@@ -118,7 +119,7 @@ const shadow = (w, h) =>
       { input: glow, left: 700, top: 20 },
       { input: b, left: 900, top: 50 },
       { input: card, left: 730, top: 110 },
-      { input: text(["More 5-star", "Google reviews."], "Tap. Review. Done. NFC Google review cards.", "Shop review cards"), left: 0, top: 0 },
+      { input: text(["More 5-star", "Google reviews."], `NFC Google review cards · Free US shipping`, `Shop now — from ${fromPriceLabel}`), left: 0, top: 0 },
     ])
     .jpeg({ quality: 86, mozjpeg: true })
     .toFile(path.join(OG, "review-cards.jpg"));
