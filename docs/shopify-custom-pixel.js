@@ -6,7 +6,7 @@
 // Meta purchases come from the "Facebook & Instagram" app (Pixel + Conversions API) — do NOT add Meta here,
 // or purchases are counted twice.
 
-const GA4_ID = "G-XXXXXXXXXX"; // GA4 → Admin → Data streams → Measurement ID
+const GA4_ID = "G-XDWPSVBW53"; // GA4 → Admin → Data streams → Measurement ID
 const ADS_ID = "AW-XXXXXXXXXX"; // Google Ads → Goals → Conversions → Purchase → Tag setup → "AW-…"
 const ADS_PURCHASE_LABEL = "XXXXXXXXXXXXXXXXXXX"; // the part after the slash in send_to "AW-…/LABEL"
 const UET_ID = "XXXXXXXXX"; // Microsoft Ads → Tools → UET tag → Tag ID
