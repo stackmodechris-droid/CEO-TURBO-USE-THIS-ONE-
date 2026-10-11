@@ -49,6 +49,11 @@ export function parseBooking(body) {
     meetingLink: str(p.metadata?.videoCallUrl || p.videoCallData?.url || (/^https?:/.test(p.location || "") ? p.location : ""), 300),
     title: str(p.title || p.eventTitle),
     notes: str(val(r.notes) || p.description, 500),
+    businessName: str(val(r.businessName), 140),
+    whatTheyDo: str(val(r.whatTheyDo), 120),
+    website: str(val(r.website), 200),
+    goal: str(val(r.goal), 100),
+    budget: str(val(r.budget), 60),
     source: str(meta.source, 80),
     page: str(meta.page, 120),
     attribution: cleanAttribution(meta),
@@ -90,7 +95,7 @@ export default async function handler(req, res) {
         customData: { content_name: b.title || "Brand Boost call", lead_source: b.source || "cal.com" },
       }),
     ]),
-    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
+    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, website: b.website, goal: b.goal, budget: b.budget, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
   ]);
   return send(res, 200, { ok: true, meta: !!capi.sent, sheet: !!sheet.stored });
 }
