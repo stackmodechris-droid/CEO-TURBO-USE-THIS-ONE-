@@ -1,7 +1,8 @@
 // One event layer for every ad platform.
 //
 // Every call pushes a GA4-style event (with a unique event_id) to the dataLayer, where Google Tag
-// Manager (GTM-KRPRZ67Z) routes it to GA4, Google Ads and Microsoft UET (docs/gtm-container.json).
+// Manager (GTM-KRPRZ67Z) routes it to GA4 and Google Ads (docs/gtm-container.json). Microsoft UET and
+// the Meta Pixel are fired from code below, so do NOT add UET or Meta tags in GTM (double counting).
 // The Meta Pixel gets the matching standard event with the same id as eventID, so the server-side
 // Conversions API copy (api/_lib/meta-capi.js) is de-duplicated instead of double counted.
 

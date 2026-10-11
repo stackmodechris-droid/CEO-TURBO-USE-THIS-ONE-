@@ -1,6 +1,6 @@
 // Google Tag Manager (GTM-KRPRZ67Z). Loaded from code instead of an inline <script> so the site's
 // Content-Security-Policy can keep blocking inline scripts. GTM routes the dataLayer events from
-// src/lib/track.ts to GA4, Google Ads and Microsoft UET — see docs/gtm-container.json.
+// src/lib/track.ts to GA4 and Google Ads (UET and Meta fire from code) — see docs/gtm-container.json.
 export const GTM_ID = "GTM-KRPRZ67Z";
 
 export function startGtm() {

@@ -1,7 +1,7 @@
 // Headless Shopify checkout: the site's own buy box, Shopify's checkout.
 // Talks to the Storefront API with the public token (what the Buy Button SDK does under the hood,
 // without its 100 KB script or its UI). Purchase conversions are tracked on Shopify's side —
-// see docs/shopify-tracking.md.
+// see docs/tracking-setup.md.
 import { SHOPIFY, type ReviewPack } from "@/config/site";
 import { attribution } from "@/lib/track";
 

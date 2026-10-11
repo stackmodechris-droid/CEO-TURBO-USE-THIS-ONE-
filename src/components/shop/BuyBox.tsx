@@ -352,7 +352,7 @@ function OrderDialog({ open, onOpenChange, pack, business }: { open: boolean; on
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, eventId, attribution: attribution(), type: "order-request", product: REVIEW_CARD.name, pack: pack.label, total: money2(pack.price), elapsedMs: Date.now() - opened.current, page: window.location.pathname }),
+        body: JSON.stringify({ ...f, eventId, attribution: attribution(), type: "order-request", product: REVIEW_CARD.name, pack: pack.label, total: money2(pack.price), value: pack.price, elapsedMs: Date.now() - opened.current, page: window.location.pathname }),
       });
       if (!res.ok) throw new Error(String(res.status));
       track("generate_lead", { lead_source: "order_request", value: pack.price, currency: REVIEW_CARD.currency, pack: pack.id }, { eventId, user: { email: f.email, phone: f.phone, name: f.name } });

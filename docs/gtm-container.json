@@ -45,7 +45,7 @@
           {
             "type": "BOOLEAN",
             "key": "enableCrossDomain",
-            "value": "false"
+            "value": "true"
           },
           {
             "type": "BOOLEAN",
@@ -56,6 +56,11 @@
             "type": "BOOLEAN",
             "key": "enableCookieOverrides",
             "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "autoLinkDomains",
+            "value": "uweee2-sc.myshopify.com"
           }
         ],
         "firingTriggerId": [
@@ -241,12 +246,12 @@
           {
             "type": "TEMPLATE",
             "key": "conversionValue",
-            "value": "1"
+            "value": "{{DLV - value}}"
           },
           {
             "type": "TEMPLATE",
             "key": "currencyCode",
-            "value": "USD"
+            "value": "{{DLV - currency}}"
           },
           {
             "type": "TEMPLATE",
@@ -271,7 +276,7 @@
           {
             "type": "BOOLEAN",
             "key": "enableEnhancedConversion",
-            "value": "false"
+            "value": "true"
           },
           {
             "type": "BOOLEAN",
@@ -304,12 +309,12 @@
           {
             "type": "TEMPLATE",
             "key": "conversionValue",
-            "value": "1"
+            "value": "{{DLV - value}}"
           },
           {
             "type": "TEMPLATE",
             "key": "currencyCode",
-            "value": "USD"
+            "value": "{{DLV - currency}}"
           },
           {
             "type": "TEMPLATE",
@@ -334,7 +339,7 @@
           {
             "type": "BOOLEAN",
             "key": "enableEnhancedConversion",
-            "value": "false"
+            "value": "true"
           },
           {
             "type": "BOOLEAN",
