@@ -1,8 +1,7 @@
 // /plan — the 5-step tutorial page Christopher scrolls in the 9:16 Meta ad (face on top, this page below).
 // One idea per screen, a real number on almost every screen, and the step rail so viewers always know where
 // they are. Focus layout (no menu): every click goes to the quiz/call or the review-card store.
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUpRight, Check, Megaphone, MapPin, Phone, Search, Sparkles, Star, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Megaphone, MapPin, Phone, Search, Sparkles, Star, X } from "lucide-react";
 import { SITE } from "@/config/site";
 import { AD_RESULTS, AD_TOTALS, APPLIANCE_KING_PAGE, GSC, STRIPE, money } from "@/content/results";
 import { CLIENTS } from "@/content/clients";
@@ -12,10 +11,10 @@ import { BookingSection } from "@/components/blocks/Sales";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { CallLink } from "@/components/site/CallLink";
 import { CountUp } from "@/components/visuals/CountUp";
+import { StepHead, StepRail, Stat, Tick, useActiveStep } from "@/components/blocks/Tutorial";
 import { SearchScene } from "@/components/visuals/Scenes";
 import { SiteWall } from "@/components/visuals/SiteWall";
 import { TapDemo } from "@/components/visuals/ReviewVisuals";
-import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
 const SOURCE = "Plan page";
@@ -28,109 +27,8 @@ const PLAN_STEPS = [
   { id: "ceo", label: "Talk to the CEO", title: "Get your plan from the founder" },
 ] as const;
 
-/** Which step is on screen (for the rail) + a one-time plan_step_view per step, so Clarity/GA show scroll depth. */
-function useActiveStep() {
-  const [active, setActive] = useState(-1);
-  const seen = useRef(new Set<string>());
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const els = PLAN_STEPS.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
-    // Count a step only after it has been on screen for a moment, so a "skip ahead" fly-past isn't a view.
-    const timers = new Map<string, number>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          const id = e.target.id;
-          if (!e.isIntersecting) {
-            clearTimeout(timers.get(id));
-            continue;
-          }
-          const i = PLAN_STEPS.findIndex((s) => s.id === id);
-          setActive(i);
-          if (seen.current.has(id)) continue;
-          timers.set(
-            id,
-            window.setTimeout(() => {
-              seen.current.add(id);
-              track("plan_step_view", { step: i + 1, step_name: PLAN_STEPS[i].label });
-            }, 800),
-          );
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    const top = () => window.scrollY < 200 && setActive(-1);
-    window.addEventListener("scroll", top, { passive: true });
-    return () => {
-      io.disconnect();
-      timers.forEach((t) => clearTimeout(t));
-      window.removeEventListener("scroll", top);
-    };
-  }, []);
-  return active;
-}
-
-function StepRail({ active }: { active: number }) {
-  const step = PLAN_STEPS[active];
-  return (
-    <div className="sticky top-16 z-30 border-b border-border/70 bg-background/90 backdrop-blur-xl" aria-hidden>
-      <div className="container-x flex h-11 items-center gap-3">
-        <p className="min-w-0 flex-1 truncate text-[13px] font-semibold sm:text-sm">
-          {step ? (
-            <>
-              <span className="text-turbo">
-                Step {active + 1} of {PLAN_STEPS.length}
-              </span>{" "}
-              · {step.label}
-            </>
-          ) : (
-            <span className="text-chrome">The 5-step plan · scroll along</span>
-          )}
-        </p>
-        <ol className="flex gap-1.5">
-          {PLAN_STEPS.map((s, i) => (
-            <li key={s.id} className={cn("h-1.5 w-6 rounded-full transition-colors duration-300 sm:w-10", i <= active ? "bg-turbo" : "bg-white/10")} />
-          ))}
-        </ol>
-      </div>
-    </div>
-  );
-}
-
-function StepHead({ n, kicker, title, lede }: { n: number; kicker: string; title: ReactNode; lede?: ReactNode }) {
-  return (
-    <div className="max-w-3xl">
-      <p className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.14em] text-turbo">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-turbo/15 font-display text-base text-turbo ring-1 ring-turbo/40">{n}</span>
-        {kicker}
-      </p>
-      <h2 className="mt-4 text-[34px] font-bold leading-[1.03] sm:text-6xl">{title}</h2>
-      {lede && <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground sm:text-xl">{lede}</p>}
-    </div>
-  );
-}
-
-function Stat({ v, l, tone = "chrome", small = false }: { v: string; l: string; tone?: "chrome" | "turbo"; small?: boolean }) {
-  return (
-    <div className={cn("rounded-2xl bg-white/[0.03] ring-1 ring-white/5 sm:p-5", small ? "p-3" : "p-4")}>
-      <dd className={cn("font-display font-bold sm:text-5xl", small ? "text-[22px]" : "text-3xl", tone === "turbo" ? "text-turbo-grad" : "text-chrome-grad")}>
-        <CountUp value={v} />
-      </dd>
-      <dt className="mt-1 text-xs text-muted-foreground sm:text-sm">{l}</dt>
-    </div>
-  );
-}
-
-const Tick = ({ children }: { children: ReactNode }) => (
-  <li className="flex items-start gap-3 text-[16px] sm:text-[17px]">
-    <Check className="mt-0.5 h-5 w-5 shrink-0 text-turbo" aria-hidden />
-    <span>{children}</span>
-  </li>
-);
-
 export default function Plan() {
-  const active = useActiveStep();
+  const active = useActiveStep(PLAN_STEPS, "plan_step_view");
   const ak = AD_RESULTS.find((r) => r.key === "appliance-king")!;
   const pg = APPLIANCE_KING_PAGE;
 
@@ -175,7 +73,7 @@ export default function Plan() {
         </div>
       </section>
 
-      <StepRail active={active} />
+      <StepRail steps={PLAN_STEPS} active={active} intro="The 5-step plan · scroll along" />
 
       {/* STEP 1 — website + SEO/AEO/GEO */}
       <section id="found" className="section scroll-mt-28" aria-label={PLAN_STEPS[0].title}>

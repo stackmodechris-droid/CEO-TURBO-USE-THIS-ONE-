@@ -381,6 +381,9 @@
   to { transform: translateY(-50%); }
 }
 .animate-feed { animation: feed-up 38s linear infinite; }
+/* Review "flowing" into Maps / AI / people on /get-more-reviews */
+@keyframes flow-dash { to { stroke-dashoffset: -28; } }
+.flow-line { stroke-dasharray: 6 8; animation: flow-dash 1.1s linear infinite; }
 .payout-feed[data-play="false"] .animate-feed,
 .payout-feed:hover .animate-feed { animation-play-state: paused; }
 .animate-float { animation: float-y 6s ease-in-out infinite; }

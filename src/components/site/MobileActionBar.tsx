@@ -3,12 +3,26 @@ import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { Phone } from "lucide-react";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
-import { SHOP_PATH } from "@/content/review-cards";
+import { REVIEWS_AD_PATH, SHOP_PATH } from "@/content/review-cards";
 
 /** Sticky bottom bar on phones: the two money actions are always one tap away. The shop page has its own buy bar. */
 export function MobileActionBar({ focus = false }: { focus?: boolean }) {
   const { pathname } = useLocation();
   if (pathname === SHOP_PATH) return null;
+  if (pathname === REVIEWS_AD_PATH)
+    return (
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
+        <div className="flex gap-2">
+          <a href="#buy" className="btn-ignite flex-1 !py-3.5 !text-base">
+            Get my review cards — from {fromPriceLabel}
+          </a>
+          <CallLink location="review ad page mobile bar" className="grid w-12 shrink-0 place-items-center rounded-2xl text-foreground ring-1 ring-white/15 hover:bg-white/5">
+            <Phone className="h-5 w-5" aria-hidden />
+            <span className="sr-only">Call {SITE.name} at {SITE.phone.display}</span>
+          </CallLink>
+        </div>
+      </div>
+    );
   if (focus)
     return (
       <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">

@@ -6,6 +6,7 @@ import { MobileActionBar } from "./MobileActionBar";
 import { QuizModalHost } from "@/components/quiz/QuizModalHost";
 import { startSpotlight } from "@/lib/spotlight";
 import { pageFor, NOT_FOUND_META } from "@/seo/pages";
+import { REVIEWS_AD_PATH } from "@/content/review-cards";
 import { applyHead } from "@/seo/head";
 import { loadCal } from "@/lib/cal";
 import { startPixel, pixelPageView } from "@/lib/pixel";
@@ -15,7 +16,7 @@ import { startTiktok, tiktokPageView } from "@/lib/tiktok";
 import { startClarity } from "@/lib/clarity";
 
 /** Ad landing pages: no menu or footer links to leak clicks — one job, one button. */
-const FOCUS_PATHS = new Set(["/book", "/booked", "/plan"]);
+const FOCUS_PATHS = new Set(["/book", "/booked", "/plan", REVIEWS_AD_PATH]);
 
 export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();

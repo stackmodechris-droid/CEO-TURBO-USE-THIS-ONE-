@@ -6,7 +6,7 @@ import { BookButton } from "@/components/cta/Actions";
 import { SERVICES } from "@/content/services";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
-import { SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
+import { REVIEWS_AD_PATH, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { cn } from "@/lib/utils";
 
 type Item = { to: string; label: string; sub?: string };
@@ -103,9 +103,15 @@ export function Header({ focus = false }: { focus?: boolean }) {
             <Phone className="h-[18px] w-[18px]" aria-hidden />
             <span className="sr-only">Call {SITE.name} at {SITE.phone.display}</span>
           </CallLink>
-          <BookButton note={focus ? "Ad page header" : "Header"} className={cn("!px-4 !py-2.5 !text-sm", focus ? "inline-flex" : "hidden sm:inline-flex")}>
-            Book a free call
-          </BookButton>
+          {pathname === REVIEWS_AD_PATH ? (
+            <a href="#buy" className="btn-ignite whitespace-nowrap !px-4 !py-2.5 !text-sm">
+              Get cards<span className="hidden sm:inline"> · {fromPriceLabel}</span>
+            </a>
+          ) : (
+            <BookButton note={focus ? "Ad page header" : "Header"} className={cn("!px-4 !py-2.5 !text-sm", focus ? "inline-flex" : "hidden sm:inline-flex")}>
+              Book a free call
+            </BookButton>
+          )}
           {!focus && (
             <button
               type="button"

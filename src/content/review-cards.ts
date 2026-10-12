@@ -3,6 +3,8 @@ import { REVIEW_CARD, NFC_APP, fromPriceLabel } from "@/config/site";
 
 export const SHOP_PATH = "/google-review-cards";
 export const SETUP_PATH = "/google-review-card-setup";
+/** The review-card tutorial page filmed for ads: its header and phone bar sell cards instead of the call. */
+export const REVIEWS_AD_PATH = "/get-more-reviews";
 
 export type GalleryItem = { src: string; thumb: string; alt: string; live3d?: boolean; w: number; h: number };
 

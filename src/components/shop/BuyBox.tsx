@@ -34,7 +34,20 @@ function addBusinessDays(from: Date, days: number) {
 const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
 /** The product listing: gallery, options, business lookup and buy button — styled like a Shopify PDP. */
-export function BuyBox({ business, onBusiness }: { business: string; onBusiness: (v: string) => void }) {
+export function BuyBox({
+  business,
+  onBusiness,
+  headingLevel = "h1",
+  stickyBar = true,
+}: {
+  business: string;
+  onBusiness: (v: string) => void;
+  /** h2 when the box sits inside another page that already has its h1. */
+  headingLevel?: "h1" | "h2";
+  /** Off when the page has its own sticky card bar. */
+  stickyBar?: boolean;
+}) {
+  const H = headingLevel;
   const [packId, setPackId] = useState<ReviewPack["id"]>("2");
   const [img, setImg] = useState(0);
   const [eta, setEta] = useState<string | null>(null);
@@ -149,9 +162,9 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
         {/* Buy panel */}
         <div>
           <p className="chip">CEO Turbo · Google review cards</p>
-          <h1 className="mt-4 text-[34px] font-bold leading-[1.02] sm:text-5xl">
+          <H className="mt-4 text-[34px] font-bold leading-[1.02] sm:text-5xl">
             NFC Google Review Card <span className="text-turbo-grad">— tap, review, done.</span>
-          </h1>
+          </H>
           <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">
             Customers tap their phone on the card and your Google review form opens. No searching for your listing, no app — “I'll leave you a review” becomes a review before they walk out.
           </p>
@@ -316,20 +329,22 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
       </div>
 
       {/* Sticky mobile buy bar */}
-      <div className={cn("pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl transition-transform duration-300 lg:hidden", showBar ? "translate-y-0" : "translate-y-full")} aria-hidden={!showBar}>
-        <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-white/5" aria-hidden>
-            <CardFace className="w-6" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{pack.label} · NFC review card</p>
-            <p className="text-xs text-muted-foreground">{money2(pack.price)} · {REVIEW_CARD.shipping.free ? "free shipping" : REVIEW_CARD.shipping.processing}</p>
+      {stickyBar && (
+        <div className={cn("pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl transition-transform duration-300 lg:hidden", showBar ? "translate-y-0" : "translate-y-full")} aria-hidden={!showBar}>
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-white/5" aria-hidden>
+              <CardFace className="w-6" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">{pack.label} · NFC review card</p>
+              <p className="text-xs text-muted-foreground">{money2(pack.price)} · {REVIEW_CARD.shipping.free ? "free shipping" : REVIEW_CARD.shipping.processing}</p>
+            </div>
+            <a href={buyHref} onClick={onBuy} tabIndex={showBar ? 0 : -1} aria-busy={busy} className="btn-ignite !px-5 !py-3 !text-sm">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Opening checkout" /> : "Buy now"}
+            </a>
           </div>
-          <a href={buyHref} onClick={onBuy} tabIndex={showBar ? 0 : -1} aria-busy={busy} className="btn-ignite !px-5 !py-3 !text-sm">
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Opening checkout" /> : "Buy now"}
-          </a>
         </div>
-      </div>
+      )}
 
       <OrderDialog open={orderOpen} onOpenChange={setOrderOpen} pack={pack} business={business} />
     </>
