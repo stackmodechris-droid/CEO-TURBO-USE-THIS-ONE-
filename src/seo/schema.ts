@@ -1,7 +1,7 @@
 // JSON-LD builders. Every node references the shared Organization/Person/WebSite
 // by @id so search engines and AI systems see one consistent entity graph.
 import { SITE, BOOKING, REVIEW_CARD, PITCH_VIDEO, packPath, packSku } from "@/config/site";
-import { GALLERY, SHOP_PATH } from "@/content/review-cards";
+import { SHOP_PATH } from "@/content/review-cards";
 import type { FAQ, Service } from "@/content/services";
 import type { Client } from "@/content/clients";
 import type { Guide } from "@/content/guides";
@@ -31,9 +31,10 @@ export const organization = (): JsonLd => ({
   founder: { "@id": PERSON_ID },
   address: { "@type": "PostalAddress", ...SITE.address },
   telephone: SITE.phone.e164,
+  email: SITE.email,
   contactPoint: [
-    { "@type": "ContactPoint", telephone: SITE.phone.e164, contactType: "sales", areaServed: "US", availableLanguage: ["English"] },
-    { "@type": "ContactPoint", telephone: SITE.phone.e164, contactType: "customer service", areaServed: "US", availableLanguage: ["English"] },
+    { "@type": "ContactPoint", telephone: SITE.phone.e164, email: SITE.email, contactType: "sales", areaServed: "US", availableLanguage: ["English"] },
+    { "@type": "ContactPoint", telephone: SITE.phone.e164, email: SITE.email, contactType: "customer service", areaServed: "US", availableLanguage: ["English"] },
   ],
   areaServed: { "@type": "Country", name: "United States" },
   sameAs: SITE.sameAs,
@@ -213,7 +214,7 @@ export const reviewCardProduct = (): JsonLd => ({
   name: REVIEW_CARD.fullName,
   productGroupID: REVIEW_CARD.sku,
   description: CARD_DESCRIPTION,
-  image: [abs("/img/review-cards/feed-white.jpg"), ...GALLERY.filter((g) => !g.live3d).map((g) => abs(g.src))],
+  image: ["feed-white.jpg", "shop-both.jpg", "shop-tap.jpg", "shop-5.jpg"].map((f) => abs(`/img/review-cards/${f}`)),
   brand: { "@type": "Brand", name: SITE.name },
   category: "Business & Industrial > Retail > Retail Display Props & Models",
   material: "PVC",

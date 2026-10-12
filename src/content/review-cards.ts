@@ -11,11 +11,11 @@ export type GalleryItem = { src: string; thumb: string; alt: string; live3d?: bo
 const IMG = "/img/review-cards";
 export const GALLERY: GalleryItem[] = [
   { src: `${IMG}/feed-white.jpg`, thumb: `${IMG}/card-3d-thumb.webp`, alt: "Double-sided NFC Google review card in 3D: white Review Us On Google front, black NFC back", live3d: true, w: 1200, h: 1200 },
+  { src: `${IMG}/shop-both.jpg`, thumb: `${IMG}/shop-both-thumb.webp`, alt: "NFC Google review card front and back: white Review Us On Google side and black NFC side", w: 2048, h: 2048 },
+  { src: `${IMG}/shop-tap.jpg`, thumb: `${IMG}/shop-tap-thumb.webp`, alt: "Review card next to a phone showing the review form that opens when you tap it", w: 2048, h: 2048 },
+  { src: `${IMG}/shop-5.jpg`, thumb: `${IMG}/shop-5-thumb.webp`, alt: "Pack of five NFC Google review cards fanned out", w: 2048, h: 2048 },
   { src: `${IMG}/specs.webp`, thumb: `${IMG}/specs-thumb.webp`, alt: "Review card specs: white matte front, black NFC back, NTAG215 chip, 504 bytes user memory, waterproof PVC, 85.5 × 54 × 0.76 mm", w: 562, h: 682 },
-  { src: `${IMG}/retail-counter.webp`, thumb: `${IMG}/retail-counter-thumb.webp`, alt: "Customer taps the Google review card at a retail store counter after paying", w: 564, h: 714 },
-  { src: `${IMG}/tap-review.webp`, thumb: `${IMG}/tap-review-thumb.webp`, alt: "Phone held near the card opens the Google review page — works with iPhone and Android", w: 566, h: 600 },
   { src: `${IMG}/how-it-works.webp`, thumb: `${IMG}/how-it-works-thumb.webp`, alt: "How it works: tap phone, open review link, submit feedback", w: 590, h: 706 },
-  { src: `${IMG}/stack.webp`, thumb: `${IMG}/stack-thumb.webp`, alt: "Stack of Review Us On Google NFC cards, black NFC side up", w: 674, h: 630 },
   { src: `${IMG}/size.webp`, thumb: `${IMG}/size-thumb.webp`, alt: "Card size: 85.5 mm by 54 mm, the size of a credit card", w: 576, h: 508 },
 ];
 

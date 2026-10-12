@@ -58,6 +58,8 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}
               <br />
               <CallLink location="footer" icon className="mt-2 font-semibold text-foreground hover:text-turbo" />
+              <br />
+              <a href={`mailto:${SITE.email}`} className="mt-1 inline-block font-semibold text-foreground hover:text-turbo">{SITE.email}</a>
             </address>
             <SocialLinks className="mt-5" />
           </div>

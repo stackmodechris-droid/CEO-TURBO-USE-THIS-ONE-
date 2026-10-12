@@ -117,5 +117,6 @@ await build("shop-both", "", [
     .flatten({ background: "#ffffff" })
     .jpeg({ quality: 90, mozjpeg: true })
     .toFile(path.join(OUT, "shop-tap.jpg"));
+  await sharp(path.join(OUT, "shop-tap.jpg")).resize({ width: 200, height: 200 }).webp({ quality: 80 }).toFile(path.join(OUT, "shop-tap-thumb.webp"));
   console.log("shop-tap");
 }
