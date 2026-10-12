@@ -29,6 +29,15 @@ export const SITE = {
     href: "tel:+14705029543",
   },
   email: "",
+  /** Site-ownership codes. Paste the content value from each service's "meta tag" option; empty = no tag. */
+  verification: {
+    /** Meta Business Settings → Brand Safety → Domains → Meta-tag method (facebook-domain-verification). */
+    meta: "",
+    /** Microsoft Merchant Center / Bing Webmaster (msvalidate.01). */
+    microsoft: "",
+    /** Google Search Console / Merchant Center HTML-tag method. */
+    google: "",
+  },
   address: {
     streetAddress: "8735 Dunwoody Place #12143",
     addressLocality: "Atlanta",

@@ -245,7 +245,7 @@ function build(): PageMeta[] {
       path: "/plan",
       title: "How to Get More Customers in 2026: The 5-Step Plan | CEO Turbo",
       description: "Get found on Google and ChatGPT, fix your socials, set up Google Business Profile and reviews, then run Meta + Google ads. The 5-step plan, with proof.",
-      ogImage: "/og/brand-boost.jpg",
+      ogImage: "/og/plan.jpg",
       priority: 0.8,
       changefreq: "monthly",
       group: "Core",
@@ -264,7 +264,7 @@ function build(): PageMeta[] {
     },
     // Ad landing + post-booking pages: kept out of search so they don't compete with /brand-boost.
     // /get-more-reviews: review-card tutorial ad page; the guide + store already own those searches.
-    { path: "/get-more-reviews", title: "How to Get More Google Reviews (One Tap) | CEO Turbo", description: `Why reviews decide who gets the call on Google, Maps and ChatGPT — and the NFC card that turns “I'll review you later” into a review. From ${fromPriceLabel}.`, ogImage: "/og/review-cards.jpg?v=2", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
+    { path: "/get-more-reviews", title: "How to Get More Google Reviews (One Tap) | CEO Turbo", description: `Why reviews decide who gets the call on Google, Maps and ChatGPT — and the NFC card that turns “I'll review you later” into a review. From ${fromPriceLabel}.`, ogImage: "/og/get-more-reviews.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/promptshop", title: "Prompt Shop — Coming Soon | CEO Turbo", description: "AI prompts, scanners and templates from CEO Turbo — coming soon.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Company", schema: base() },

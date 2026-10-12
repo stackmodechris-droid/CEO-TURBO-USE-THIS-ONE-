@@ -29,6 +29,10 @@ export function renderHead(meta: PageMeta): string {
     `<meta name="twitter:description" content="${esc(meta.description)}" />`,
     `<meta name="twitter:image" content="${image}" />`,
   ];
+  const v = SITE.verification;
+  if (v.meta) tags.push(`<meta name="facebook-domain-verification" content="${esc(v.meta)}" />`);
+  if (v.microsoft) tags.push(`<meta name="msvalidate.01" content="${esc(v.microsoft)}" />`);
+  if (v.google) tags.push(`<meta name="google-site-verification" content="${esc(v.google)}" />`);
   if (meta.schema.length) {
     tags.push(`<script type="application/ld+json" id="page-schema">${safeJson(graph(meta.schema))}</script>`);
   }
