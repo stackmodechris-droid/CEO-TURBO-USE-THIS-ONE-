@@ -12,6 +12,7 @@ import { startPixel, pixelPageView } from "@/lib/pixel";
 import { gtmPageView } from "@/lib/gtm";
 import { startUet } from "@/lib/uet";
 import { startTiktok, tiktokPageView } from "@/lib/tiktok";
+import { startClarity } from "@/lib/clarity";
 
 /** Ad landing pages: no menu or footer links to leak clicks — one job, one button. */
 const FOCUS_PATHS = new Set(["/book", "/booked"]);
@@ -45,6 +46,7 @@ export function Layout({ children }: { children: ReactNode }) {
       startPixel();
       startUet();
       startTiktok();
+      startClarity();
       startSpotlight();
     };
     if (ric) ric(start, { timeout: 2500 });

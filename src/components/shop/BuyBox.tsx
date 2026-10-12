@@ -230,7 +230,7 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
             </label>
             <div className="relative mt-2">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-              <input id={`${uid}-biz`} className="field pl-10" value={business} onChange={(e) => onBusiness(e.target.value)} onBlur={() => rememberBusiness(business)} placeholder="Type your Google business name" maxLength={100} autoComplete="organization" />
+              <input id={`${uid}-biz`} data-clarity-mask="true" className="field pl-10" value={business} onChange={(e) => onBusiness(e.target.value)} onBlur={() => rememberBusiness(business)} placeholder="Type your Google business name" maxLength={100} autoComplete="organization" />
             </div>
             {business.trim().length > 1 ? (
               <p className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground animate-step">
@@ -413,7 +413,7 @@ function OrderDialog({ open, onOpenChange, pack, business }: { open: boolean; on
                   <label htmlFor={`${uid}-${k}`} className="mb-1.5 block text-xs font-medium text-chrome">
                     {label}
                   </label>
-                  <input id={`${uid}-${k}`} type={type} className="field" value={f[k]} onChange={(e) => setF((x) => ({ ...x, [k]: e.target.value }))} autoComplete={ac} maxLength={k === "email" ? 200 : 100} />
+                  <input id={`${uid}-${k}`} data-clarity-mask="true" type={type} className="field" value={f[k]} onChange={(e) => setF((x) => ({ ...x, [k]: e.target.value }))} autoComplete={ac} maxLength={k === "email" ? 200 : 100} />
                 </div>
               ))}
               <label className="hidden" aria-hidden>

@@ -32,3 +32,5 @@ media-source/
 
 # Local MCP config (holds the Cal.com API key)
 .mcp.json
+.vercel
+.env*

@@ -423,10 +423,10 @@ export function BrandBoostQuiz({
             <Question title={isArtist ? "What's your artist name?" : "What's your business called?"} hint={`${SITE.founder.name.split(" ")[0]} looks you up before the call, so the 30 minutes are about you.`} onBack={back}>
               <form onSubmit={submitBusiness} className="grid gap-4" noValidate>
                 <Field id={`${uid}-biz`} label={isArtist ? "Artist name" : "Business name"} error={errors.business}>
-                  <input id={`${uid}-biz`} data-quiz-focus className="field" value={answers.business} onChange={(e) => set("business", e.target.value)} placeholder={isArtist ? "e.g. Yari Beats" : "e.g. Mor Handy"} autoComplete="organization" maxLength={140} aria-invalid={!!errors.business} />
+                  <input id={`${uid}-biz`} data-clarity-mask="true" data-quiz-focus className="field" value={answers.business} onChange={(e) => set("business", e.target.value)} placeholder={isArtist ? "e.g. Yari Beats" : "e.g. Mor Handy"} autoComplete="organization" maxLength={140} aria-invalid={!!errors.business} />
                 </Field>
                 <Field id={`${uid}-web`} label={isArtist ? "Website, Spotify or main social (optional)" : "Website or main social (optional)"}>
-                  <input id={`${uid}-web`} className="field" value={answers.website} onChange={(e) => set("website", e.target.value)} placeholder={isArtist ? "Spotify, Instagram or yoursite.com" : "yourbusiness.com — blank if none"} inputMode="url" autoComplete="url" maxLength={200} />
+                  <input id={`${uid}-web`} data-clarity-mask="true" className="field" value={answers.website} onChange={(e) => set("website", e.target.value)} placeholder={isArtist ? "Spotify, Instagram or yoursite.com" : "yourbusiness.com — blank if none"} inputMode="url" autoComplete="url" maxLength={200} />
                 </Field>
                 <button type="submit" className="btn-ignite btn-shine w-full sm:w-auto">
                   Almost done <ArrowRight className="h-4 w-4" aria-hidden />
@@ -439,14 +439,14 @@ export function BrandBoostQuiz({
             <Question title="Where should we send your plan?" hint="Last step. You'll see your #1 money move and pick a call time next." onBack={back}>
               <form onSubmit={submitContact} className="grid gap-4" noValidate>
                 <Field id={`${uid}-name`} label="Your name" error={errors.name}>
-                  <input id={`${uid}-name`} data-quiz-focus className="field" value={answers.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" maxLength={100} aria-invalid={!!errors.name} />
+                  <input id={`${uid}-name`} data-clarity-mask="true" data-quiz-focus className="field" value={answers.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" maxLength={100} aria-invalid={!!errors.name} />
                 </Field>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field id={`${uid}-email`} label="Email" error={errors.email}>
-                    <input id={`${uid}-email`} type="email" className="field" value={answers.email} onChange={(e) => set("email", e.target.value)} autoComplete="email" inputMode="email" maxLength={200} aria-invalid={!!errors.email} />
+                    <input id={`${uid}-email`} data-clarity-mask="true" type="email" className="field" value={answers.email} onChange={(e) => set("email", e.target.value)} autoComplete="email" inputMode="email" maxLength={200} aria-invalid={!!errors.email} />
                   </Field>
                   <Field id={`${uid}-phone`} label="Mobile phone" error={errors.phone}>
-                    <input id={`${uid}-phone`} type="tel" className="field" value={answers.phone} onChange={(e) => set("phone", e.target.value)} autoComplete="tel" inputMode="tel" maxLength={30} placeholder="(404) 555-0123" aria-invalid={!!errors.phone} />
+                    <input id={`${uid}-phone`} data-clarity-mask="true" type="tel" className="field" value={answers.phone} onChange={(e) => set("phone", e.target.value)} autoComplete="tel" inputMode="tel" maxLength={30} placeholder="(404) 555-0123" aria-invalid={!!errors.phone} />
                   </Field>
                 </div>
                 <label className="hidden" aria-hidden>

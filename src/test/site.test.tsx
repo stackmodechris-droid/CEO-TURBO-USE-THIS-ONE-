@@ -265,3 +265,21 @@ describe("phone + social", () => {
     expect((founder() as Record<string, unknown>).sameAs).toEqual(SITE.founder.sameAs);
   });
 });
+
+describe("Microsoft Clarity prep", () => {
+  it("allows Clarity in the Content-Security-Policy and discloses it in the privacy policy", () => {
+    const csp = JSON.parse(readFileSync(path.resolve(__dirname, "../../vercel.json"), "utf8")).headers[0].headers.find((h: { key: string }) => h.key === "Content-Security-Policy").value as string;
+    for (const dir of ["script-src", "connect-src", "img-src"]) expect(csp.split(";").find((d) => d.trim().startsWith(dir))).toContain("clarity.ms");
+    expect(readFileSync(path.resolve(__dirname, "../pages/Legal.tsx"), "utf8")).toContain("Microsoft Clarity");
+  });
+
+  it("masks every personal-data input on the lead forms", () => {
+    for (const f of ["../components/quiz/BrandBoostQuiz.tsx", "../components/audit/AuditTool.tsx"]) {
+      const src = readFileSync(path.resolve(__dirname, f), "utf8");
+      for (const field of ["-name`", "-email`", "-phone`"]) {
+        const re = new RegExp(`<input id=\\{\\\`\\$\\{uid\\}${field.replace("`", "\\`")}[^>]*`);
+        expect(src, `${f} ${field}`).toMatch(re);
+      }
+    }
+  });
+});

@@ -49,7 +49,7 @@ export function PrivacyPolicy() {
       </section>
       <section>
         <h2>Cookies and embedded content</h2>
-        <p>The booking calendar is embedded from Cal.com and may set its own cookies when you open it. If we add analytics or advertising pixels (for example Google Analytics or Meta Pixel), they may set cookies to measure visits and ad performance. You can block or delete cookies in your browser settings.</p>
+        <p>The booking calendar is embedded from Cal.com and may set its own cookies when you open it. We use analytics and advertising tags to measure visits and ad performance: Google Analytics and Google Ads, Meta Pixel, Microsoft Advertising (UET) and TikTok. They may set cookies and send events such as page views, button clicks, phone taps and form submissions to those platforms. We also use Microsoft Clarity, which records how visitors move around the site (clicks, scrolling and page visits) to improve it. Clarity masks form fields, so names, emails and phone numbers you type are not recorded. You can block or delete cookies in your browser settings, or use a browser ad-blocker to stop these tags.</p>
       </section>
       <section>
         <h2>How long we keep it</h2>

@@ -246,19 +246,19 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             <Field id={`${uid}-biz`} label={form.kind === "artist" ? "Artist name" : "Business name"} error={errors.business}>
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-                <input id={`${uid}-biz`} className="field pl-10" value={form.business} onChange={(e) => set("business", e.target.value)} placeholder={form.kind === "artist" ? "e.g. Yari Beats" : "e.g. Mor Handy"} autoComplete="organization" maxLength={100} />
+                <input id={`${uid}-biz`} data-clarity-mask="true" className="field pl-10" value={form.business} onChange={(e) => set("business", e.target.value)} placeholder={form.kind === "artist" ? "e.g. Yari Beats" : "e.g. Mor Handy"} autoComplete="organization" maxLength={100} />
               </div>
             </Field>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field id={`${uid}-what`} label={form.kind === "artist" ? "Genre / what you do" : "What do you do?"}>
-                <input id={`${uid}-what`} className="field" value={form.what} onChange={(e) => set("what", e.target.value)} placeholder={form.kind === "artist" ? "e.g. R&B singer" : "e.g. plumber, barber"} maxLength={60} />
+                <input id={`${uid}-what`} data-clarity-mask="true" className="field" value={form.what} onChange={(e) => set("what", e.target.value)} placeholder={form.kind === "artist" ? "e.g. R&B singer" : "e.g. plumber, barber"} maxLength={60} />
               </Field>
               <Field id={`${uid}-city`} label={form.kind === "artist" ? "City (optional)" : "City"}>
-                <input id={`${uid}-city`} className="field" value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="e.g. Atlanta, GA" autoComplete="address-level2" maxLength={60} />
+                <input id={`${uid}-city`} data-clarity-mask="true" className="field" value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="e.g. Atlanta, GA" autoComplete="address-level2" maxLength={60} />
               </Field>
             </div>
             <Field id={`${uid}-web`} label={form.kind === "artist" ? "Website or main link (optional)" : "Website (optional)"}>
-              <input id={`${uid}-web`} className="field" value={form.website} onChange={(e) => set("website", e.target.value)} placeholder={form.kind === "artist" ? "yoursite.com, Linktree or Spotify" : "yourbusiness.com — blank if none"} inputMode="url" autoComplete="url" maxLength={300} />
+              <input id={`${uid}-web`} data-clarity-mask="true" className="field" value={form.website} onChange={(e) => set("website", e.target.value)} placeholder={form.kind === "artist" ? "yoursite.com, Linktree or Spotify" : "yourbusiness.com — blank if none"} inputMode="url" autoComplete="url" maxLength={300} />
             </Field>
           </div>
           <button type="submit" className="btn-ignite btn-shine mt-5 w-full !py-4 !text-base">
@@ -313,14 +313,14 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
           </div>
           <div className="grid gap-3">
             <Field id={`${uid}-name`} label="Your name" error={errors.name}>
-              <input id={`${uid}-name`} className="field" value={form.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" maxLength={100} />
+              <input id={`${uid}-name`} data-clarity-mask="true" className="field" value={form.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" maxLength={100} />
             </Field>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field id={`${uid}-email`} label="Email" error={errors.email}>
-                <input id={`${uid}-email`} type="email" className="field" value={form.email} onChange={(e) => set("email", e.target.value)} autoComplete="email" inputMode="email" maxLength={200} />
+                <input id={`${uid}-email`} data-clarity-mask="true" type="email" className="field" value={form.email} onChange={(e) => set("email", e.target.value)} autoComplete="email" inputMode="email" maxLength={200} />
               </Field>
               <Field id={`${uid}-phone`} label="Mobile phone" error={errors.phone}>
-                <input id={`${uid}-phone`} type="tel" className="field" value={form.phone} onChange={(e) => set("phone", e.target.value)} autoComplete="tel" inputMode="tel" maxLength={30} placeholder="(404) 555-0123" />
+                <input id={`${uid}-phone`} data-clarity-mask="true" type="tel" className="field" value={form.phone} onChange={(e) => set("phone", e.target.value)} autoComplete="tel" inputMode="tel" maxLength={30} placeholder="(404) 555-0123" />
               </Field>
             </div>
             <label className="hidden" aria-hidden>
