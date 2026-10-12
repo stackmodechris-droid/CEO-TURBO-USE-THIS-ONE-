@@ -322,7 +322,7 @@ export function PayoutFeed({ className }: { className?: string }) {
  */
 export function StripeProof({ compact = false, title, lede }: { compact?: boolean; title?: string; lede?: string }) {
   const stats = [
-    { v: STRIPE.gross, l: "collected in our Stripe", sub: STRIPE.period },
+    { v: STRIPE.gross, l: "collected in our Stripe", sub: `net volume ${STRIPE.net}` },
     { v: String(STRIPE.payments), l: "successful payments", sub: `${STRIPE.paymentsBefore} the year before` },
     { v: STRIPE.paymentsGrowth, l: "more payments than last year", sub: `net volume ${STRIPE.net} (${STRIPE.netGrowth})` },
   ];
@@ -350,7 +350,7 @@ export function StripeProof({ compact = false, title, lede }: { compact?: boolea
             ))}
           </dl>
           <p className="mt-6 text-xs text-muted-foreground">
-            Payments to CEO Turbo, {STRIPE.period}. This is our revenue, not a client's profit or a promise of yours.
+            Payments to CEO Turbo through Stripe. This is our revenue, not a client's profit or a promise of yours.
           </p>
         </div>
         <PayoutFeed className="mx-auto w-full max-w-[340px]" />

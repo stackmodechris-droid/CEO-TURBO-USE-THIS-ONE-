@@ -207,6 +207,32 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section border-t border-border" aria-labelledby="tracking">
+        <div className="container-x">
+          <SectionHeader
+            title={<span id="tracking">We handle the data side, so you never touch a tracking code.</span>}
+            lede="Ads that can't see which click became a call or a sale spend blind. We build the tracking first, then run everything on top of it."
+          />
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { t: "Every conversion counted", b: "Calls, forms, booked appointments and purchases are tracked in Google Ads, Microsoft Ads, Meta and Google Analytics, with real values attached." },
+              { t: "No double counting", b: "Each lead and sale is sent once per platform, so the numbers in your ad accounts match what actually came in." },
+              { t: "Server-side where it counts", b: "Meta and checkout events also go through the server, so ad blockers and iPhone privacy settings don't wipe out your data." },
+              { t: "Feeds and policies fixed", b: "Google and Microsoft Merchant Center product feeds, shipping and returns, and ad-account setup, done and kept clean." },
+            ].map((x) => (
+              <li key={x.t} className="panel p-5">
+                <Check className="h-5 w-5 text-turbo" aria-hidden />
+                <h3 className="mt-3 font-display text-lg font-bold">{x.t}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">{x.b}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Included in every package, or <Link to="/pricing" className="font-semibold text-turbo underline-offset-4 hover:underline">buy tracking setup on its own</Link>.
+          </p>
+        </div>
+      </section>
+
       <section className="section border-t border-border" aria-labelledby="how">
         <div className="container-x">
           <SectionHeader title={<span id="how">How does the Brand Boost work?</span>} lede="Three steps, and the first one is free. Most people know their next move by the end of the call." />

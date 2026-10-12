@@ -22,12 +22,18 @@ export function renderHead(meta: PageMeta): string {
     `<meta property="og:description" content="${esc(meta.description)}" />`,
     `<meta property="og:url" content="${url}" />`,
     `<meta property="og:image" content="${image}" />`,
+    `<meta property="og:image:secure_url" content="${image}" />`,
+    `<meta property="og:image:type" content="image/jpeg" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="${esc(meta.title)}" />`,
     `<meta property="og:locale" content="en_US" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:site" content="@ChristopherRCEO" />`,
     `<meta name="twitter:title" content="${esc(meta.title)}" />`,
     `<meta name="twitter:description" content="${esc(meta.description)}" />`,
     `<meta name="twitter:image" content="${image}" />`,
+    `<meta name="twitter:image:alt" content="${esc(meta.title)}" />`,
   ];
   const v = SITE.verification;
   if (v.meta) tags.push(`<meta name="facebook-domain-verification" content="${esc(v.meta)}" />`);
@@ -56,6 +62,9 @@ export function applyHead(meta: PageMeta) {
   set('meta[property="og:description"]', "content", meta.description);
   set('meta[property="og:url"]', "content", url);
   set('meta[property="og:image"]', "content", image);
+  set('meta[property="og:image:secure_url"]', "content", image);
+  set('meta[property="og:image:alt"]', "content", meta.title);
+  set('meta[name="twitter:image:alt"]', "content", meta.title);
   set('meta[name="twitter:title"]', "content", meta.title);
   set('meta[name="twitter:description"]', "content", meta.description);
   set('meta[name="twitter:image"]', "content", image);
