@@ -14,10 +14,10 @@ export const GOOGLE_ADS_ID = envAds && /^AW-\d{6,}$/.test(envAds) ? envAds : "AW
  * send_to "AW-18468746701/LABEL". Empty = that conversion isn't sent yet (GA4 still records the event).
  */
 export const GOOGLE_ADS_LABELS: Record<string, string> = {
-  generate_lead: "",
-  book_call: "",
-  click_to_call: "",
-  purchase: "",
+  generate_lead: "6XuTCJ6H55odEM3ryuZE",
+  book_call: "5K_sCJuH55odEM3ryuZE",
+  click_to_call: "eAzECKGH55odEM3ryuZE",
+  purchase: "sOe0CJiH55odEM3ryuZE",
 };
 
 type GaWin = Window & { gaLayer?: unknown[]; gtag?: (...args: unknown[]) => void; __ga?: boolean };
