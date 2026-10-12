@@ -30,6 +30,13 @@ const ACTIONS: Record<string, string> = {
   add_to_cart: "add_to_cart",
   begin_checkout: "begin_checkout",
   view_item: "view_item",
+  click_to_call: "contact",
+};
+
+/** Microsoft wants phones in E.164 (+14045550123). */
+const e164Phone = (p: string) => {
+  const d = p.replace(/\D/g, "");
+  return d.length === 10 ? `+1${d}` : `+${d}`;
 };
 
 export function uetEvent(event: string, params: { value?: unknown; currency?: unknown; lead_source?: unknown }, user?: { email?: string; phone?: string }) {
@@ -38,8 +45,9 @@ export function uetEvent(event: string, params: { value?: unknown; currency?: un
   const w = window as unknown as { uetq?: Uetq };
   w.uetq = w.uetq || ([] as unknown as Uetq);
   // Enhanced conversions: UET hashes these before sending.
-  if (user?.email || user?.phone) w.uetq.push("set", { pid: { ...(user.email ? { em: user.email.trim().toLowerCase() } : {}), ...(user.phone ? { ph: user.phone.replace(/\D/g, "") } : {}) } });
+  if (user?.email || user?.phone) w.uetq.push("set", { pid: { ...(user.email ? { em: user.email.trim().toLowerCase() } : {}), ...(user.phone ? { ph: e164Phone(user.phone) } : {}) } });
   w.uetq.push("event", action, {
+    event_category: event === "click_to_call" ? "phone" : event === "book_call" || event === "generate_lead" ? "lead" : "ecommerce",
     ...(typeof params.lead_source === "string" ? { event_label: params.lead_source } : {}),
     ...(typeof params.value === "number" && params.value > 0 ? { revenue_value: params.value, currency: params.currency || "USD" } : {}),
   });

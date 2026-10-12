@@ -45,6 +45,7 @@ export const SITE = {
     { network: "youtube", label: "YouTube", href: "https://www.youtube.com/@CEOTurbo7" },
     { network: "x", label: "X", href: "https://x.com/CEO_Turbo" },
     { network: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/showcase/ceoturbo" },
+    { network: "pinterest", label: "Pinterest", href: "https://www.pinterest.com/ceoturbo/" },
   ],
   sameAs: [
     "https://www.instagram.com/ceoturbo_/",
@@ -52,6 +53,7 @@ export const SITE = {
     "https://www.youtube.com/@CEOTurbo7",
     "https://x.com/CEO_Turbo",
     "https://www.linkedin.com/showcase/ceoturbo",
+    "https://www.pinterest.com/ceoturbo/",
   ],
 } as const;
 

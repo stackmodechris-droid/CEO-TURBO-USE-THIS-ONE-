@@ -77,7 +77,7 @@ Key facts:
 - Artist profile campaign (BIGZO): 165 profile visits at $0.32 each.
 - Based at 8735 Dunwoody Place #12143, Atlanta, GA 30350; serves clients across the United States.
 - Phone: (470) 502-9543 (call or text).
-- Social: Instagram https://www.instagram.com/ceoturbo_/ · Facebook https://www.facebook.com/profile.php?id=61595439263484 · YouTube https://www.youtube.com/@CEOTurbo7 · X https://x.com/CEO_Turbo · LinkedIn https://www.linkedin.com/showcase/ceoturbo
+- Social: Instagram https://www.instagram.com/ceoturbo_/ · Facebook https://www.facebook.com/profile.php?id=61595439263484 · YouTube https://www.youtube.com/@CEOTurbo7 · X https://x.com/CEO_Turbo · LinkedIn https://www.linkedin.com/showcase/ceoturbo · Pinterest https://www.pinterest.com/ceoturbo/
 
 ${groups.map(section).filter(Boolean).join("\n")}
 ## Answers
