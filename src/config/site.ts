@@ -28,7 +28,7 @@ export const SITE = {
     e164: "+14705029543",
     href: "tel:+14705029543",
   },
-  email: "",
+  email: "ceoturbo@proton.me",
   /** Site-ownership codes. Paste the content value from each service's "meta tag" option; empty = no tag. */
   verification: {
     /** Meta Business Settings → Brand Safety → Domains → Meta-tag method (facebook-domain-verification). */

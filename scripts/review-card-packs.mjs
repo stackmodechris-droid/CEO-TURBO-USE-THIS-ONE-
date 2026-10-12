@@ -36,14 +36,14 @@ const pill = (label) =>
   <text x="${S / 2}" y="${S - 150}" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="700" font-size="52" fill="#fff">${label}</text>
 </svg>`);
 
-async function build(name, label, cards) {
+async function build(name, label, cards, { pill: withPill = true } = {}) {
   const layers = [];
   for (const c of cards) {
     const p = await placed(c.buf, c);
     layers.push({ input: p.input, left: Math.round(c.cx - p.w / 2), top: Math.round(c.cy - p.h / 2) });
   }
   await sharp({ create: { width: S, height: S, channels: 4, background: "#ffffff" } })
-    .composite([...layers, { input: pill(label) }])
+    .composite(withPill ? [...layers, { input: pill(label) }] : layers)
     .flatten({ background: "#ffffff" })
     .jpeg({ quality: 90, mozjpeg: true })
     .toFile(path.join(OUT, `${name}.jpg`));
@@ -69,3 +69,53 @@ await build("pack-5", "5 cards", [
   { buf: back, scale: 0.8, deg: 0, cx: S / 2 + 20, cy: cy - 4 },
   { buf: front, scale: 0.8, deg: -4, cx: S / 2 - 90, cy: cy + 10 },
 ]);
+
+// ---- Clean shopping images (no text overlays, product fills the frame) for Merchant Center / Shopping ads.
+const cyc = S / 2;
+await build("shop-1", "", [{ buf: front, scale: 1.04, deg: -5, cx: S / 2, cy: cyc }], { pill: false });
+await build("shop-2", "", [
+  { buf: back, scale: 0.92, deg: 7, cx: S / 2 + 300, cy: cyc - 20 },
+  { buf: front, scale: 0.92, deg: -7, cx: S / 2 - 300, cy: cyc + 20 },
+], { pill: false });
+await build("shop-5", "", [
+  { buf: back, scale: 0.92, deg: 9, cx: S / 2 + 250, cy: cyc - 40 },
+  { buf: back, scale: 0.92, deg: 6, cx: S / 2 + 185, cy: cyc - 28 },
+  { buf: back, scale: 0.92, deg: 3, cx: S / 2 + 120, cy: cyc - 16 },
+  { buf: back, scale: 0.92, deg: 0, cx: S / 2 + 55, cy: cyc - 4 },
+  { buf: front, scale: 0.92, deg: -4, cx: S / 2 - 120, cy: cyc + 10 },
+], { pill: false });
+
+// Front + back, clean, for the additional-image slot.
+await build("shop-both", "", [
+  { buf: back, scale: 0.95, deg: 8, cx: S / 2 + 300, cy: cyc - 10 },
+  { buf: front, scale: 0.95, deg: -6, cx: S / 2 - 300, cy: cyc + 20 },
+], { pill: false });
+
+// Tap scene: phone with a generic English review screen next to the card, NFC waves between them.
+{
+  const card = await placed(front, { scale: 0.82, deg: -6 });
+  const phone = Buffer.from(`<svg width="${S}" height="${S}" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f7fb"/><stop offset="1" stop-color="#dfe8f3"/></linearGradient>
+  <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="28"/></filter></defs>
+  <rect width="${S}" height="${S}" fill="url(#bg)"/>
+  <g transform="translate(1130 300) rotate(8 340 700)">
+    <rect x="30" y="60" width="680" height="1400" rx="110" fill="#0b1220" fill-opacity=".28" filter="url(#sh)"/>
+    <rect width="680" height="1400" rx="110" fill="#111827"/>
+    <rect x="16" y="16" width="648" height="1368" rx="96" fill="#fff"/>
+    <rect x="250" y="40" width="180" height="46" rx="23" fill="#111827"/>
+    <text x="340" y="250" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="700" font-size="50" fill="#111827">How was your visit?</text>
+    <text x="340" y="312" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#6b7280">Tap a star to rate</text>
+    ${[0,1,2,3,4].map(i=>`<polygon transform="translate(${96+i*100} 380) scale(3.3)" points="12,2 15,9 22,9.3 16.5,14 18.3,21 12,17.2 5.7,21 7.5,14 2,9.3 9,9" fill="#fbbc04"/>`).join("")}
+    <rect x="70" y="560" width="540" height="300" rx="28" fill="#f3f4f6"/>
+    <text x="100" y="620" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="32" fill="#9ca3af">Share details of your experience</text>
+    <rect x="70" y="930" width="540" height="110" rx="55" fill="#1a73e8"/>
+    <text x="340" y="1002" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="700" font-size="42" fill="#fff">Post review</text>
+  </g>
+</svg>`);
+  await sharp(phone)
+    .composite([{ input: card.input, left: 120, top: Math.round(S / 2 - card.h / 2) + 60 }])
+    .flatten({ background: "#ffffff" })
+    .jpeg({ quality: 90, mozjpeg: true })
+    .toFile(path.join(OUT, "shop-tap.jpg"));
+  console.log("shop-tap");
+}

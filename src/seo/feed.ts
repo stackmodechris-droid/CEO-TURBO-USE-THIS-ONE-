@@ -2,7 +2,6 @@
 // Written to /feeds/products.xml at build time; both Merchant Centers fetch it on a schedule.
 // Built from the same config as the product page, JSON-LD and Shopify variants, so prices never drift.
 import { SITE, REVIEW_CARD, packPath, packSku } from "@/config/site";
-import { GALLERY } from "@/content/review-cards";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const abs = (p: string) => `${SITE.url}${p}`;
@@ -20,12 +19,13 @@ export function feedItems(): FeedItem[] {
     price: `${p.price.toFixed(2)} ${REVIEW_CARD.currency}`,
     color: "White/Black",
     multipack: p.qty,
-    image: abs(REVIEW_CARD.image),
+    image: abs(`/img/review-cards/shop-${p.qty}.jpg`),
   }));
 }
 
 export function merchantFeed(): string {
-  const extra = GALLERY.filter((g) => !g.live3d).map((g) => abs(g.src));
+  // Clean, text-free images only: Shopping rejects overlays and supplier infographics.
+  const extra = ["shop-both.jpg", "shop-tap.jpg", "feed-white.jpg"].map((f) => abs(`/img/review-cards/${f}`));
   const items = feedItems()
     .map(
       (i) => `    <item>
