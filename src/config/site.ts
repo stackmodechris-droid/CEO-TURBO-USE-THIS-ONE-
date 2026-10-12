@@ -124,8 +124,8 @@ export const REVIEW_CARD = {
     minDays: 3,
     maxDays: 7,
   },
-  guarantee: "If a card won't program or tap, we replace it or refund you — just tell us within 30 days of delivery.",
-  returnDays: 30,
+  guarantee: "Not right for you, or the card won't program or tap? Return it new and unused within 5 days of delivery for a refund. No restocking fee.",
+  returnDays: 5,
 } as const;
 
 

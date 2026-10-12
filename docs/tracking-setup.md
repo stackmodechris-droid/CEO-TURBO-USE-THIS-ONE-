@@ -80,7 +80,7 @@ The booking questions (business, what they do, website, goal, budget) are now as
 
 ## 6. Google Merchant Center + Microsoft Merchant Center (free listings + Shopping ads)
 1. **Google Merchant Center** (merchants.google.com) → Business info: website `https://www.ceoturbo.com` → verify and claim (use the Search Console method).
-2. **Shipping:** US, free, 1–2 day handling, 2–5 day transit. **Returns:** 30 days. **Add a support email** (also set `SITE.email` in `src/config/site.ts`).
+2. **Shipping:** US, free, 1–2 day handling, 2–5 day transit. **Returns:** 5 days, by mail, customer pays the label, no restocking fee, no exchanges, refund within 30 days. **Add a support email** (also set `SITE.email` in `src/config/site.ts`).
 3. **Products → Add products from a file → Scheduled fetch:** `https://www.ceoturbo.com/feeds/products.xml`, daily.
 4. Turn on **Free listings** and link Google Ads for Shopping/PMax.
 5. **Microsoft Merchant Center** (Microsoft Ads → Tools → Merchant Center): create a store for `ceoturbo.com` → **Catalog → Scheduled file download** with the same feed URL. Or import directly from Google Merchant Center.

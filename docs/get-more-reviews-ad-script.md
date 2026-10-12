@@ -28,7 +28,7 @@ The poll listings are clearly an illustration. Don't call them real businesses, 
 | 14–26s | **Step 2**: the robots diagram | "And it's not just people. Google says reviews help you rank on Maps. AI answers quote them. ChatGPT names businesses with the best reviews. Every review is a salesperson that never asks for a raise." | Reviews train Google + AI |
 | 26–34s | **Step 3**: the comparisons + Nah/Yeah meme | "Saying 'please leave us a review' is like saying 'we should hang out sometime.' Everyone agrees. Nobody does it." | Asking out loud ≠ reviews |
 | 34–48s | **Step 4**: type the business name → TapDemo, then drag the slider | "So make it one tap. Watch — they tap the card, *your* review page opens, five stars, done. If 2 in 10 people review you, look how fast you pass your competitor." | One tap = one review |
-| 48–60s | **Step 5**: $24.99 · $0/mo · buy box | **(camera)** "$24.99 once, no monthly fee, ships from Atlanta in a day or two. If it doesn't work, I replace it or refund you. Tap the orange button." | $24.99 · no subscription |
+| 48–60s | **Step 5**: $24.99 · $0/mo · buy box | **(camera)** "$24.99 once, no monthly fee, ships from Atlanta in a day or two. You can return it within 5 days for a refund. Tap the orange button." | $24.99 · no subscription |
 
 ## 90-second cut
 
@@ -62,7 +62,7 @@ Why it matters: Google uses reviews in local ranking, AI answers quote them, and
 ✅ $24.99 once — no monthly fee
 ✅ iPhone + Android, no app
 ✅ Ships from Atlanta in 1–2 business days
-✅ Doesn't work? Replaced or refunded
+✅ 5-day returns, no restocking fee
 
 **Headline:** Turn "I'll review you later" into a review
 **Description:** NFC Google review card — from $24.99

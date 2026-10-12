@@ -200,6 +200,8 @@ const cardOffer = (p: (typeof REVIEW_CARD.packs)[number]) => ({
     merchantReturnDays: REVIEW_CARD.returnDays,
     returnMethod: "https://schema.org/ReturnByMail",
     returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+    restockingFee: 0,
+    refundType: "https://schema.org/FullRefund",
   },
 });
 

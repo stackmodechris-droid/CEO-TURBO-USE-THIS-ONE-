@@ -240,7 +240,7 @@ function build(): PageMeta[] {
   pages.push(
     { path: "/privacy-policy", title: "Privacy Policy | CEO Turbo", description: "How CEO Turbo collects, uses and protects your personal information, including what we collect, why, and how you can control it.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
     { path: "/terms", title: "Terms & Conditions | CEO Turbo", description: "Terms for using ceoturbo.com and buying CEO Turbo products and services.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
-    { path: "/shipping-returns", title: "Shipping & Returns | CEO Turbo", description: "Shipping times, costs and the 30-day return and replacement policy for CEO Turbo Google review cards.", priority: 0.3, changefreq: "yearly", group: "Company", schema: base() },
+    { path: "/shipping-returns", title: "Shipping & Returns | CEO Turbo", description: "Shipping times, costs and the 5-day return policy for CEO Turbo Google review cards.", priority: 0.3, changefreq: "yearly", group: "Company", schema: base() },
     {
       path: "/plan",
       title: "How to Get More Customers in 2026: The 5-Step Plan | CEO Turbo",

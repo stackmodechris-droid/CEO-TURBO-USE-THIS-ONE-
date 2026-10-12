@@ -4,11 +4,16 @@ The connector has no `write_legal_policies` scope, so paste these by hand. Wordi
 Use the editor's HTML (`<>`) view or paste as plain text.
 
 ## Refund policy
-**Returns & refunds.** Changed your mind? Unused cards in their original condition can be returned within 30 days of delivery for a refund of the item price. Contact us first for the return address; return shipping is paid by you. Refunds go back to the original payment method within 5–10 business days of approval.
+**Returns.** We accept returns of both defective and non-defective cards in the United States. Return a new, unused card within 5 days of delivery for a refund of the item price. There is no restocking fee.
 
-**Cards that don't work.** If a card won't program or tap, we replace it or refund you — just tell us within 30 days of delivery. You don't need to send a faulty card back; a short description or photo is enough.
+- Condition: new and unused only.
+- Window: 5 days from delivery.
+- How to return: by mail. Contact us first for the return address.
+- Return shipping: you buy and pay for the return label.
+- Exchanges: not accepted. To get a different pack, return your order and place a new one.
+- Refunds: issued to your original payment method within 30 days of us receiving the return.
 
-**Damaged or wrong item.** Tell us within 30 days of delivery and we'll replace it or refund you at no cost.
+**Cards that don't work.** If a card won't program or tap, contact us within 5 days of delivery. We'll help you set it up, and if it still doesn't work you can return it for a refund as above.
 
 **Contact.** CEO Turbo, 8735 Dunwoody Place #12143, Atlanta, GA 30350. https://www.ceoturbo.com
 

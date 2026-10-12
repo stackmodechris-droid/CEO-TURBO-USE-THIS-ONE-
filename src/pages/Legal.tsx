@@ -85,7 +85,7 @@ export function Terms() {
       <section>
         <h2>2. Google review cards</h2>
         <p>
-          Review cards ship unprogrammed; you write your own Google review link to the card using our free setup guide. Shipping, returns and replacements are covered in our <Link to="/shipping-returns" className="text-foreground underline underline-offset-4">Shipping &amp; Returns policy</Link>. The cards link to your Google review page; Google controls whether reviews are published, and you're responsible for asking for reviews in line with Google's review policies (no incentives, no review gating, no fake reviews). Google is a trademark of Google LLC; {SITE.name} is not affiliated with or endorsed by Google.
+          Review cards ship unprogrammed; you write your own Google review link to the card using our free setup guide. Shipping and returns are covered in our <Link to="/shipping-returns" className="text-foreground underline underline-offset-4">Shipping &amp; Returns policy</Link>. The cards link to your Google review page; Google controls whether reviews are published, and you're responsible for asking for reviews in line with Google's review policies (no incentives, no review gating, no fake reviews). Google is a trademark of Google LLC; {SITE.name} is not affiliated with or endorsed by Google.
         </p>
       </section>
       <section>
@@ -127,7 +127,7 @@ export function Terms() {
 export function ShippingReturns() {
   const s = REVIEW_CARD.shipping;
   return (
-    <LegalShell title="Shipping & Returns" path="/shipping-returns" updated="October 10, 2026">
+    <LegalShell title="Shipping & Returns" path="/shipping-returns" updated="October 12, 2026">
       <section>
         <h2>Shipping</h2>
         <p>
@@ -135,16 +135,22 @@ export function ShippingReturns() {
         </p>
       </section>
       <section>
-        <h2>Cards that don't work</h2>
-        <p>{REVIEW_CARD.guarantee} You don't need to send a faulty card back — a short description or photo is enough.</p>
-      </section>
-      <section>
         <h2>Returns</h2>
-        <p>Changed your mind? Unused cards in their original condition can be returned within {REVIEW_CARD.returnDays} days of delivery for a refund of the item price. Contact us first for the return address; return shipping is paid by you. Refunds go back to the original payment method within 5–10 business days of approval.</p>
+        <p>
+          We accept returns of both defective and non-defective cards in the United States. Return a new, unused card within {REVIEW_CARD.returnDays} days of delivery for a refund of the item price. There is no restocking fee.
+        </p>
+        <ul>
+          <li><strong>Condition:</strong> new and unused only.</li>
+          <li><strong>Window:</strong> {REVIEW_CARD.returnDays} days from delivery.</li>
+          <li><strong>How to return:</strong> by mail. Contact us first for the return address.</li>
+          <li><strong>Return shipping:</strong> you buy and pay for the return label.</li>
+          <li><strong>Exchanges:</strong> not accepted. If you want a different pack, return your order and place a new one.</li>
+          <li><strong>Refunds:</strong> issued to your original payment method, within 30 days of us receiving the return.</li>
+        </ul>
       </section>
       <section>
-        <h2>Damaged or wrong item</h2>
-        <p>If your order arrives damaged or isn't what you ordered, tell us within {REVIEW_CARD.returnDays} days of delivery and we'll replace it or refund you at no cost.</p>
+        <h2>Cards that don't work</h2>
+        <p>If a card won't program or tap, contact us within {REVIEW_CARD.returnDays} days of delivery. Our free setup help is a call or text away — and if it still doesn't work, return it for a refund as above.</p>
       </section>
       <section>
         <h2>Contact</h2>
