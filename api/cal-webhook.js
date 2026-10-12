@@ -1,13 +1,17 @@
 // POST /api/cal-webhook — Cal.com → "Booking created" webhook.
 // 1) Sends Meta a server-side "Schedule" (de-duplicated with the browser event via book_<uid>),
 //    so booked calls count even when the Pixel is blocked by an ad blocker or iOS.
-// 2) Adds the booking to the leads Google Sheet.
+// 2) Sends TikTok the same "Schedule" through the Events API (once TikTok credentials are set).
+// 3) Adds the booking to the leads Google Sheet, with the Brand Boost quiz answers (from the hidden
+//    booking fields, or from booking metadata when those are empty) and the quiz id that links it
+//    to the visitor's row on the "Call Quiz Leads" tab.
 // Setup: Cal.com → Settings → Developer → Webhooks → New: URL https://www.ceoturbo.com/api/cal-webhook,
 // trigger "Booking Created", secret = CAL_WEBHOOK_SECRET (same value in Vercel).
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { send } from "./_lib/http.js";
 import { forwardLead } from "./_lib/leads.js";
 import { buildEvent, cleanAttribution, sendMetaEvents } from "./_lib/meta-capi.js";
+import { buildTiktokEvent, sendTiktokEvents } from "./_lib/tiktok-events.js";
 
 async function readRaw(req, limit = 200_000) {
   if (typeof req.body === "string") return req.body;
@@ -37,6 +41,7 @@ export function parseBooking(body) {
   const att = Array.isArray(p.attendees) ? p.attendees[0] ?? {} : {};
   const r = p.responses ?? {};
   const meta = p.metadata ?? {};
+  const pick = (key, max) => str(val(r[key]), max) || str(meta[key], max);
   return {
     uid: str(p.uid, 120),
     name: str(att.name || val(r.name)),
@@ -49,11 +54,15 @@ export function parseBooking(body) {
     meetingLink: str(p.metadata?.videoCallUrl || p.videoCallData?.url || (/^https?:/.test(p.location || "") ? p.location : ""), 300),
     title: str(p.title || p.eventTitle),
     notes: str(val(r.notes) || p.description, 500),
-    businessName: str(val(r.businessName), 140),
-    whatTheyDo: str(val(r.whatTheyDo), 120),
-    website: str(val(r.website), 200),
-    goal: str(val(r.goal), 100),
-    budget: str(val(r.budget), 60),
+    businessName: pick("businessName", 140),
+    whatTheyDo: pick("whatTheyDo", 120),
+    website: pick("website", 200),
+    goal: str(meta.goalLabel, 100) || pick("goal", 100),
+    budget: str(meta.budgetLabel, 60) || pick("budget", 60),
+    blockers: str(meta.blockers, 300),
+    timeline: str(meta.timeline, 60),
+    quizId: str(meta.quizId, 60),
+    value: Math.max(0, Math.min(Number(meta.leadValue) || 0, 100000)),
     source: str(meta.source, 80),
     page: str(meta.page, 120),
     attribution: cleanAttribution(meta),
@@ -83,19 +92,24 @@ export default async function handler(req, res) {
   if (body.triggerEvent !== "BOOKING_CREATED") return send(res, 200, { ok: true, ignored: body.triggerEvent || "ping" });
 
   const b = parseBooking(body);
-  const [capi, sheet] = await Promise.all([
+  const eventId = b.uid ? `book_${b.uid}` : undefined;
+  const url = `https://www.ceoturbo.com${b.page || "/brand-boost"}`;
+  const user = { email: b.email, phone: b.phone, name: b.name, externalId: b.quizId || undefined };
+  const worth = b.value ? { value: b.value, currency: "USD" } : {};
+  const [capi, , sheet] = await Promise.all([
     sendMetaEvents([
       buildEvent({
         eventName: "Schedule",
-        eventId: b.uid ? `book_${b.uid}` : undefined,
+        eventId,
         eventTime: body.createdAt,
-        url: `https://www.ceoturbo.com${b.page || "/brand-boost"}`,
-        user: { email: b.email, phone: b.phone, name: b.name },
+        url,
+        user,
         attribution: b.attribution,
-        customData: { content_name: b.title || "Brand Boost call", lead_source: b.source || "cal.com" },
+        customData: { content_name: b.title || "Brand Boost call", lead_source: b.source || "cal.com", ...worth },
       }),
     ]),
-    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, website: b.website, goal: b.goal, budget: b.budget, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
+    sendTiktokEvents([buildTiktokEvent({ event: "Schedule", eventId, eventTime: body.createdAt, url, user, attribution: b.attribution, properties: { content_name: b.title || "Brand Boost call", ...worth } })]),
+    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, website: b.website, goal: b.goal, budget: b.budget, blockers: b.blockers, timeline: b.timeline, quizId: b.quizId, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
   ]);
   return send(res, 200, { ok: true, meta: !!capi.sent, sheet: !!sheet.stored });
 }

@@ -1,5 +1,5 @@
 // Paste into the "FREE Lead Magnet Leads" sheet: Extensions → Apps Script (replace everything).
-// Receives every lead from ceoturbo.com (/api/audit, /api/cal-webhook, /api/lead) and files it on
+// Receives every lead from ceoturbo.com (/api/audit, /api/cal-webhook, /api/lead, /api/shopify-webhook) and files it on
 // the right tab, under the matching column header. Columns can be reordered or hidden in the
 // sheet: rows are matched by header NAME, not position. Setup steps: docs/leads-google-sheet.md
 
@@ -16,10 +16,34 @@ const ATTR = {
   "Google click ID": "gclid",
   "Microsoft click ID": "msclkid",
   "Meta click ID": "fbclid",
+  "TikTok click ID": "ttclid",
   "Landing page": "landing",
 };
 
 const TABS = {
+  // Brand Boost quiz: everyone who answered the questions and left their details. "Booked?" flips to
+  // "Yes" automatically when the same person books — anyone still "No" is your follow-up list.
+  "Call Quiz Leads": Object.assign(
+    {
+      Received: "receivedAt",
+      Name: "name",
+      Phone: "phone",
+      Email: "email",
+      Company: "business",
+      "What they do": "audience",
+      Website: "website",
+      "Biggest goal": "goal",
+      "Holding them back": "blockers",
+      "Monthly budget": "budget",
+      "How soon": "timeline",
+      "#1 move shown": "move",
+      "Text opt-in": "smsOptIn",
+      "Booked?": "booked",
+      "Call time": "callTime",
+    },
+    ATTR,
+    { "Form page": "page", "Quiz ID": "quizId" }
+  ),
   "Free Check Leads": Object.assign(
     {
       Received: "receivedAt",
@@ -56,7 +80,9 @@ const TABS = {
       "What they do": "whatTheyDo",
       Website: "website",
       "Biggest goal": "goal",
+      "Holding them back": "blockers",
       "Monthly budget": "budget",
+      "How soon": "timeline",
       "Call time": "startTime",
       Ends: "endTime",
       "Time zone": "timeZone",
@@ -67,7 +93,7 @@ const TABS = {
       "Booking ID": "uid",
     },
     ATTR,
-    { "Form page": "page" }
+    { "Form page": "page", "Quiz ID": "quizId" }
   ),
   "Card Orders": Object.assign(
     {
@@ -91,14 +117,39 @@ const TABS = {
     ATTR,
     { "Form page": "page", "Order ID": "orderId" }
   ),
+  "Other Leads": Object.assign({ Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Company: "business", Type: "type", Note: "note" }, ATTR, { "Form page": "page" }),
 };
 
-const TYPE_LABEL = { "audit-business": "Business", "audit-artist": "Artist", "order-request": "Order request", "shopify-order": "Paid order" };
+const TYPE_LABEL = { "audit-business": "Business", "audit-artist": "Artist", "order-request": "Order request", "shopify-order": "Paid order", "brand-boost-quiz": "Call quiz" };
 
 function tabFor(type) {
   if (type === "booking") return "Booked Calls";
+  if (type === "brand-boost-quiz") return "Call Quiz Leads";
   if (String(type).indexOf("audit") === 0) return "Free Check Leads";
-  return "Card Orders";
+  if (type === "order-request" || type === "shopify-order") return "Card Orders";
+  return "Other Leads";
+}
+
+/** When someone books, mark their quiz row as booked (matched by Quiz ID, else by email). */
+function markQuizBooked(book, data) {
+  const sheet = book.getSheetByName("Call Quiz Leads");
+  if (!sheet || sheet.getLastRow() < 2) return;
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const col = function (h) {
+    return headers.indexOf(h) + 1;
+  };
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, headers.length).getValues();
+  const email = String(data.email || "").toLowerCase();
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const byId = data.quizId && col("Quiz ID") > 0 && String(rows[i][col("Quiz ID") - 1]) === String(data.quizId);
+    const byEmail = !data.quizId && email && col("Email") > 0 && String(rows[i][col("Email") - 1]).toLowerCase() === email;
+    if (!byId && !byEmail) continue;
+    const r = i + 2;
+    if (col("Booked?") > 0) sheet.getRange(r, col("Booked?")).setValue("Yes");
+    if (col("Call time") > 0 && data.startTime) sheet.getRange(r, col("Call time")).setValue(display("startTime", data.startTime));
+    if (col("Status") > 0) sheet.getRange(r, col("Status")).setValue("Booked");
+    return;
+  }
 }
 
 function display(field, value) {
@@ -137,8 +188,15 @@ function doPost(e) {
       sheet.getRange(1, 1, 1, labels.length).setValues([labels]).setFontWeight("bold");
       sheet.setFrozenRows(1);
     }
-    const lastCol = sheet.getLastColumn();
-    const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    let headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    // New columns added to the website later (e.g. "Quiz ID") are appended to an existing tab automatically.
+    const missing = Object.keys(map).filter(function (h) {
+      return headers.indexOf(h) === -1;
+    });
+    if (missing.length) {
+      sheet.getRange(1, headers.length + 1, 1, missing.length).setValues([missing]).setFontWeight("bold");
+      headers = headers.concat(missing);
+    }
 
     // A booking is only recorded once, even if Cal.com retries the webhook.
     // Each booking / paid order is recorded once, even if Cal.com or Shopify retries the webhook.
@@ -151,6 +209,7 @@ function doPost(e) {
       }
     }
 
+    if (name === "Call Quiz Leads") data.booked = "No";
     const row = headers.map(function (h) {
       if (h === "Status") return "New";
       const field = map[h];
@@ -159,6 +218,7 @@ function doPost(e) {
     const next = sheet.getLastRow() + 1;
     if (next > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), 500);
     sheet.getRange(next, 1, 1, row.length).setValues([row]);
+    if (name === "Booked Calls") markQuizBooked(book, data);
     // Optional: email yourself every lead
     // MailApp.sendEmail("you@example.com", "New lead: " + data.name, JSON.stringify(data, null, 2));
     return ContentService.createTextOutput("ok");

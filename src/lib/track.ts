@@ -6,14 +6,17 @@
 // the Meta Pixel are fired from code below, so do NOT add UET or Meta tags in GTM (double counting).
 // The Meta Pixel gets the matching standard event with the same id as eventID, so the server-side
 // Conversions API copy (api/_lib/meta-capi.js) is de-duplicated instead of double counted.
+// TikTok (src/lib/tiktok.ts) gets the same event and id once VITE_TIKTOK_PIXEL_ID is set.
 
 import { gaEvent } from "@/lib/ga";
 import { uetEvent } from "@/lib/uet";
+import { tiktokEvent } from "@/lib/tiktok";
 
 type Fn = (...args: unknown[]) => void;
 type Win = Window & { dataLayer?: unknown[]; fbq?: Fn };
 
-export type UserData = { email?: string; phone?: string; name?: string };
+/** externalId = our own id for the person (quiz id), sent hashed for better ad-platform matching. */
+export type UserData = { email?: string; phone?: string; name?: string; externalId?: string };
 export type Item = { item_id: string; item_name: string; item_variant?: string; price: number; quantity: number };
 export type Ecommerce = { currency: string; value: number; items: Item[] };
 
@@ -27,6 +30,7 @@ const META: Record<string, { name: string; custom?: boolean }> = {
   booking_open: { name: "BookingOpen", custom: true },
   audit_start: { name: "AuditStart", custom: true },
   audit_complete: { name: "AuditComplete", custom: true },
+  quiz_start: { name: "QuizStart", custom: true },
 };
 
 /** CEO Turbo's Meta Pixel (Events Manager → Data sources). VITE_META_PIXEL_ID overrides it. */
@@ -36,6 +40,19 @@ export const PIXEL_ID = () => (import.meta.env.VITE_META_PIXEL_ID as string | un
 export const newEventId = (prefix: string) => `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
 const win = () => (typeof window === "undefined" ? null : (window as Win));
+
+// The Meta Pixel loads once the page is idle (src/lib/pixel.ts), so events fired earlier — e.g. the shop's
+// ViewContent on page load — wait here and are sent, in order, right after the pixel's init.
+const metaQueue: (() => void)[] = [];
+let metaReady = false;
+export function metaPixelReady() {
+  metaReady = true;
+  metaQueue.splice(0).forEach((f) => f());
+}
+const withMeta = (fn: () => void) => {
+  if (metaReady && win()?.fbq) fn();
+  else if (metaQueue.length < 50) metaQueue.push(fn);
+};
 
 /** E.164-ish phone for Google/Microsoft enhanced conversions (US default). */
 export const e164 = (phone = "") => {
@@ -66,13 +83,14 @@ function metaParams(params: Record<string, unknown>, ecommerce?: Ecommerce) {
 export function identify(user: UserData) {
   const w = win();
   const id = PIXEL_ID();
-  if (!w?.fbq || !id || (!user.email && !user.phone)) return;
+  if (!w?.fbq || !id || (!user.email && !user.phone && !user.externalId)) return;
   const { first, last } = splitName(user.name);
   w.fbq("init", id, {
     ...(user.email ? { em: user.email.trim().toLowerCase() } : {}),
     ...(user.phone ? { ph: user.phone.replace(/\D/g, "") } : {}),
     ...(first ? { fn: first.toLowerCase() } : {}),
     ...(last ? { ln: last.toLowerCase() } : {}),
+    ...(user.externalId ? { external_id: user.externalId } : {}),
   });
 }
 
@@ -110,12 +128,39 @@ export function track(event: string, params: Record<string, unknown> = {}, opts:
 
   uetEvent(event, { value: ecommerce?.value ?? params.value, currency: ecommerce?.currency ?? params.currency, lead_source: params.lead_source }, user);
 
+  tiktokEvent(event, { value: ecommerce?.value ?? params.value, currency: ecommerce?.currency ?? params.currency, content_name: params.content_name, contents: ecommerce?.items.map((i) => ({ content_id: i.item_id, content_name: i.item_name, quantity: i.quantity, price: i.price })) }, event_id, user ? { email: user.email, phone: e164(user.phone), externalId: user.externalId } : undefined);
+
   const meta = META[event];
-  if (meta && w.fbq) {
-    if (user) identify(user);
-    w.fbq(meta.custom ? "trackCustom" : "track", meta.name, metaParams(params, ecommerce), { eventID: event_id });
+  if (meta && PIXEL_ID()) {
+    const payload = metaParams(params, ecommerce);
+    withMeta(() => {
+      if (user) identify(user);
+      win()?.fbq?.(meta.custom ? "trackCustom" : "track", meta.name, payload, { eventID: event_id });
+    });
   }
   return event_id;
+}
+
+// The Brand Boost quiz stores who is about to book and what the call is worth, so the booked-call
+// conversion carries a value and full match data even when Cal.com's payload is thin.
+const CALL_KEY = "ct_call_ctx";
+export type CallContext = { value: number; user: UserData };
+
+export function setCallContext(ctx: CallContext) {
+  try {
+    localStorage.setItem(CALL_KEY, JSON.stringify({ ...ctx, at: Date.now() }));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function callContext(): CallContext | null {
+  try {
+    const c = JSON.parse(localStorage.getItem(CALL_KEY) || "null");
+    return c && Date.now() - c.at < 7 * 86400_000 ? { value: Number(c.value) || 0, user: c.user || {} } : null;
+  } catch {
+    return null;
+  }
 }
 
 /** A confirmed booking, counted once per booking whether it came from the embed or the /booked redirect. */
@@ -128,7 +173,10 @@ export function trackBooked(via: string, uid?: string, user?: UserData) {
   } catch {
     /* storage blocked: still count it */
   }
-  track("book_call", { via, value: 0, currency: "USD" }, { eventId: uid ? `book_${uid}` : undefined, user });
+  const ctx = callContext();
+  const who = { ...ctx?.user, ...Object.fromEntries(Object.entries(user ?? {}).filter(([, v]) => v)) } as UserData;
+  track("book_call", { via, value: ctx?.value ?? 0, currency: "USD", lead_source: ctx ? "brand-boost-quiz" : "cal.com" }, { eventId: uid ? `book_${uid}` : undefined, user: who.email || who.phone ? who : undefined });
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("ct:booked"));
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -137,11 +185,28 @@ export function trackBooked(via: string, uid?: string, user?: UserData) {
 
 const ATTR_KEY = "ct_attr";
 const ATTR_PARAMS = ["gclid", "gbraid", "wbraid", "fbclid", "msclkid", "ttclid", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
-export type Attribution = Partial<Record<(typeof ATTR_PARAMS)[number] | "landing" | "fbp" | "fbc", string>>;
+export type Attribution = Partial<Record<(typeof ATTR_PARAMS)[number] | "landing" | "fbp" | "fbc" | "ttp", string>>;
 
 const cookie = (name: string) => (typeof document === "undefined" ? undefined : document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))?.[1]);
 
-/** Call once per page load: stores any new click ids and sets _fbc from fbclid before the pixel loads. */
+/**
+ * Meta's Conversions API Parameter Builder (meta-capi-param-builder-clientjs) writes _fbp and, after an
+ * ad click, _fbc in the exact format Meta scores highest (with its version appendix). It's loaded as a
+ * separate chunk right after the page starts, so it never weighs on first paint. If it can't load,
+ * _fbc is still set by hand so the click is not lost.
+ */
+function buildMetaParams(fbclid?: string) {
+  import("meta-capi-param-builder-clientjs")
+    .then((m) => {
+      const b = ((m as { default?: unknown }).default ?? m) as { processAndCollectAllParams: (url: string | null) => Promise<unknown> };
+      return b.processAndCollectAllParams(window.location.href);
+    })
+    .catch(() => {
+      if (fbclid && !cookie("_fbc")) document.cookie = `_fbc=fb.1.${Date.now()}.${fbclid}; max-age=${90 * 86400}; path=/; SameSite=Lax; Secure`;
+    });
+}
+
+/** Call once per page load: stores any new click ids and builds Meta's _fbp/_fbc before the pixel loads. */
 export function captureAttribution() {
   const w = win();
   if (!w) return;
@@ -151,10 +216,7 @@ export function captureAttribution() {
     const v = q.get(k);
     if (v) fresh[k] = v.slice(0, 300);
   }
-  if (fresh.fbclid && !cookie("_fbc")) {
-    const fbc = `fb.1.${Date.now()}.${fresh.fbclid}`;
-    document.cookie = `_fbc=${fbc}; max-age=${90 * 86400}; path=/; SameSite=Lax; Secure`;
-  }
+  buildMetaParams(fresh.fbclid);
   if (!Object.keys(fresh).length) return;
   try {
     localStorage.setItem(ATTR_KEY, JSON.stringify({ ...fresh, landing: w.location.pathname, at: Date.now() }));
@@ -172,7 +234,9 @@ export function attribution(): Attribution {
     /* ignore */
   }
   delete stored.at;
+  // Sent exactly as stored: _fbc is case-sensitive and Meta wants it unmodified.
   const fbp = cookie("_fbp");
   const fbc = cookie("_fbc");
-  return { ...stored, ...(fbp ? { fbp } : {}), ...(fbc ? { fbc } : {}) };
+  const ttp = cookie("_ttp");
+  return { ...stored, ...(fbp ? { fbp } : {}), ...(fbc ? { fbc } : {}), ...(ttp ? { ttp } : {}) };
 }

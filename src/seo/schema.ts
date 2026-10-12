@@ -6,6 +6,7 @@ import type { FAQ, Service } from "@/content/services";
 import type { Client } from "@/content/clients";
 import type { Guide } from "@/content/guides";
 import { guideImage, guidePath } from "@/content/guides";
+import { MONTHLY, SETUP, WEBSITES, pricesFor, type PriceItem } from "@/content/pricing";
 
 const abs = (path: string) => (path.startsWith("http") ? path : `${SITE.url}${path}`);
 
@@ -115,6 +116,7 @@ export const service = (s: Service): JsonLd => ({
   provider: { "@id": ORG_ID },
   areaServed: { "@type": "Country", name: "United States" },
   url: abs(`/services/${s.slug}`),
+  ...(pricesFor(s.slug).length ? { offers: pricesFor(s.slug).map(priceOffer) } : {}),
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: `${s.name} — what's included`,
@@ -123,6 +125,37 @@ export const service = (s: Service): JsonLd => ({
       itemOffered: { "@type": "Service", name: item },
     })),
   },
+});
+
+/** A published service price as a schema.org Offer: one-time fee, or a monthly UnitPriceSpecification. */
+export const priceOffer = (p: PriceItem) => ({
+  "@type": "Offer",
+  name: p.name,
+  description: p.summary,
+  url: abs("/pricing"),
+  priceCurrency: "USD",
+  price: p.price.toFixed(2),
+  seller: { "@id": ORG_ID },
+  availability: "https://schema.org/InStock",
+  priceSpecification:
+    p.billing === "month"
+      ? { "@type": "UnitPriceSpecification", price: p.price.toFixed(2), priceCurrency: "USD", unitText: "month", referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" } }
+      : { "@type": "PriceSpecification", price: p.price.toFixed(2), priceCurrency: "USD", ...(p.from ? { minPrice: p.price.toFixed(2) } : {}) },
+  ...(p.service ? { itemOffered: { "@type": "Service", name: p.name, url: abs(`/services/${p.service}`) } } : {}),
+});
+
+/** The full price list for /pricing. */
+export const pricingCatalog = (): JsonLd => ({
+  "@type": "OfferCatalog",
+  "@id": `${abs("/pricing")}#catalog`,
+  name: "CEO Turbo pricing",
+  url: abs("/pricing"),
+  provider: { "@id": ORG_ID },
+  itemListElement: [
+    { "@type": "OfferCatalog", name: "One-time setup", itemListElement: SETUP.map(priceOffer) },
+    { "@type": "OfferCatalog", name: "Websites", itemListElement: WEBSITES.map(priceOffer) },
+    { "@type": "OfferCatalog", name: "Monthly plans", itemListElement: MONTHLY.map(priceOffer) },
+  ],
 });
 
 const CARD_DESCRIPTION =

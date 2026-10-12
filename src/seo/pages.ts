@@ -7,6 +7,7 @@ import { AUDIENCES } from "@/content/audiences";
 import { GUIDES, guideImage, guidePath } from "@/content/guides";
 import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
+import { PRICING_FAQS, price } from "@/content/pricing";
 import * as S from "./schema";
 
 export type PageMeta = {
@@ -61,14 +62,25 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/brand-boost",
-    title: "Brand Boost by CEO Turbo — Free 30-Minute Growth Call",
+    title: "Free Brand Boost Call — Get More Customers | CEO Turbo",
     description:
-      "CEO Turbo Brand Boost: a free 30-minute call where we review your website, Google profile, reviews and ads live and map the fastest way to more customers.",
+      "Answer 5 quick questions, get your #1 money move, then a free 30-minute call: we review your website, Google profile, reviews and ads live.",
     ogImage: "/og/brand-boost.jpg",
     priority: 0.9,
     changefreq: "monthly",
     group: "Core",
-    schema: [...base(), S.webPage("/brand-boost", "Brand Boost by CEO Turbo", "Free 30-minute growth call."), S.brandBoost(), S.video("/brand-boost"), S.breadcrumbs([{ name: "Brand Boost call", path: "/brand-boost" }]), S.faqPage(BOOK_FAQS, "/brand-boost")],
+    schema: [...base(), S.webPage("/brand-boost", "Free Brand Boost call", "Answer 5 quick questions, see your #1 money move, then book a free 30-minute growth call with CEO Turbo."), S.brandBoost(), S.video("/brand-boost"), S.breadcrumbs([{ name: "Brand Boost call", path: "/brand-boost" }]), S.faqPage(BOOK_FAQS, "/brand-boost")],
+  });
+
+  pages.push({
+    path: "/pricing",
+    title: "CEO Turbo Pricing — Websites, SEO, AEO, GEO & Ads",
+    description: `Clear CEO Turbo pricing: Google profile setup ${price("gbp-setup")}, websites from ${price("site-artist")}, SEO/AEO/GEO from ${price("seo-local")}/mo, ads from ${price("ads-management")}/mo. No contracts.`,
+    ogImage: "/og/brand-boost.jpg",
+    priority: 0.9,
+    changefreq: "monthly",
+    group: "Core",
+    schema: [...base(), S.webPage("/pricing", "CEO Turbo pricing", "Published prices for every CEO Turbo service: one-time setups and monthly plans."), S.pricingCatalog(), S.breadcrumbs([{ name: "Pricing", path: "/pricing" }]), S.faqPage(PRICING_FAQS, "/pricing")],
   });
 
   pages.push({

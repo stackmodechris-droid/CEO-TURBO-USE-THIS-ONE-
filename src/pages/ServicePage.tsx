@@ -9,6 +9,8 @@ import { SearchScene, SCENES } from "@/components/visuals/Scenes";
 import { WorkGrid, AdResultsGrid, AdGallery } from "@/components/blocks/Proof";
 import { ServiceGrid, BookingSection } from "@/components/blocks/Sales";
 import { SectionHeader, DirectAnswer, Breadcrumbs, FAQList } from "@/components/blocks/Basics";
+import { PriceBox } from "@/components/blocks/PriceBlocks";
+import { priceLabel, pricesFor } from "@/content/pricing";
 import NotFound from "./NotFound";
 
 export default function ServicePage() {
@@ -22,6 +24,7 @@ export default function ServicePage() {
   const Scene = s.slug === "seo-aeo-geo" ? SearchScene : s.slug === "google-business-profile" ? SCENES.local : s.slug === "email-marketing" || s.slug === "tiktok-ads" ? SCENES.shopify : s.slug === "social-media-optimization" || s.slug === "x-ads" ? SCENES.artist : SearchScene;
   const note = `Service: ${s.name}`;
   const prefill = `Interested in ${s.name}.`;
+  const prices = pricesFor(s.slug);
 
   return (
     <>
@@ -106,10 +109,18 @@ export default function ServicePage() {
               </li>
             ))}
           </ol>
-          <h2 className="mt-14 text-2xl font-bold">How much does it cost?</h2>
-          <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
-            Pricing depends on scope. After the free Brand Boost call you get a fixed, written quote before any work starts.{isAds ? " Ad spend is paid directly to the platform from your own ad account." : ""}
-          </p>
+          <div className="mt-14 grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <h2 className="text-2xl font-bold sm:text-3xl">How much does {s.short} cost?</h2>
+              <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
+                {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Every service is an add-on — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
+              </p>
+              <BookButton note={`${note} — pricing`} className="mt-6">
+                Which do I need? Get my free plan
+              </BookButton>
+            </div>
+            <PriceBox items={prices} />
+          </div>
         </div>
       </section>
 

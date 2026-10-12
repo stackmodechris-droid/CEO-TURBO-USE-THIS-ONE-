@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Globe, Mail, MapPin, Megaphone, Search, UserRound, Music2 } from "lucide-react";
@@ -10,7 +10,7 @@ import { BookButton } from "@/components/cta/Actions";
 import { SCENES } from "@/components/visuals/Scenes";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
-import { mountInlineBooking } from "@/lib/cal";
+import { BrandBoostQuiz } from "@/components/quiz/BrandBoostQuiz";
 import { track } from "@/lib/track";
 
 const SERVICE_ICON: Record<Service["icon"], typeof Globe> = {
@@ -168,44 +168,28 @@ export function Founder() {
   );
 }
 
-/** Closing CTA with the calendar mounted inline once it scrolls near the viewport. */
+/** Closing CTA: the Brand Boost quiz (a few taps → plan → prefilled calendar) next to what the call covers. */
 export function BookingSection({
-  title = "Pick a time. We'll show you what's costing you customers.",
+  title = "Get your free plan, then pick a time.",
   note,
   prefill,
+  primary = false,
 }: {
   title?: string;
   note?: string;
   prefill?: string;
+  /** This page's main quiz: "Book" buttons scroll here instead of opening the quiz dialog. */
+  primary?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
-  const id = "brand-boost-inline";
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((e) => e.isIntersecting)) return;
-        io.disconnect();
-        setState("loading");
-        mountInlineBooking(id, note, prefill).then((ok) => setState(ok ? "ready" : "failed"));
-      },
-      { rootMargin: "400px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [note, prefill]);
-
   return (
-    <section id="book" className="section relative overflow-hidden">
+    <section id="book" className="section relative scroll-mt-16 overflow-hidden">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[900px] -translate-x-1/2 glow-ignite opacity-50" aria-hidden />
       <div className="container-x relative">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
+        <div className="grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="lg:sticky lg:top-28">
             <p className="text-sm font-medium text-ignite">Free Brand Boost call · {BOOKING.length}</p>
             <h2 className="h-section mt-2">{title}</h2>
+            <p className="lede">Answer a few quick taps about your business. You'll see your #1 money move right away, then pick a time — your details are already filled in.</p>
             <ul className="mt-6 space-y-3 text-[15px]">
               {["A live look at your site, Google profile, socials and ads", "The one change that would bring the most customers fastest", "A fixed price if you want us to do it — no obligation"].map((t) => (
                 <li key={t} className="flex gap-3">
@@ -215,31 +199,18 @@ export function BookingSection({
               ))}
             </ul>
             <p className="mt-8 text-sm text-muted-foreground">
-              Calendar not loading?{" "}
+              Prefer to skip ahead?{" "}
               <a href={BOOKING.url} target="_blank" rel="noopener" className="text-turbo underline underline-offset-4">
                 Book on Cal.com
               </a>
             </p>
           </div>
-          <div ref={ref} className="panel relative min-h-[560px] overflow-hidden p-2">
-            {state !== "ready" && (
-              <div className="absolute inset-0 grid place-items-center p-8 text-center">
-                <div>
-                  <p className="text-muted-foreground">{state === "failed" ? "The calendar didn't load." : "Loading available times…"}</p>
-                  <BookButton note={note} prefill={prefill} className="mt-4">
-                    Open the booking calendar
-                  </BookButton>
-                </div>
-              </div>
-            )}
-            <div id={id} className="relative h-full min-h-[560px] w-full overflow-auto" />
-          </div>
+          <BrandBoostQuiz source={note ?? "Booking section"} prefill={prefill} primary={primary} />
         </div>
       </div>
     </section>
   );
 }
-
 
 /** Founder video in a phone frame. Nothing downloads until the visitor taps play. */
 export function VideoPitch({ note, className }: { note: string; className?: string }) {

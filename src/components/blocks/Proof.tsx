@@ -6,6 +6,7 @@ import { CLIENTS, CATEGORY_LABEL, domainOf, type Category, type Client } from "@
 import { AD_RESULTS, AD_TOTALS, GSC, APPLIANCE_KING_PAGE, FEATURED_RESULT, money, type AdResult } from "@/content/results";
 import type { AdCreative } from "@/content/ads";
 import { cn } from "@/lib/utils";
+import { CountUp } from "@/components/visuals/CountUp";
 
 export function ProofStats() {
   const stats = [
@@ -19,7 +20,9 @@ export function ProofStats() {
       {stats.map((s) => (
         <div key={s.label} className="bg-background/95 p-5 sm:p-6">
           <dt className="sr-only">{s.label}</dt>
-          <dd className="font-display text-3xl font-bold tracking-tight text-chrome-grad sm:text-4xl">{s.value}</dd>
+          <dd className="font-display text-3xl font-bold tracking-tight text-chrome-grad sm:text-4xl">
+            <CountUp value={s.value} />
+          </dd>
           <dd className="mt-1 text-sm text-muted-foreground">{s.label}</dd>
         </div>
       ))}

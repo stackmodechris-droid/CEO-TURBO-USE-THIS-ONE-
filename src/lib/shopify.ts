@@ -98,7 +98,10 @@ export async function createCheckout(pack: ReviewPack, business: string) {
     url = `https://${SHOPIFY.domain}/cart/${numericId(found.variant.id)}:${found.quantity}`;
   }
   const u = new URL(url);
-  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const) if (a[k]) u.searchParams.set(k, a[k]!);
+  // Checkout runs on Shopify's domain, where our cookies don't exist. Passing the ad click ids in the URL
+  // lets the Facebook & Instagram app (fbclid → _fbc), Google (gclid) and Microsoft (msclkid) pixels on
+  // checkout attribute the purchase to the ad that drove it.
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "gclid", "gbraid", "wbraid", "msclkid", "ttclid"] as const) if (a[k]) u.searchParams.set(k, a[k]!);
   if (!a.utm_source) {
     u.searchParams.set("utm_source", "ceoturbo.com");
     u.searchParams.set("utm_medium", "website");

@@ -3,12 +3,15 @@ import { useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileActionBar } from "./MobileActionBar";
+import { QuizModalHost } from "@/components/quiz/QuizModalHost";
+import { startSpotlight } from "@/lib/spotlight";
 import { pageFor, NOT_FOUND_META } from "@/seo/pages";
 import { applyHead } from "@/seo/head";
 import { loadCal } from "@/lib/cal";
 import { startPixel, pixelPageView } from "@/lib/pixel";
 import { gtmPageView } from "@/lib/gtm";
 import { startUet } from "@/lib/uet";
+import { startTiktok, tiktokPageView } from "@/lib/tiktok";
 
 /** Ad landing pages: no menu or footer links to leak clicks — one job, one button. */
 const FOCUS_PATHS = new Set(["/book", "/booked"]);
@@ -29,6 +32,7 @@ export function Layout({ children }: { children: ReactNode }) {
     applyHead(meta);
     window.scrollTo(0, 0);
     pixelPageView();
+    tiktokPageView();
     gtmPageView(pathname);
   }, [pathname]);
 
@@ -40,6 +44,8 @@ export function Layout({ children }: { children: ReactNode }) {
     const start = () => {
       startPixel();
       startUet();
+      startTiktok();
+      startSpotlight();
     };
     if (ric) ric(start, { timeout: 2500 });
     else setTimeout(start, 1500);
@@ -61,6 +67,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <main id="main">{children}</main>
       <Footer focus={focus} />
       <MobileActionBar focus={focus} />
+      <QuizModalHost />
     </>
   );
 }

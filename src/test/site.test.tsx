@@ -17,6 +17,10 @@ import { reviewCardProduct } from "@/seo/schema";
 import { findVariant } from "@/lib/shopify";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { checkReviewLink } from "@/lib/review-link";
+import { ALL_PRICES, PRICING_FAQS, pricesFor, usd } from "@/content/pricing";
+import { HOME_FAQS, BOOK_FAQS } from "@/content/faqs";
+import { BrandBoostQuiz } from "@/components/quiz/BrandBoostQuiz";
+import { AUDIENCES as QUIZ_AUDIENCES, BUDGETS, CAL_GOAL_OPTIONS, calGoal, moneyMove, EMPTY_ANSWERS, GOALS } from "@/content/quiz";
 
 const pub = (p: string) => path.resolve(__dirname, "../../public", p.replace(/^\//, ""));
 const paths = new Set(PAGES.map((p) => p.path));
@@ -149,5 +153,51 @@ describe("review card store", () => {
     expect(checkReviewLink("https://g.page/r/CabcDEF123")).toMatchObject({ ok: false, kind: "fixable", url: "https://g.page/r/CabcDEF123/review" });
     expect(checkReviewLink("https://maps.app.goo.gl/xyz")).toMatchObject({ ok: false, kind: "profile" });
     expect(checkReviewLink("https://example.com")).toMatchObject({ ok: false, kind: "invalid" });
+  });
+});
+
+describe("Brand Boost quiz", () => {
+  it("renders the first question server-side with tappable answers", () => {
+    render(
+      <MemoryRouter>
+        <BrandBoostQuiz source="test" primary />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("What do you do?")).toBeInTheDocument();
+    for (const a of QUIZ_AUDIENCES) expect(screen.getByRole("button", { name: new RegExp(a.label) })).toBeInTheDocument();
+  });
+
+  it("only prefills Cal.com with values the booking form accepts", () => {
+    for (const goals of Object.values(GOALS)) for (const g of goals) expect(CAL_GOAL_OPTIONS).toContain(calGoal(g.key));
+    expect(BUDGETS.every((b) => b.value > 0)).toBe(true);
+  });
+
+  it("always has a money move for every audience and goal", () => {
+    for (const [audience, goals] of Object.entries(GOALS))
+      for (const g of goals) {
+        const m = moneyMove({ ...EMPTY_ANSWERS, audience: audience as never, goal: g.key });
+        expect(m.title.length).toBeGreaterThan(5);
+        expect(m.points.length).toBe(3);
+      }
+  });
+});
+
+describe("pricing", () => {
+  it("has unique ids and gives every service a price", () => {
+    expect(new Set(ALL_PRICES.map((p) => p.id)).size).toBe(ALL_PRICES.length);
+    for (const s of SERVICES) expect(pricesFor(s.slug).length, s.slug).toBeGreaterThan(0);
+  });
+
+  it("never quotes a dollar amount in FAQs that isn't on the price list", () => {
+    const allowed = new Set(ALL_PRICES.map((p) => usd(p.price)));
+    const text = [...PRICING_FAQS, ...HOME_FAQS, ...BOOK_FAQS].map((f) => f.a).join(" ");
+    const quoted = (text.match(/\$\d{1,3}(?:,\d{3})*(?!\d|[.,]\d)/g) ?? []).filter((m) => !/^\$(10|20|300)$/.test(m));
+    for (const q of quoted) expect(allowed.has(q), q).toBe(true);
+  });
+
+  it("publishes a /pricing page with the price catalog", () => {
+    const p = PAGES.find((x) => x.path === "/pricing");
+    expect(p && !p.noindex).toBe(true);
+    expect(JSON.stringify(p!.schema)).toContain("OfferCatalog");
   });
 });

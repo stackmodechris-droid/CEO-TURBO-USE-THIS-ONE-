@@ -7,9 +7,18 @@ Google Sheet with a tiny Apps Script. Nothing is stored on the website itself.
 
 ## 1. The sheet and script
 
-The sheet is **FREE Lead Magnet Leads** (tabs: Free Check Leads, Booked Calls, Card Orders, already set up
-with headers, filters, a Status dropdown and colors). The script that fills it is
+The sheet is **FREE Lead Magnet Leads** (tabs: Call Quiz Leads, Free Check Leads, Booked Calls, Card Orders, with
+headers, filters, a Status dropdown and colors). The script that fills it is
 [`docs/leads-apps-script.js`](leads-apps-script.js).
+
+**Call Quiz Leads** is the Brand Boost quiz: one row per person who answered the questions and left their details,
+with every answer (what they do, goal, what's holding them back, budget, how soon, the #1 move they were shown) and
+the ad that brought them. When the same person books, their row flips to **Booked? = Yes** with the call time and
+Status "Booked". **Anyone still "No" is your follow-up list:** call or text them the same day.
+The script creates missing tabs and adds any new columns to existing tabs by itself.
+
+> **Updated 2026-10-11: re-paste the script** (steps 1, 2 and 4 below) so quiz leads get their own tab and bookings
+> link back to the quiz. Until you do, quiz leads land on the "Card Orders" tab.
 
 1. Open the sheet → **Extensions → Apps Script**. Delete what's there and paste the whole file.
 2. On the `const SECRET = ...` line, replace the placeholder with your `LEADS_WEBHOOK_SECRET`.

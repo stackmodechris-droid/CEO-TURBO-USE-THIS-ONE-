@@ -82,6 +82,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               { to: "/results", label: "Results" },
               { to: "/about", label: "About Christopher" },
               { to: "/brand-boost", label: "Brand Boost call" },
+              { to: "/pricing", label: "Pricing" },
               { to: "/contact", label: "Contact" },
               { to: "/promptshop", label: "Prompt Shop" },
             ]}

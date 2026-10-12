@@ -55,81 +55,105 @@ function bootstrap() {
   w.Cal = cal;
 }
 
-export function loadCal(): Promise<boolean> {
-  if (typeof window === "undefined") return Promise.resolve(false);
-  if (ready) return ready;
-  ready = new Promise((resolve) => {
-    bootstrap();
-    const Cal = window.Cal!;
-    Cal("init", BOOKING.namespace, { origin: "https://cal.com" });
-    Cal.ns[BOOKING.namespace]("ui", {
-      theme: "dark",
-      hideEventTypeDetails: false,
-      layout: "month_view",
-      cssVarsPerTheme: { dark: { "cal-brand": "#ff6b1a" }, light: { "cal-brand": "#ff6b1a" } },
-    });
-    const script = document.querySelector<HTMLScriptElement>(`script[src="${EMBED_SRC}"]`);
-    if (!script) return resolve(false);
-    // Real bookings (not just calendar opens) are the conversion Meta should optimize for.
-    Cal.ns[BOOKING.namespace]("on", {
-      action: "bookingSuccessfulV2",
-      callback: (e: { detail?: { data?: Record<string, unknown> } }) => {
-        const d = e?.detail?.data ?? {};
-        const uid = typeof d.uid === "string" ? d.uid : undefined;
-        trackBooked("embed", uid, bookerFrom(d));
-      },
-    });
-    script.addEventListener("load", () => resolve(true), { once: true });
-    script.addEventListener("error", () => resolve(false), { once: true });
+const UI = {
+  theme: "dark",
+  layout: "month_view",
+  cssVarsPerTheme: { dark: { "cal-brand": "#ff6b1a" }, light: { "cal-brand": "#ff6b1a" } },
+};
+
+/** Namespaces: the site-wide modal/inline calendar, and the quiz's calendar (no repeated event details). */
+export const QUIZ_NS = "brandboostquiz";
+const inited = new Set<string>();
+
+function initNamespace(ns: string) {
+  const Cal = window.Cal!;
+  if (inited.has(ns)) return;
+  inited.add(ns);
+  Cal("init", ns, { origin: "https://cal.com" });
+  Cal.ns[ns]("ui", { ...UI, hideEventTypeDetails: ns === QUIZ_NS });
+  // Real bookings (not just calendar opens) are the conversion the ad platforms should optimize for.
+  Cal.ns[ns]("on", {
+    action: "bookingSuccessfulV2",
+    callback: (e: { detail?: { data?: Record<string, unknown> } }) => {
+      const d = e?.detail?.data ?? {};
+      const uid = typeof d.uid === "string" ? d.uid : undefined;
+      trackBooked("embed", uid, bookerFrom(d));
+    },
   });
+}
+
+export function loadCal(ns: string = BOOKING.namespace): Promise<boolean> {
+  if (typeof window === "undefined") return Promise.resolve(false);
+  if (!ready) {
+    ready = new Promise((resolve) => {
+      bootstrap();
+      initNamespace(BOOKING.namespace);
+      const script = document.querySelector<HTMLScriptElement>(`script[src="${EMBED_SRC}"]`);
+      if (!script) return resolve(false);
+      script.addEventListener("load", () => resolve(true), { once: true });
+      script.addEventListener("error", () => resolve(false), { once: true });
+    });
+  }
+  initNamespace(ns);
   return ready;
 }
 
 /**
  * source  → hidden booking metadata (which button/page drove the booking)
  * prefill → visible "notes" text the visitor sees and can edit; only for real intent
+ * person  → name / email / phone the visitor already typed (so they don't type them twice)
+ * fields  → booking-form fields by slug (the hidden quiz answers on the Cal.com event)
+ * meta    → extra booking metadata, read by api/cal-webhook.js
  */
-export type Person = { name?: string; email?: string };
+export type Person = { name?: string; email?: string; phone?: string };
+export type Prefill = { source?: string; prefill?: string; person?: Person; fields?: Record<string, string | undefined>; meta?: Record<string, string | number | undefined> };
 
-const calConfig = (source?: string, prefill?: string, person?: Person) => ({
+const defined = (o: Record<string, unknown> = {}) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== ""));
+
+const calConfig = ({ source, prefill, person, fields, meta }: Prefill = {}) => ({
   layout: "month_view",
   theme: "dark",
   ...(prefill ? { notes: prefill } : {}),
   ...(person?.name ? { name: person.name } : {}),
   ...(person?.email ? { email: person.email } : {}),
+  ...(person?.phone ? { attendeePhoneNumber: person.phone } : {}),
+  ...defined(fields),
   ...(source ? { "metadata[source]": source } : {}),
   "metadata[page]": typeof window !== "undefined" ? window.location.pathname : "",
-  // Read by api/cal-webhook.js so the server-side Meta "Schedule" matches this browser.
+  ...Object.fromEntries(Object.entries(defined(meta)).map(([k, v]) => [`metadata[${k}]`, String(v).slice(0, 480)])),
+  // Read by api/cal-webhook.js so the server-side Meta / TikTok "Schedule" matches this browser.
   ...attributionMeta(),
 });
 
 function attributionMeta() {
   if (typeof window === "undefined") return {};
   const a = attribution();
-  const keep = ["fbp", "fbc", "gclid", "msclkid", "utm_source", "utm_campaign"] as const;
+  const keep = ["fbp", "fbc", "fbclid", "gclid", "msclkid", "ttclid", "ttp", "utm_source", "utm_campaign"] as const;
   return Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!]));
 }
 
 /** Opens the Brand Boost booking modal; falls back to the Cal.com page if the embed can't load. */
-export async function openBooking(source?: string, prefill?: string, person?: Person) {
+export async function openBooking(source?: string, prefill?: string, person?: Person, extra: Omit<Prefill, "source" | "prefill" | "person"> = {}) {
   track("booking_open", { source });
-  const ok = await Promise.race([loadCal(), new Promise<boolean>((r) => setTimeout(() => r(false), 4000))]);
-  if (ok && window.Cal?.ns[BOOKING.namespace]) {
-    window.Cal.ns[BOOKING.namespace]("modal", { calLink: BOOKING.calLink, config: calConfig(source, prefill, person) });
+  const ns = BOOKING.namespace;
+  const ok = await Promise.race([loadCal(ns), new Promise<boolean>((r) => setTimeout(() => r(false), 4000))]);
+  if (ok && window.Cal?.ns[ns]) {
+    window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
   } else {
-    const q = new URLSearchParams({ ...(person?.name ? { name: person.name } : {}), ...(person?.email ? { email: person.email } : {}), ...(prefill ? { notes: prefill } : {}) });
+    const q = new URLSearchParams(defined({ name: person?.name, email: person?.email, attendeePhoneNumber: person?.phone, notes: prefill, ...extra.fields }) as Record<string, string>);
     window.open(`${BOOKING.url}${q.toString() ? `?${q}` : ""}`, "_blank", "noopener,noreferrer");
   }
 }
 
 /** Inline booking calendar mounted into an element by id. */
-export async function mountInlineBooking(elementId: string, source?: string, prefill?: string) {
-  const ok = await loadCal();
-  if (!ok || !window.Cal?.ns[BOOKING.namespace]) return false;
-  window.Cal.ns[BOOKING.namespace]("inline", {
+export async function mountInlineBooking(elementId: string, source?: string, prefill?: string, opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {}) {
+  const { ns = BOOKING.namespace, ...rest } = opts;
+  const ok = await loadCal(ns);
+  if (!ok || !window.Cal?.ns[ns]) return false;
+  window.Cal.ns[ns]("inline", {
     elementOrSelector: `#${elementId}`,
     calLink: BOOKING.calLink,
-    config: calConfig(source, prefill),
+    config: calConfig({ source, prefill, ...rest }),
   });
   return true;
 }

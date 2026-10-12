@@ -45,7 +45,7 @@ analytics.subscribe("checkout_completed", (event) => {
   const value = num(c.totalPrice);
   const currency = c.currencyCode || "USD";
   const items = (c.lineItems || []).map((li) => ({
-    // SKU = the id used on ceoturbo.com and in the Merchant feed (CT-NFC-REVIEW-WHITE-2 …)
+    // SKU = the id used on ceoturbo.com and in the Merchant feed (CT-NFC-REVIEW-1 / -2 / -5)
     item_id: (li.variant && (li.variant.sku || li.variant.id)) || li.id,
     item_name: li.title,
     item_variant: li.variant && li.variant.title,

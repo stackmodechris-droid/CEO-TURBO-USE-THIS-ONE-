@@ -16,6 +16,7 @@ const BrandBoost = lazy(() => import("./pages/BrandBoost"));
 const ReviewCards = lazy(() => import("./pages/ReviewCards"));
 const ReviewCardSetup = lazy(() => import("./pages/ReviewCardSetup"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
+const Pricing = lazy(() => import("./pages/Pricing"));
 const Book = lazy(() => import("./pages/Book"));
 const Booked = named(() => import("./pages/Book"), "Booked");
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/shopify" element={<AudiencePage slug="shopify" />} />
           <Route path="/brand-boost" element={<BrandBoost />} />
           <Route path="/free-audit" element={<FreeAudit />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/book" element={<Book />} />
           <Route path="/booked" element={<Booked />} />
           <Route path="/google-review-cards" element={<ReviewCards />} />

@@ -1,10 +1,25 @@
-// POST /api/lead — review card order requests (fallback when Shopify checkout is unreachable)
-// and any other simple lead form.
+// POST /api/lead — Brand Boost quiz leads, review card order requests (fallback when Shopify checkout
+// is unreachable) and any other simple lead form.
 import { cleanLead, forwardLead, isBot } from "./_lib/leads.js";
 import { readJson, send, clientIp, rateLimited, sameOrigin } from "./_lib/http.js";
-import { buildEvent, cleanAttribution, sendMetaEvents } from "./_lib/meta-capi.js";
+import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
+import { buildTiktokEvent, sendTiktokEvents } from "./_lib/tiktok-events.js";
 
 const text = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f<>]/g, " ").trim().slice(0, max) : "");
+
+/** The quiz answers kept for the "Call Quiz Leads" sheet tab (exported for tests). */
+export function quizFields(body) {
+  return {
+    quizId: text(body.quizId, 60),
+    audience: text(body.audience, 60),
+    goal: text(body.goal, 80),
+    blockers: text(body.blockers, 300),
+    budget: text(body.budget, 40),
+    timeline: text(body.timeline, 40),
+    website: text(body.website, 200),
+    move: text(body.move, 120),
+  };
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -25,25 +40,39 @@ export default async function handler(req, res) {
   const { lead, error } = cleanLead(body);
   if (error) return send(res, 400, { error });
 
-  const attr = cleanAttribution(body.attribution);
+  const type = text(body.type, 30) || "order-request";
+  const quiz = type === "brand-boost-quiz" ? quizFields(body) : null;
+  const signals = requestSignals(req, res);
+  const attr = withSignals(cleanAttribution(body.attribution), signals);
+  const eventId = text(body.eventId, 120);
+  const value = Number(body.value) > 0 ? Math.min(Number(body.value), 100000) : 0;
+  const url = `https://www.ceoturbo.com${text(body.page, 120) || "/"}`;
+  const ip = signals.ip || clientIp(req);
+  const user = { email: lead.email, phone: lead.phone, name: lead.name, externalId: quiz?.quizId || undefined };
+
   const capi = sendMetaEvents([
     buildEvent({
       eventName: "Lead",
-      eventId: text(body.eventId, 120),
-      url: `https://www.ceoturbo.com${text(body.page, 120) || "/"}`,
-      user: { email: lead.email, phone: lead.phone, name: lead.name },
+      eventId,
+      url,
+      user,
       attribution: attr,
-      ip: clientIp(req),
+      ip,
       userAgent: req.headers["user-agent"],
       customData: {
-        lead_source: text(body.type, 30) || "order-request",
-        ...(Number(body.value) > 0 ? { value: Number(body.value), currency: "USD" } : {}),
+        lead_source: type,
+        ...(quiz ? { content_name: "Brand Boost quiz", content_category: quiz.audience } : {}),
+        ...(value ? { value, currency: "USD" } : {}),
       },
     }),
   ]);
+  const tiktok = sendTiktokEvents([
+    buildTiktokEvent({ event: "Lead", eventId, url, user, attribution: attr, ip, userAgent: req.headers["user-agent"], properties: { content_name: quiz ? "Brand Boost quiz" : type, ...(value ? { value, currency: "USD" } : {}) } }),
+  ]);
   const { stored } = await forwardLead({
-    type: text(body.type, 30) || "order-request",
+    type,
     ...lead,
+    ...(quiz ?? {}),
     product: text(body.product, 120),
     style: text(body.style, 40),
     pack: text(body.pack, 40),
@@ -52,6 +81,6 @@ export default async function handler(req, res) {
     page: text(body.page, 120),
     ...attr,
   });
-  await capi;
+  await Promise.all([capi, tiktok]);
   return send(res, 200, { ok: true, stored: !!stored });
 }

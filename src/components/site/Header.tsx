@@ -27,7 +27,7 @@ const MENUS: Menu[] = [
     label: "Services",
     to: "/services",
     wide: true,
-    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
+    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
   },
   {
     label: "Results",
@@ -87,6 +87,9 @@ export function Header({ focus = false }: { focus?: boolean }) {
             {MENUS.map((m) => (
               <Dropdown key={m.label} menu={m} active={m.items.some((i) => i.to === pathname)} />
             ))}
+            <NavLink to="/pricing" className={linkCls}>
+              Pricing
+            </NavLink>
             <NavLink to="/free-audit" className={linkCls}>
               Free check <span className="ml-1 rounded-full bg-turbo/15 px-1.5 py-0.5 text-[10px] font-semibold text-turbo">FREE</span>
             </NavLink>

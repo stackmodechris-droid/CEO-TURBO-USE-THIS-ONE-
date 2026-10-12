@@ -363,7 +363,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             {failure === "rate" ? "Too many audits from your network in the last few minutes. Try again shortly — or skip the wait and we'll run it live with you." : "Something blocked the scan (it happens with some hosts). Book a free call and we'll run the full audit live with you — same report, plus answers."}
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <button type="button" className="btn-ignite btn-shine flex-1" onClick={() => openBooking(`${source} — scan failed`, `Free audit for ${form.business}${form.website ? ` (${form.website})` : ""}. The online scan didn't finish.`, { name: form.name, email: form.email })}>
+            <button type="button" className="btn-ignite btn-shine flex-1" onClick={() => openBooking(`${source} — scan failed`, `Free audit for ${form.business}${form.website ? ` (${form.website})` : ""}. The online scan didn't finish.`, { name: form.name, email: form.email, phone: form.phone })}>
               Book my free audit call
             </button>
             <button type="button" className="btn-chrome" onClick={() => setStage("contact")}>
@@ -405,7 +405,7 @@ export function AuditReport({ report: r, form: f, source, onRestart }: { report:
   const prompt = aiPrompt(r, f);
   const lowReviews = r.kind === "business" && (r.scores.reviews ?? 100) < 75;
   const notes = `Free audit — ${r.name}: ${r.overall}/100 (${r.categories.map((c) => `${CATEGORY[c].short} ${r.scores[c]}`).join(", ")}). Top issues: ${topChecks.slice(0, 3).map((c) => c.label).join("; ")}.`;
-  const book = (where: string) => openBooking(`${source} — report ${where}`, notes, { name: f.name, email: f.email });
+  const book = (where: string) => openBooking(`${source} — report ${where}`, notes, { name: f.name, email: f.email, phone: f.phone });
 
   return (
     <div className="animate-step">

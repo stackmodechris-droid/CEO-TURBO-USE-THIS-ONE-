@@ -1,55 +1,103 @@
-import { BOOKING } from "@/config/site";
+import { SITE } from "@/config/site";
 import { BOOK_FAQS } from "@/content/faqs";
 import { AD_TOTALS, money } from "@/content/results";
 import { CLIENTS } from "@/content/clients";
-import { BookingSection, BrandBoostSteps, Founder, VideoPitch } from "@/components/blocks/Sales";
-import { ProofStats } from "@/components/blocks/Proof";
-import { Breadcrumbs, FAQList } from "@/components/blocks/Basics";
+import { BrandBoostSteps, Founder, VideoPitch } from "@/components/blocks/Sales";
+import { AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
+import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
+import { BoostHero, FitCheck, PriceTeaser, WalkAway } from "@/components/blocks/Boost";
 import { BookButton } from "@/components/cta/Actions";
+
+const SHOWCASE = ["mor-handy", "kingstone-landscaping", "bigzo"];
+const SOURCE = "Brand Boost page";
 
 export default function BrandBoost() {
   return (
     <>
-      <section className="relative overflow-hidden pt-28 sm:pt-32">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[900px] -translate-x-1/2 glow-ignite opacity-70" aria-hidden />
-        <div className="container-x relative">
-          <Breadcrumbs items={[{ name: "Brand Boost call", path: "/brand-boost" }]} />
-          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="hero-rise max-w-3xl">
-            <p className="chip">Free · {BOOKING.length} · video or phone</p>
-            <h1 className="mt-5 text-4xl font-bold leading-[1.02] sm:text-6xl">Brand Boost: what's costing you customers — and how do you fix it?</h1>
-            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-              We look at your website, Google profile, social profiles and ads with you, live, and show you the single change that would bring the most customers fastest. If you want us to do the work, you get a fixed price. If not, you keep the plan.
-            </p>
-            <div className="mt-8">
-              <BookButton note="Brand Boost page hero">Choose a time</BookButton>
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              {CLIENTS.length} client sites live · {AD_TOTALS.leads} Meta leads at {money(AD_TOTALS.avgCpl)} average
-            </p>
+      <BoostHero
+        source={SOURCE}
+        top={<Breadcrumbs items={[{ name: "Brand Boost call", path: "/brand-boost" }]} />}
+        title={
+          <>
+            <span className="text-chrome-grad">Free Brand Boost call:</span> <span className="text-turbo-grad">more customers, reviews &amp; listeners</span>
+          </>
+        }
+        lede={
+          <>
+            Answer 5 quick questions, see your #1 money move instantly, then pick a time.<span className="hidden sm:inline"> {SITE.founder.name} reviews your website, Google profile, reviews, socials and ads with you — live — and hands you the fixes that bring customers fastest.</span>
+          </>
+        }
+      />
+
+      <section className="section pb-0" aria-labelledby="what">
+        <div className="container-x max-w-4xl">
+          <h2 id="what" className="h-section">
+            What is a Brand Boost call?
+          </h2>
+          <DirectAnswer>
+            Brand Boost is CEO Turbo's free 30-minute growth call for local businesses, artists and online stores. Founder {SITE.founder.name} reviews your website, Google Business Profile, reviews, social profiles and ads live, names the one change that would bring the most customers fastest, and gives you a fixed-price plan from published prices. You keep the plan whether or not you hire us.
+          </DirectAnswer>
+        </div>
+      </section>
+
+      <WalkAway />
+
+      <section id="results" className="section scroll-mt-20 border-t border-border" aria-labelledby="proof">
+        <div className="container-x">
+          <SectionHeader title={<span id="proof">Does this actually work?</span>} lede={`Unedited Meta Ads Manager dashboards from client campaigns: ${AD_TOTALS.leads} leads for ${money(AD_TOTALS.leadSpend)} total.`} />
+          <div className="mt-12">
+            <AdResultsGrid keys={["ryan-pool", "stackmode-repair", "bigzo"]} />
           </div>
-          <VideoPitch note="Brand Boost page video" />
+          <h3 className="mt-16 text-2xl font-bold">Sites we built that bring in customers</h3>
+          <div className="mt-8">
+            <WorkGrid clients={CLIENTS.filter((c) => SHOWCASE.includes(c.slug))} />
+          </div>
+          <div className="mt-12 text-center">
+            <BookButton note={`${SOURCE} — after proof`} className="btn-shine">
+              I want results like these
+            </BookButton>
           </div>
         </div>
       </section>
-      <BookingSection note="Brand Boost page" title="When works for you? Pick a time." />
-      <section className="section border-t border-border">
+
+      <section className="section border-t border-border" aria-label="Founder">
         <div className="container-x">
-          <h2 className="h-section">What happens after you book?</h2>
+          <div className="grid items-center gap-10 md:grid-cols-[1fr_auto]">
+            <SectionHeader title="Hear it from Christopher in 82 seconds" lede="How businesses get found on Google, Maps and AI assistants in 2026 — and turn that attention into customers." />
+            <VideoPitch note={`${SOURCE} video`} />
+          </div>
+          <div className="mt-16">
+            <Founder />
+          </div>
+        </div>
+      </section>
+
+      <FitCheck />
+
+      <section className="section border-t border-border" aria-labelledby="next">
+        <div className="container-x">
+          <SectionHeader title={<span id="next">What happens after you book?</span>} />
           <div className="mt-10">
             <BrandBoostSteps />
           </div>
-          <div className="mt-14">
-            <ProofStats />
+        </div>
+      </section>
+
+      <PriceTeaser source={SOURCE} />
+
+      <FAQList faqs={BOOK_FAQS} title="Questions before you book?" />
+
+      <section className="section pt-0">
+        <div className="container-x">
+          <div className="cta-glow rounded-3xl p-8 text-center sm:p-12">
+            <h2 className="h-section">Your plan is 30 seconds away.</h2>
+            <p className="lede mx-auto">Five taps, your #1 money move, then a time that suits you. Free, no pressure.</p>
+            <BookButton note={`${SOURCE} — final CTA`} className="btn-shine mt-8 !px-8 !py-4 !text-base">
+              Start my free plan
+            </BookButton>
           </div>
         </div>
       </section>
-      <section className="section border-t border-border">
-        <div className="container-x">
-          <Founder />
-        </div>
-      </section>
-      <FAQList faqs={BOOK_FAQS} title="Questions before you book?" />
     </>
   );
 }

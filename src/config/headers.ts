@@ -2,15 +2,16 @@
 // If you add a new third-party script, iframe or API, allow its origin here.
 export const CSP = [
   "default-src 'self'",
-  // Tag Manager + GA4 + Google Ads, Meta Pixel, Microsoft UET
-  "script-src 'self' https://app.cal.com https://cal.com https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://connect.facebook.net https://bat.bing.com",
+  // Tag Manager + GA4 + Google Ads, Meta Pixel, Microsoft UET, TikTok Pixel
+  "script-src 'self' https://app.cal.com https://cal.com https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://connect.facebook.net https://bat.bing.com https://analytics.tiktok.com",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   "img-src 'self' data: blob: https:",
   "media-src 'self'",
   "frame-src https://app.cal.com https://cal.com https://*.cal.com https://www.facebook.com https://www.googletagmanager.com https://td.doubleclick.net https://bid.g.doubleclick.net",
-  // + Shopify Storefront API (headless checkout)
-  "connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://www.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.facebook.com https://connect.facebook.net https://bat.bing.com https://uweee2-sc.myshopify.com",
+  // + Meta Conversions API Gateway (the pixel's "openbridge" endpoints from Events Manager — if Meta Events
+  //   Manager ever shows a new gateway URL, add it here) + Shopify Storefront API (headless checkout)
+  "connect-src 'self' https://app.cal.com https://cal.com https://*.cal.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://www.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.facebook.com https://connect.facebook.net https://bat.bing.com https://analytics.tiktok.com https://*.tiktok.com https://*.tiktokw.us https://mpc2-prod-28-is5qnl632q-ue.a.run.app https://5z-2b6b7616f94640c2840d1841e1ac24c3.ecs.us-east-1.on.aws https://uweee2-sc.myshopify.com",
   "form-action 'self' https://cal.com https://app.cal.com https://www.facebook.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",

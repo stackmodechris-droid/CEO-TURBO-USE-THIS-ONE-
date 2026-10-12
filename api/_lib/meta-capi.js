@@ -2,6 +2,9 @@
 // browser event, so Meta de-duplicates them and keeps whichever arrives with better match data.
 // Needs META_CAPI_TOKEN (Events Manager → your pixel → Settings → Conversions API → Generate access token).
 import { createHash } from "node:crypto";
+import paramBuilder from "capi-param-builder-nodejs";
+
+const { ParamBuilder } = paramBuilder;
 
 export const DEFAULT_PIXEL_ID = "3232222473609236";
 const GRAPH = process.env.META_GRAPH_VERSION || "v24.0";
@@ -75,6 +78,34 @@ export async function sendMetaEvents(events) {
 /** Ad click ids / UTMs posted by the browser (src/lib/track.ts attribution()). */
 export function cleanAttribution(a) {
   if (!a || typeof a !== "object") return {};
-  const keys = ["fbp", "fbc", "fbclid", "gclid", "gbraid", "wbraid", "msclkid", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing"];
+  const keys = ["fbp", "fbc", "fbclid", "gclid", "gbraid", "wbraid", "msclkid", "ttclid", "ttp", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing"];
   return Object.fromEntries(keys.map((k) => [k, clean(a[k], 300).replace(/[\u0000-\u001f<>]/g, "")]).filter(([, v]) => v));
+}
+
+/**
+ * Meta's Conversions API Parameter Builder (capi-param-builder-nodejs), run on the browser's own request:
+ * reads _fbp/_fbc from the request cookies (or builds _fbc from an fbclid on the page URL in the Referer)
+ * and picks the best client IP (IPv6 first). Values are returned exactly as Meta wants them; the cookies it
+ * recommends are set on the response so later events reuse the same ids. Never throws.
+ */
+export function requestSignals(req, res) {
+  try {
+    const builder = new ParamBuilder(["ceoturbo.com", "localhost"]);
+    const cookies = builder.processRequestFromContext(req) || [];
+    if (res && cookies.length) {
+      res.setHeader(
+        "Set-Cookie",
+        cookies.map((c) => `${c.name}=${c.value}; Max-Age=${c.maxAge}; Path=/; SameSite=Lax; Secure${c.domain && !/localhost/.test(c.domain) ? `; Domain=${c.domain}` : ""}`),
+      );
+    }
+    return { fbp: builder.getFbp() || "", fbc: builder.getFbc() || "", ip: builder.getClientIpAddress() || "" };
+  } catch (e) {
+    console.warn("[capi] param builder failed", e?.message);
+    return { fbp: "", fbc: "", ip: "" };
+  }
+}
+
+/** Browser-posted attribution, with the Parameter Builder's fbp/fbc filling any gaps. */
+export function withSignals(attr, signals) {
+  return { ...attr, ...(attr.fbp ? {} : signals.fbp ? { fbp: signals.fbp } : {}), ...(attr.fbc ? {} : signals.fbc ? { fbc: signals.fbc } : {}) };
 }
