@@ -11,7 +11,7 @@ import zlib from "node:zlib";
 
 const MAX_BYTES = 1_500_000;
 const MAX_REDIRECTS = 4;
-export const USER_AGENT = "Mozilla/5.0 (compatible; CEOTurboAudit/1.0; +https://ceoturbo.com/free-audit)";
+export const USER_AGENT = "Mozilla/5.0 (compatible; CEOTurboAudit/1.0; +https://www.ceoturbo.com/free-audit)";
 
 /** True for loopback, private, link-local, CGNAT, multicast and reserved ranges. */
 export function isPrivateIp(ip) {

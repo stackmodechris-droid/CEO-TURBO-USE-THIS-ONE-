@@ -8,7 +8,7 @@
 - **Status:** Properly configured
 - **Features:**
   - All crawlers allowed (`User-agent: *`)
-  - Sitemap URL specified: `https://ceoturbo.com/sitemap.xml`
+  - Sitemap URL specified: `https://www.ceoturbo.com/sitemap.xml`
   - AI crawlers explicitly allowed (OAI-SearchBot, GPTBot, ClaudeBot, Bingbot, Googlebot)
   - Google-Extended and Applebot-Extended supported
 
@@ -142,14 +142,14 @@ Your site is **fully optimized** for both Google and Bing indexing standards.
 ## Submission Steps
 
 1. **Google Search Console:**
-   - Add property: `https://ceoturbo.com/`
-   - Submit sitemap: `https://ceoturbo.com/sitemap.xml`
+   - Add property: `https://www.ceoturbo.com/`
+   - Submit sitemap: `https://www.ceoturbo.com/sitemap.xml`
    - Request indexing for homepage
    - Monitor crawl errors and coverage
 
 2. **Bing Webmaster Tools:**
-   - Add property: `https://ceoturbo.com/`
-   - Submit sitemap: `https://ceoturbo.com/sitemap.xml`
+   - Add property: `https://www.ceoturbo.com/`
+   - Submit sitemap: `https://www.ceoturbo.com/sitemap.xml`
    - Verify ownership via DNS or HTML file
 
 3. **AI Search (Optional):**

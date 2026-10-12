@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     buildEvent({
       eventName: "Lead",
       eventId: text(body.eventId, 120),
-      url: `https://ceoturbo.com${text(body.page, 120) || "/"}`,
+      url: `https://www.ceoturbo.com${text(body.page, 120) || "/"}`,
       user: { email: lead.email, phone: lead.phone, name: lead.name },
       attribution: attr,
       ip: clientIp(req),

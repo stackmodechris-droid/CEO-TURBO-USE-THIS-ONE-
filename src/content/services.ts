@@ -68,7 +68,7 @@ export const SERVICES: Service[] = [
     name: "Website design",
     short: "Websites",
     icon: "layout",
-    metaTitle: "Website Design That Converts — Built for Calls, Bookings & Sales",
+    metaTitle: "Website Design That Converts — Calls, Bookings & Sales",
     metaDescription:
       "Fast, mobile-first websites for local businesses, artists and Shopify stores, with SEO, schema and booking built in. 20 live client sites to see.",
     h1: "Website design built to turn visitors into calls, bookings and sales",
@@ -176,7 +176,7 @@ export const SERVICES: Service[] = [
     name: "TikTok ads",
     short: "TikTok ads",
     icon: "tiktok",
-    metaTitle: "TikTok Ads Setup & Management — Spark Ads for Brands & Artists",
+    metaTitle: "TikTok Ads Setup & Management — Spark Ads",
     metaDescription:
       "TikTok ads for Shopify stores, artists and consumer brands: pixel setup, Spark Ads, native creative direction and weekly optimization.",
     h1: "TikTok ads that look like TikToks — and sell like ads",

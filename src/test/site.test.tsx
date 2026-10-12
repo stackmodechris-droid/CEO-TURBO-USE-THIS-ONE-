@@ -126,7 +126,7 @@ describe("review card store", () => {
     }
     const xml = merchantFeed();
     expect(xml).toContain('xmlns:g="http://base.google.com/ns/1.0"');
-    expect(xml).toContain(`<g:link>https://ceoturbo.com${packPath("5")}</g:link>`);
+    expect(xml).toContain(`<g:link>https://www.ceoturbo.com${packPath("5")}</g:link>`);
     expect(xml).toContain("<g:price>39.99 USD</g:price>");
     expect(xml).not.toMatch(/&(?!amp;|lt;|gt;|quot;)/);
   });
@@ -137,7 +137,7 @@ describe("review card store", () => {
     expect(p.hasVariant).toHaveLength(REVIEW_CARD.packs.length);
     for (const v of p.hasVariant) {
       expect(Number(v.offers.price)).toBeGreaterThan(0);
-      expect(v.offers.url).toMatch(/^https:\/\/ceoturbo\.com\/google-review-cards\?pack=\d$/);
+      expect(v.offers.url).toMatch(/^https:\/\/www\.ceoturbo\.com\/google-review-cards\?pack=\d$/);
       expect(existsSync(pub(new URL(v.image).pathname))).toBe(true);
     }
   });

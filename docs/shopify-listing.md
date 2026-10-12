@@ -32,7 +32,7 @@ NFC Google Review Card – Tap to Review, Works on iPhone & Android, No App
 
 <h3>Set up in 2 minutes</h3>
 <ol>
-  <li>Find your Google review link with our free finder at <a href="https://ceoturbo.com/google-review-card-setup">ceoturbo.com/google-review-card-setup</a>.</li>
+  <li>Find your Google review link with our free finder at <a href="https://www.ceoturbo.com/google-review-card-setup">ceoturbo.com/google-review-card-setup</a>.</li>
   <li>Open the free NFC Tools app (iPhone or Android) → Write → Add a record → URL → paste your link.</li>
   <li>Tap Write and hold the card to your phone. Done — test it with a second phone.</li>
 </ol>

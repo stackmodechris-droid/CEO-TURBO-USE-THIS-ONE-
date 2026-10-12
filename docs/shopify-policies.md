@@ -10,7 +10,7 @@ Use the editor's HTML (`<>`) view or paste as plain text.
 
 **Damaged or wrong item.** Tell us within 30 days of delivery and we'll replace it or refund you at no cost.
 
-**Contact.** CEO Turbo, 8735 Dunwoody Place #12143, Atlanta, GA 30350. https://ceoturbo.com
+**Contact.** CEO Turbo, 8735 Dunwoody Place #12143, Atlanta, GA 30350. https://www.ceoturbo.com
 
 ## Shipping policy
 We ship Google review cards to addresses in the United States. Orders ship in 1–2 business days from Atlanta, GA and arrive 2–5 business days after they ship (USPS). Standard shipping is free. Express shipping is available at checkout for $15.
@@ -18,9 +18,9 @@ We ship Google review cards to addresses in the United States. Orders ship in 1�
 You'll get tracking by email once your order ships. If your order hasn't arrived within 12 business days of ordering, contact us and we'll track it down, reship it or refund you.
 
 ## Terms of service
-By placing an order you agree to these terms. Full terms for all CEO Turbo services are at https://ceoturbo.com/terms.
+By placing an order you agree to these terms. Full terms for all CEO Turbo services are at https://www.ceoturbo.com/terms.
 
-**Google review cards.** Cards ship unprogrammed; you write your own Google review link to the card using our free setup guide at https://ceoturbo.com/google-review-card-setup. Google controls whether reviews are published, and you are responsible for asking for reviews in line with Google's review policies (no incentives, no review gating, no fake reviews). Google is a trademark of Google LLC; CEO Turbo is not affiliated with or endorsed by Google.
+**Google review cards.** Cards ship unprogrammed; you write your own Google review link to the card using our free setup guide at https://www.ceoturbo.com/google-review-card-setup. Google controls whether reviews are published, and you are responsible for asking for reviews in line with Google's review policies (no incentives, no review gating, no fake reviews). Google is a trademark of Google LLC; CEO Turbo is not affiliated with or endorsed by Google.
 
 **Payments.** Prices are in USD. Payments are processed securely by third-party payment providers at checkout.
 

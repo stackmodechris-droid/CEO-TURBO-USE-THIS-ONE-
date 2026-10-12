@@ -147,7 +147,7 @@ export function ReviewLinkTool() {
               <a href={good} target="_blank" rel="noopener noreferrer" className="choice !py-2">
                 <ExternalLink className="h-3.5 w-3.5" aria-hidden /> Test link
               </a>
-              <a href={`mailto:?subject=${encodeURIComponent("My Google review link")}&body=${encodeURIComponent(`Review link for my NFC card:\n${good}\n\nSetup guide: https://ceoturbo.com/google-review-card-setup`)}`} className="choice !py-2">
+              <a href={`mailto:?subject=${encodeURIComponent("My Google review link")}&body=${encodeURIComponent(`Review link for my NFC card:\n${good}\n\nSetup guide: https://www.ceoturbo.com/google-review-card-setup`)}`} className="choice !py-2">
                 <Mail className="h-3.5 w-3.5" aria-hidden /> Email it to my phone
               </a>
             </div>

@@ -132,7 +132,7 @@ export function ResultCard({ r }: { r: AdResult }) {
         {r.peer && <p className="mt-4 rounded-lg bg-turbo/10 px-3 py-2 text-xs leading-snug text-turbo">Meta benchmark: {r.peer}</p>}
       </div>
       <a href={r.image} target="_blank" rel="noopener" className="mt-auto block border-t border-border bg-white/[0.02]">
-        <img src={r.image.replace(".webp", "-600.webp")} alt={`Meta Ads Manager dashboard: ${r.client} ${r.campaign}, ${r.count} ${r.metric.toLowerCase()} at ${money(r.costPer)} each`} loading="lazy" decoding="async" width={600} height={545} className="h-36 w-full object-cover object-top opacity-80 transition-opacity hover:opacity-100" />
+        <img src={r.image.replace(".webp", "-600.webp")} srcSet={`${r.image.replace(".webp", "-600.webp")} 600w, ${r.image} 1100w`} sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 92vw" alt={`Meta Ads Manager dashboard: ${r.client} ${r.campaign}, ${r.count} ${r.metric.toLowerCase()} at ${money(r.costPer)} each`} loading="lazy" decoding="async" width={600} height={545} className="h-36 w-full object-cover object-top opacity-80 transition-opacity hover:opacity-100" />
         <span className="flex items-center gap-1 px-5 py-2.5 text-xs text-muted-foreground">
           View the dashboard <ArrowUpRight className="h-3 w-3" />
         </span>
@@ -250,11 +250,21 @@ export function FeaturedResult() {
         </div>
         <div className="grid gap-4">
           {[
-            { src: ad.image, alt: `Meta Ads Manager: Appliance King lead form, ${ad.count} leads at ${money(ad.costPer)} each, ${money(ad.spent)} spent`, label: "Meta Ads Manager" },
-            { src: pg.image, alt: "Appliance King Facebook page insights: 59.4K views, 26.6K viewers, 778 link clicks, 186 follows", label: "Facebook page insights" },
+            { src: ad.image, w600: "-600", w2: "", wBig: 978, h: 492, alt: `Meta Ads Manager: Appliance King lead form, ${ad.count} leads at ${money(ad.costPer)} each, ${money(ad.spent)} spent`, label: "Meta Ads Manager" },
+            { src: pg.image, w600: "-600", w2: "-900", wBig: 1290, h: 1380, alt: "Appliance King Facebook page insights: 59.4K views, 26.6K viewers, 778 link clicks, 186 follows", label: "Facebook page insights" },
           ].map((i) => (
             <a key={i.src} href={i.src} target="_blank" rel="noopener" className="block overflow-hidden rounded-xl border border-border bg-white/[0.02]">
-              <img src={i.src.replace(".webp", "-600.webp")} alt={i.alt} loading="lazy" decoding="async" width={600} className="h-auto max-h-80 w-full object-cover object-top" />
+              <img
+                src={i.src.replace(".webp", `${i.w2 || i.w600}.webp`)}
+                srcSet={`${i.src.replace(".webp", `${i.w600}.webp`)} 600w, ${i.w2 ? `${i.src.replace(".webp", `${i.w2}.webp`)} 900w, ` : ""}${i.src} ${i.wBig}w`}
+                sizes="(min-width: 1024px) 480px, 92vw"
+                alt={i.alt}
+                loading="lazy"
+                decoding="async"
+                width={i.wBig}
+                height={i.h}
+                className="h-auto max-h-96 w-full object-cover object-top"
+              />
               <span className="flex items-center gap-1 px-4 py-2 text-xs text-muted-foreground">
                 {i.label} <ArrowUpRight className="h-3 w-3" />
               </span>

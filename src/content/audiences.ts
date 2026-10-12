@@ -29,7 +29,7 @@ export const AUDIENCES: Audience[] = [
     category: "artist",
     nav: "Artists",
     plural: "artists",
-    metaTitle: "Music Artist Marketing — More Listeners, Shows & Label Attention",
+    metaTitle: "Music Artist Marketing — Listeners, Shows & Labels",
     metaDescription:
       "Artist websites, social cleanup, ads and SEO that get you more listeners, booked shows, features, label attention and merch sales. See our artist sites.",
     eyebrow: "For artists & producers",

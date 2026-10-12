@@ -144,7 +144,7 @@ export default function Book() {
 }
 
 export function Booked() {
-  // Cal.com → event → Advanced → "Redirect on booking" to https://ceoturbo.com/booked with
+  // Cal.com → event → Advanced → "Redirect on booking" to https://www.ceoturbo.com/booked with
   // "Forward parameters" on, so the booking uid (dedup with the server-side event) and email arrive here.
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);

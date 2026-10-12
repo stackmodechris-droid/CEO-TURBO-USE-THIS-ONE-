@@ -43,7 +43,7 @@ Add a client, service or guide to its content file and the page, sitemap entry, 
 2. **Review card checkout:** create one Stripe Payment Link per pack (collect shipping address, add a "Business name" custom field) and paste them into `REVIEW_CARD.packs[].checkoutUrl` in `src/config/site.ts`. Until then, Buy opens an order-request form that sends the order to your lead sheet.
 3. **Confirm with your supplier** that `REVIEW_CARD.shipping` times and the QR code on the cards are right (the FAQ and setup guide assume you program the NFC chip yourself and tell buyers how to check the QR).
 4. **Deploy** to Vercel (`vercel.json`: clean URLs, redirects for old URLs incl. `/digital-business-card` → `/google-review-cards`, function time limits, caching, security headers).
-5. Submit `https://ceoturbo.com/sitemap.xml` in Google Search Console and Bing Webmaster Tools, then run `npm run indexnow`.
+5. Submit `https://www.ceoturbo.com/sitemap.xml` in Google Search Console and Bing Webmaster Tools, then run `npm run indexnow`.
 6. Optional tracking: add GA4 and/or Meta Pixel in a file loaded with `<script src="/tracking.js" defer>` (the CSP blocks inline scripts). Events already fire: `audit_start`, `audit_lead` (Meta `Lead`), `audit_complete`, `booking_open` (Meta `Schedule`), `card_checkout` (`InitiateCheckout`), `order_request` (`Lead`). Add a cookie banner for EU/UK visitors if you do.
 
 `_legacy/` holds the previous Lovable components, pages and assets for reference. It is not part of the build.

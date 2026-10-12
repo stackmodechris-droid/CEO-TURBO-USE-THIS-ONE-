@@ -2,7 +2,7 @@
 // 1) Sends Meta a server-side "Schedule" (de-duplicated with the browser event via book_<uid>),
 //    so booked calls count even when the Pixel is blocked by an ad blocker or iOS.
 // 2) Adds the booking to the leads Google Sheet.
-// Setup: Cal.com → Settings → Developer → Webhooks → New: URL https://ceoturbo.com/api/cal-webhook,
+// Setup: Cal.com → Settings → Developer → Webhooks → New: URL https://www.ceoturbo.com/api/cal-webhook,
 // trigger "Booking Created", secret = CAL_WEBHOOK_SECRET (same value in Vercel).
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { send } from "./_lib/http.js";
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
         eventName: "Schedule",
         eventId: b.uid ? `book_${b.uid}` : undefined,
         eventTime: body.createdAt,
-        url: `https://ceoturbo.com${b.page || "/brand-boost"}`,
+        url: `https://www.ceoturbo.com${b.page || "/brand-boost"}`,
         user: { email: b.email, phone: b.phone, name: b.name },
         attribution: b.attribution,
         customData: { content_name: b.title || "Brand Boost call", lead_source: b.source || "cal.com" },

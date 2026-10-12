@@ -3,7 +3,7 @@
 
 export const SITE = {
   name: "CEO Turbo",
-  url: "https://ceoturbo.com",
+  url: "https://www.ceoturbo.com",
   tagline: "More customers, more reviews, more listeners.",
   description:
     "CEO Turbo builds websites, ads, Google Business Profiles and AI-search visibility for artists, local service businesses and Shopify stores — plus NFC Google review cards that make leaving a review a one-tap job.",

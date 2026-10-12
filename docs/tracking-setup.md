@@ -34,7 +34,7 @@ The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PI
 4. **Campaigns:** agency ads optimize for **Schedule** (use **Lead** while you're under ~50 bookings a week). Card ads optimize for **Purchase**.
 
 ## 3. Cal.com (event type `ceoturbo-brandboost`)
-1. **Event → Advanced → Redirect on booking:** `https://ceoturbo.com/booked`, with **Forward parameters** turned **on**.
+1. **Event → Advanced → Redirect on booking:** `https://www.ceoturbo.com/booked`, with **Forward parameters** turned **on**.
 2. **Settings → Developer → Webhooks → New:**
    - URL: `https://www.ceoturbo.com/api/cal-webhook` (use **www**, the bare domain redirects)
    - Trigger: **Booking Created**
@@ -59,9 +59,9 @@ The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PI
 5. Do the listing and store settings in `shopify-listing.md`. The site's Buy button goes live as soon as the **Pack** variants exist.
 
 ## 6. Google Merchant Center + Microsoft Merchant Center (free listings + Shopping ads)
-1. **Google Merchant Center** (merchants.google.com) → Business info: website `https://ceoturbo.com` → verify and claim (use the Search Console method).
+1. **Google Merchant Center** (merchants.google.com) → Business info: website `https://www.ceoturbo.com` → verify and claim (use the Search Console method).
 2. **Shipping:** US, free, 1–2 day handling, 2–5 day transit. **Returns:** 30 days. **Add a support email** (also set `SITE.email` in `src/config/site.ts`).
-3. **Products → Add products from a file → Scheduled fetch:** `https://ceoturbo.com/feeds/products.xml`, daily.
+3. **Products → Add products from a file → Scheduled fetch:** `https://www.ceoturbo.com/feeds/products.xml`, daily.
 4. Turn on **Free listings** and link Google Ads for Shopping/PMax.
 5. **Microsoft Merchant Center** (Microsoft Ads → Tools → Merchant Center): create a store for `ceoturbo.com` → **Catalog → Scheduled file download** with the same feed URL. Or import directly from Google Merchant Center.
 6. Watch for disapprovals in the first 72 hours. Google sometimes reviews products that use its logo. If that happens, request a review and point to the "not affiliated with Google" line on the product page.

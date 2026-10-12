@@ -1,6 +1,6 @@
 // Pushes every URL in the built sitemap to IndexNow (Bing, Yandex, Seznam, Naver…).
 // Run after each deploy:  npm run build && (deploy) && npm run indexnow
-// The key file public/<KEY>.txt must be live at https://ceoturbo.com/<KEY>.txt first.
+// The key file public/<KEY>.txt must be live at https://www.ceoturbo.com/<KEY>.txt first.
 import { readFile } from "node:fs/promises";
 
 const KEY = "e46cbbfd6a1fe7d283a53bbc1282109d";
