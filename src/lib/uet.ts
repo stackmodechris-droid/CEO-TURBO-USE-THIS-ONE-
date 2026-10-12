@@ -1,8 +1,9 @@
 // Microsoft Advertising UET tag (Bing / Microsoft Ads conversions). Loaded from code (not GTM custom
-// HTML) so the CSP can keep blocking inline scripts. Set VITE_UET_TAG_ID in Vercel
-// (Microsoft Ads → Tools → UET tag → Tag ID) and redeploy; without it this is a no-op.
+// HTML) so the CSP can keep blocking inline scripts. The tag id is built in; VITE_UET_TAG_ID
+// overrides it. No cookie banner (US audience), so consent is granted up front.
 type Uetq = unknown[] & { push: (...a: unknown[]) => void };
-const TAG_ID = import.meta.env.VITE_UET_TAG_ID as string | undefined;
+export const DEFAULT_UET_TAG_ID = "187280408";
+const TAG_ID = (import.meta.env.VITE_UET_TAG_ID as string | undefined) || DEFAULT_UET_TAG_ID;
 let started = false;
 
 export function startUet() {
@@ -10,9 +11,10 @@ export function startUet() {
   started = true;
   const w = window as unknown as { uetq?: Uetq; UET?: new (o: object) => Uetq };
   w.uetq = w.uetq || ([] as unknown as Uetq);
+  w.uetq.push("consent", "default", { ad_storage: "granted" });
   const s = document.createElement("script");
   s.async = true;
-  s.src = "https://bat.bing.com/bat.js";
+  s.src = `https://bat.bing.net/bat.js?ti=${encodeURIComponent(TAG_ID)}`;
   s.onload = () => {
     if (!w.UET) return;
     const queued = w.uetq;

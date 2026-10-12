@@ -9,7 +9,7 @@
 const GA4_ID = "G-XDWPSVBW53"; // GA4 → Admin → Data streams → Measurement ID
 const ADS_ID = "AW-XXXXXXXXXX"; // Google Ads → Goals → Conversions → Purchase → Tag setup → "AW-…"
 const ADS_PURCHASE_LABEL = "XXXXXXXXXXXXXXXXXXX"; // the part after the slash in send_to "AW-…/LABEL"
-const UET_ID = "XXXXXXXXX"; // Microsoft Ads → Tools → UET tag → Tag ID
+const UET_ID = "187280408"; // Microsoft Ads → Tools → UET tag → Tag ID
 
 // --- Google tag ---------------------------------------------------------------------------
 const gs = document.createElement("script");
@@ -28,7 +28,7 @@ gtag("config", ADS_ID, { allow_enhanced_conversions: true });
 window.uetq = window.uetq || [];
 const us = document.createElement("script");
 us.async = true;
-us.src = "https://bat.bing.com/bat.js";
+us.src = `https://bat.bing.net/bat.js?ti=${UET_ID}`;
 us.onload = () => {
   const o = { ti: UET_ID, enableAutoSpaTracking: false, q: window.uetq };
   window.uetq = new window.UET(o);

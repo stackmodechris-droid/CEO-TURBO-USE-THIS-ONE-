@@ -31,14 +31,13 @@ Every lead and booking also lands in your **Google Sheet** with its ad click ids
 | `META_CAPI_TOKEN` | Events Manager → pixel **3232222473609236** → Settings → Conversions API → *Generate access token* | Server-side Lead + Schedule (counts ad-blocked/iOS users) |
 | `CAL_WEBHOOK_SECRET` | any long random string; use the same one in step 3 | Booked calls → Meta CAPI + Sheet |
 | `LEADS_WEBHOOK_URL`, `LEADS_WEBHOOK_SECRET` | `leads-google-sheet.md` | Leads in Google Sheets |
-| `VITE_UET_TAG_ID` | Microsoft Ads → Tools → UET tag → create → Tag ID | Microsoft Ads conversions |
 | `SHOPIFY_WEBHOOK_SECRET` | Shopify → Settings → Notifications → Webhooks (signing secret) | Paid card orders → Google Sheet (`leads-google-sheet.md`) |
 | `META_TEST_EVENT_CODE` *(temporary)* | Events Manager → Test events | See server events live while testing; delete it after |
 | `VITE_TIKTOK_PIXEL_ID` *(when you start TikTok ads)* | TikTok Ads Manager → Tools → Events → Web events → your pixel → Pixel ID | TikTok Pixel on every page |
 | `TIKTOK_ACCESS_TOKEN` *(when you start TikTok ads)* | Same pixel → Settings → Events API → Generate access token | Server-side Lead + Schedule (counts ad-blocked/iOS users) |
 | `TIKTOK_TEST_EVENT_CODE` *(temporary)* | TikTok Events Manager → Test events | See server events live while testing; delete after |
 
-The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PIXEL_ID`.
+The Meta Pixel id, the Microsoft UET tag id (**187280408**) and the Microsoft Clarity project id (**ywmvopjye1**) are built into the code, so you don't need to set `VITE_META_PIXEL_ID`, `VITE_UET_TAG_ID` or `VITE_CLARITY_ID` (set them only to override).
 
 ## 2. Meta Events Manager
 1. **Settings → Domains:** verify `ceoturbo.com` (Business Settings → Brand safety → Domains → DNS TXT in Vercel).

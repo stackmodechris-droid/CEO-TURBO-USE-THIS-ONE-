@@ -11,6 +11,8 @@ import { GUIDES } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
 import { SERVICES } from "@/content/services";
 import { CSP } from "@/config/headers";
+import { DEFAULT_UET_TAG_ID } from "@/lib/uet";
+import { DEFAULT_CLARITY_ID } from "@/lib/clarity";
 import { BOOKING, REVIEW_CARD, SITE, packSavings, packPath } from "@/config/site";
 import { merchantFeed, feedItems } from "@/seo/feed";
 import { reviewCardProduct, organization, founder } from "@/seo/schema";
@@ -271,6 +273,18 @@ describe("Microsoft Clarity prep", () => {
     const csp = JSON.parse(readFileSync(path.resolve(__dirname, "../../vercel.json"), "utf8")).headers[0].headers.find((h: { key: string }) => h.key === "Content-Security-Policy").value as string;
     for (const dir of ["script-src", "connect-src", "img-src"]) expect(csp.split(";").find((d) => d.trim().startsWith(dir))).toContain("clarity.ms");
     expect(readFileSync(path.resolve(__dirname, "../pages/Legal.tsx"), "utf8")).toContain("Microsoft Clarity");
+  });
+
+  it("lets the Clarity and UET loaders through the CSP", () => {
+    const csp = CSP;
+    const scriptSrc = csp.split(";").find((d) => d.trim().startsWith("script-src"))!;
+    for (const host of ["https://*.clarity.ms", "https://bat.bing.net", "https://bat.bing.com"]) expect(scriptSrc).toContain(host);
+    expect(csp.split(";").find((d) => d.trim().startsWith("connect-src"))).toContain("https://bat.bing.net");
+  });
+
+  it("has the UET tag and Clarity project ids built in", () => {
+    expect(DEFAULT_UET_TAG_ID).toBe("187280408");
+    expect(DEFAULT_CLARITY_ID).toBe("ywmvopjye1");
   });
 
   it("masks every personal-data input on the lead forms", () => {
