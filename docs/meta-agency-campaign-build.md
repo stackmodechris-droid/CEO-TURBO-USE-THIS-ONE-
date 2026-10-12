@@ -1,11 +1,11 @@
 # Meta ads — agency campaign build sheet (copy these settings exactly)
 
 Pixel: `3232222473609236` (PageView, ViewContent, AddToCart, InitiateCheckout, Lead, Contact, Schedule, Purchase all fire and are de-duplicated with the server events).
-Goal: booked calls from business owners. Everything below uses `/plan` as the landing page (live). Review-card ads wait until `/get-more-reviews` is confirmed live after the deploy.
+Goal: booked calls from business owners. Everything below uses `/how-to-get-more-customers` as the landing page (live). Review-card ads wait until `/get-more-reviews` is confirmed live after the deploy.
 
 ## Before you build (5 minutes)
 1. Business Settings → Brand Safety → **Domains** → add `ceoturbo.com` → choose the **meta-tag** method. Send me the code and I add it to the site. (Or use the DNS method.)
-2. Events Manager → Data sources → your pixel → **Test events** → open `https://www.ceoturbo.com/plan`, finish the quiz with a test email. You should see **Lead** (Browser + Server, "deduplicated").
+2. Events Manager → Data sources → your pixel → **Test events** → open `https://www.ceoturbo.com/how-to-get-more-customers`, finish the quiz with a test email. You should see **Lead** (Browser + Server, "deduplicated").
 3. Make sure the ad account has a payment method and your Facebook page + Instagram account are connected.
 
 ## Campaign
@@ -32,11 +32,11 @@ Goal: booked calls from business owners. Everything below uses `/plan` as the la
 Same settings, but: name `US \| 18-35 \| Music`, location United States, interests hip-hop, trap music, music production, FL Studio, Spotify for Artists. Destination: `https://www.ceoturbo.com/artist`.
 
 ## Ads (create 3 in ad set A)
-For every ad: format **video 9:16**, face on the top half, website on the bottom half, captions burned in. **Call to action: Learn More.** Primary text from `docs/plan-ad-script.md` ("Meta ad copy"). Headline: `Get your free 5-step growth plan`. Description: `Free 30-min call with the founder`.
+For every ad: format **video 9:16**, face on the top half, website on the bottom half, captions burned in. **Call to action: Learn More.** Primary text from `docs/how-to-get-more-customers-ad-script.md` ("Meta ad copy"). Headline: `How to get more customers (free)`. Description: `Free 30-min call with the founder`.
 
 | Ad | Hook (first 3 seconds) | Landing URL |
 |---|---|---|
-| 1 | "Your competitors aren't better than you. They're just easier to find." | `https://www.ceoturbo.com/plan?utm_source=meta&utm_medium=paid_social&utm_campaign=agency_la&utm_content=hook_fear` |
+| 1 | "Your competitors aren't better than you. They're just easier to find." | `https://www.ceoturbo.com/how-to-get-more-customers?utm_source=meta&utm_medium=paid_social&utm_campaign=agency_la&utm_content=hook_fear` |
 | 2 | "I checked an LA business's Google profile. Here's what I found." (screen-record the free check) | `...&utm_content=hook_audit` |
 | 3 | "This is my real Stripe. 152 payments this year. Here's what I do." | `...&utm_content=hook_proof` |
 

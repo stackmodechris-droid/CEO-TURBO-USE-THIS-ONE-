@@ -18,7 +18,7 @@ const ReviewCardSetup = lazy(() => import("./pages/ReviewCardSetup"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Book = lazy(() => import("./pages/Book"));
-const Plan = lazy(() => import("./pages/Plan"));
+const HowToGetMoreCustomers = lazy(() => import("./pages/HowToGetMoreCustomers"));
 const GetMoreReviews = lazy(() => import("./pages/GetMoreReviews"));
 const Booked = named(() => import("./pages/Book"), "Booked");
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -45,7 +45,7 @@ export default function App() {
           <Route path="/free-audit" element={<FreeAudit />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/book" element={<Book />} />
-          <Route path="/plan" element={<Plan />} />
+          <Route path="/how-to-get-more-customers" element={<HowToGetMoreCustomers />} />
           <Route path="/get-more-reviews" element={<GetMoreReviews />} />
           <Route path="/booked" element={<Booked />} />
           <Route path="/google-review-cards" element={<ReviewCards />} />

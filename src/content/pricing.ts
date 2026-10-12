@@ -2,9 +2,10 @@
 // box, the FAQs, JSON-LD offers (Google + AI assistants) and llms.txt all read from here, so a price
 // is never different in two places. Change a number here and rebuild.
 //
-// Model: pay once to set something up properly, then a monthly plan only for the things that need
-// ongoing work to keep paying off (website care, SEO/AEO/GEO, ads, email). Everything is an add-on —
-// clients pick only what they need. Ad spend is always paid by the client straight to the platform.
+// Model: one setup PACKAGE (pay once, built right), then ONE monthly plan for the work that has to keep
+// happening (security, updates, SEO/AEO/GEO, tracking health, ads, email). The à-la-carte setups below are
+// for people who only need one thing — and they anchor how much a package saves. Ad spend is always paid by
+// the client straight to the platform.
 
 export type PriceItem = {
   id: string;
@@ -19,15 +20,78 @@ export type PriceItem = {
   summary: string;
   includes: string[];
   popular?: boolean;
+  /** Packages only: the à-la-carte items it replaces, so the "you save" number can never drift. */
+  replaces?: string[];
 };
 
 export const PRICING_TERMS = {
   contract: "No long-term contracts. Monthly plans are month to month — cancel with 30 days' notice.",
   payment: "Setup fees are paid 50% to start and 50% at launch. Monthly plans are billed on the same day each month.",
-  adSpend: "Ad spend is paid by you, directly to Meta, Google, Microsoft or TikTok, from your own ad account — we never mark it up.",
+  adSpend: "Ad spend is paid by you, directly to Google, Microsoft, Meta, TikTok, X, Reddit or LinkedIn, from your own ad account — we never mark it up.",
   ownership: "You own your website, domain, ad accounts, pixel data, content and email list. If you leave, it all stays yours.",
   results: "SEO, AEO and GEO compound: most clients see movement in 30–90 days and the biggest gains after 3–6 months — and every month builds on the last.",
 } as const;
+
+export const PACKAGES: PriceItem[] = [
+  {
+    id: "pkg-start",
+    name: "Turbo Start",
+    price: 697,
+    billing: "once",
+    service: "google-business-profile",
+    summary: "Keep the site you have. We fix everything around it so Google, Bing and AI can find you and your ads can be measured.",
+    includes: [
+      "SEO, AEO & GEO tune-up of your current site or link-in-bio",
+      "Google + Bing indexing: Search Console, Bing Webmaster Tools, sitemap, IndexNow",
+      "AI crawler access + llms.txt so ChatGPT, Claude & Perplexity can read you",
+      "Google Business Profile setup & optimization",
+      "Up to 3 social profiles optimized",
+      "GA4, Google Tag Manager, Meta Pixel + Conversions API",
+      "Your own booking calendar",
+      "1 ad campaign launched on your best-fit platform",
+    ],
+    replaces: ["visibility-foundation", "gbp-setup", "social-setup", "tracking-setup"],
+  },
+  {
+    id: "pkg-launch",
+    name: "Turbo Launch — the whole package",
+    price: 1697,
+    billing: "once",
+    service: "website-design",
+    summary: "A new website built for Google, Bing and AI answers, every profile set up, every tag tracking, and ads switched on. Done for you.",
+    includes: [
+      "New conversion website, up to 7 pages (business or artist)",
+      "Everything in Turbo Start",
+      "Up to 5 social profiles optimized",
+      "Full tracking: GA4, GTM, Meta CAPI, Microsoft UET, TikTok & Reddit pixels",
+      "Email platform + 3 automations (welcome, review request, win-back)",
+      "Google + Microsoft Merchant Center for Shopify / online stores",
+      "Ad campaigns on your 2 best-fit platforms (Google, Microsoft, Meta, TikTok, X, Reddit, LinkedIn or Spotify)",
+      "2 NFC Google review cards",
+      "First month of Turbo Care free",
+    ],
+    popular: true,
+    replaces: ["site-launch", "visibility-foundation", "gbp-setup", "social-setup", "tracking-setup", "email-setup"],
+  },
+  {
+    id: "pkg-dominate",
+    name: "Turbo Dominate",
+    price: 3497,
+    billing: "once",
+    service: "website-design",
+    summary: "For businesses and brands ready to own their market: more pages, more keywords, more platforms.",
+    includes: [
+      "Up to 15 pages with a page for every service and city — or a full Shopify store (up to 25 products)",
+      "Everything in Turbo Launch",
+      "Ad campaigns on up to 4 platforms",
+      "Google Shopping / Performance Max + Microsoft Shopping for stores",
+      "Competitor research and a keyword map",
+      "5 NFC Google review cards",
+      "First 2 months of Turbo Care free",
+    ],
+    replaces: ["site-shopify", "visibility-foundation", "gbp-setup", "social-setup", "tracking-setup", "email-setup"],
+  },
+];
 
 export const SETUP: PriceItem[] = [
   {
@@ -55,7 +119,7 @@ export const SETUP: PriceItem[] = [
     price: 497,
     billing: "once",
     service: "seo-aeo-geo",
-    summary: "The technical groundwork that lets Google rank you and ChatGPT, Gemini and Perplexity name you.",
+    summary: "The technical groundwork that lets Google and Bing rank you and ChatGPT, Claude, Gemini and Perplexity name you.",
     includes: ["Technical SEO fixes: speed, indexing, titles, headings", "Schema markup (LocalBusiness, Service, FAQ, Product)", "AI crawler access and an llms.txt file", "Listings and citations cleaned up so your name, address and phone match", "Google Search Console + Bing Webmaster Tools set up"],
   },
   {
@@ -65,7 +129,7 @@ export const SETUP: PriceItem[] = [
     billing: "once",
     service: "meta-ads",
     summary: "Ad accounts and conversion tracking set up right, so every dollar is measured and the platforms learn who buys.",
-    includes: ["Meta Pixel + Conversions API", "Google Ads, GA4 and Tag Manager conversions", "Microsoft (Bing) UET and TikTok Pixel", "Lead, booking and purchase events with de-duplication", "Google Merchant Center for product stores"],
+    includes: ["Meta Pixel + Conversions API", "Google Ads, GA4 and Tag Manager conversions", "Microsoft (Bing) UET, TikTok and Reddit pixels", "Lead, booking and purchase events with de-duplication", "Google Merchant Center for product stores"],
   },
   {
     id: "email-setup",
@@ -101,7 +165,7 @@ export const WEBSITES: PriceItem[] = [
   {
     id: "site-growth",
     name: "Growth website",
-    price: 2997,
+    price: 2497,
     billing: "once",
     service: "website-design",
     summary: "For businesses ready to dominate their area: more pages, more keywords, more leads.",
@@ -110,7 +174,7 @@ export const WEBSITES: PriceItem[] = [
   {
     id: "site-shopify",
     name: "Shopify store",
-    price: 3497,
+    price: 2997,
     billing: "once",
     service: "website-design",
     summary: "A Shopify store built to convert, with the tracking ads need to scale.",
@@ -120,97 +184,81 @@ export const WEBSITES: PriceItem[] = [
 
 export const MONTHLY: PriceItem[] = [
   {
-    id: "website-care",
-    name: "Website Care",
-    price: 97,
+    id: "care",
+    name: "Turbo Care",
+    price: 197,
     billing: "month",
     service: "website-design",
-    summary: "Your site stays fast, secure and up to date — without you thinking about it.",
-    includes: ["Hosting management and SSL", "Security, software and plugin updates", "Daily backups and uptime monitoring", "Speed and Core Web Vitals checks", "Up to 1 hour of edits each month"],
+    summary: "Your site stays fast, secure, up to date and tracking correctly — and keeps up with the latest SEO and AI search changes.",
+    includes: ["Hosting management and SSL", "Security and software updates, daily backups, uptime monitoring", "Latest SEO, AEO & GEO changes applied (schema, AI crawlers, indexing)", "Tracking health checks: tags, pixels and Conversions API", "2 Google Business Profile posts a month", "1 email campaign to your list a month", "Monthly report + 1 hour of edits"],
   },
   {
-    id: "seo-local",
-    name: "Local Visibility (SEO, AEO & GEO)",
-    price: 497,
-    billing: "month",
-    service: "seo-aeo-geo",
-    summary: "Climb Google and the map pack, and get named in AI answers — every month.",
-    includes: ["1 location", "Weekly Google Business Profile posts", "2 answer-ready articles or service pages a month", "Citation building and review-reply help", "Rank + AI answer tracking with a monthly report"],
-    popular: true,
-  },
-  {
-    id: "seo-growth",
-    name: "Growth Visibility (SEO, AEO & GEO)",
-    price: 997,
-    billing: "month",
-    service: "seo-aeo-geo",
-    summary: "For competitive markets, multiple locations or national reach.",
-    includes: ["Up to 3 locations", "4 articles or landing pages a month", "Link building and digital PR", "Competitor tracking", "Everything in Local Visibility"],
-  },
-  {
-    id: "ads-management",
-    name: "Ads management — first platform",
+    id: "growth",
+    name: "Turbo Growth",
     price: 597,
     billing: "month",
     service: "meta-ads",
-    summary: "Meta, Google, Microsoft, TikTok or X ads that bring leads and sales, managed weekly.",
-    includes: ["Campaign strategy, targeting and budgets", "4 new ad creatives a month", "Landing page and lead follow-up advice", "Weekly optimization", "Monthly report in plain English"],
+    summary: "Care plus ads managed every week and fresh content for Google and AI answers. The plan most clients pick.",
+    includes: ["Everything in Turbo Care", "Ads managed weekly on 1 platform", "4 new ad creatives a month", "2 answer-ready articles or service pages a month", "2 email campaigns a month", "Weekly Google Business Profile posts", "Monthly plain-English results call"],
     popular: true,
+  },
+  {
+    id: "scale",
+    name: "Turbo Scale",
+    price: 1197,
+    billing: "month",
+    service: "seo-aeo-geo",
+    summary: "For competitive markets, multiple locations, stores and artists pushing releases on several platforms.",
+    includes: ["Everything in Turbo Growth", "Ads managed on up to 3 platforms", "4 articles or landing pages a month", "Link building and digital PR", "Up to 3 locations", "Competitor tracking"],
   },
   {
     id: "ads-additional",
     name: "Each additional ad platform",
-    price: 297,
+    price: 197,
     billing: "month",
     service: "google-ads",
-    summary: "Add Google, Microsoft, TikTok or X on top of your first platform.",
+    summary: "Add Google, Microsoft, Meta, TikTok, X, Reddit, LinkedIn or Spotify on top of your plan.",
     includes: ["Same weekly management", "Shared creative and reporting", "Budget moved to whatever performs best"],
-  },
-  {
-    id: "email-monthly",
-    name: "Email & SMS marketing",
-    price: 397,
-    billing: "month",
-    service: "email-marketing",
-    summary: "Regular campaigns that turn past customers and fans into repeat sales.",
-    includes: ["2 campaigns a month, written and designed", "Flow tuning and A/B tests", "List growth and clean-up", "Monthly report"],
   },
 ];
 
-export const ALL_PRICES = [...SETUP, ...WEBSITES, ...MONTHLY];
+export const ALL_PRICES = [...PACKAGES, ...SETUP, ...WEBSITES, ...MONTHLY];
 
 export const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
-/** Formatted price of one item by id — used in FAQ text so copy can never drift from the price list. */
-export const price = (id: string) => {
-  const item = [...SETUP, ...WEBSITES, ...MONTHLY].find((p) => p.id === id);
+const byId = (id: string) => {
+  const item = ALL_PRICES.find((p) => p.id === id);
   if (!item) throw new Error(`Unknown price id ${id}`);
-  return usd(item.price);
+  return item;
 };
+/** Formatted price of one item by id — used in FAQ text so copy can never drift from the price list. */
+export const price = (id: string) => usd(byId(id).price);
 export const priceLabel = (p: PriceItem) => `${p.from ? "from " : ""}${usd(p.price)}${p.billing === "month" ? "/mo" : " one-time"}`;
 export const perDay = (monthly: number) => `about $${Math.round((monthly * 12) / 365)} a day`;
+/** What a package's pieces would cost one by one. */
+export const alaCarte = (p: PriceItem) => (p.replaces ?? []).reduce((n, id) => n + byId(id).price, 0);
 
-/** What each service page shows in its price box: setup first, then the monthly plan(s). */
+/** What each service page shows in its price box: the à-la-carte setup, the package that covers it, the monthly plan. */
 export function pricesFor(service: string): PriceItem[] {
   const map: Record<string, string[]> = {
-    "seo-aeo-geo": ["visibility-foundation", "seo-local", "seo-growth"],
-    "website-design": ["site-artist", "site-launch", "site-growth", "site-shopify", "website-care"],
-    "meta-ads": ["tracking-setup", "ads-management"],
-    "google-ads": ["tracking-setup", "ads-management", "ads-additional"],
-    "tiktok-ads": ["tracking-setup", "ads-management", "ads-additional"],
-    "x-ads": ["tracking-setup", "ads-management", "ads-additional"],
-    "google-business-profile": ["gbp-setup"],
-    "social-media-optimization": ["social-setup"],
-    "email-marketing": ["email-setup", "email-monthly"],
+    "seo-aeo-geo": ["visibility-foundation", "pkg-start", "pkg-launch", "care", "growth"],
+    "website-design": ["site-artist", "site-launch", "site-growth", "site-shopify", "pkg-launch", "care"],
+    "meta-ads": ["tracking-setup", "pkg-launch", "growth", "ads-additional"],
+    "google-ads": ["tracking-setup", "pkg-launch", "growth", "ads-additional"],
+    "tiktok-ads": ["tracking-setup", "pkg-launch", "growth", "ads-additional"],
+    "x-ads": ["tracking-setup", "pkg-launch", "growth", "ads-additional"],
+    "google-business-profile": ["gbp-setup", "pkg-start", "care"],
+    "social-media-optimization": ["social-setup", "pkg-start"],
+    "email-marketing": ["email-setup", "pkg-launch", "care", "growth"],
   };
   return (map[service] ?? []).map((id) => ALL_PRICES.find((p) => p.id === id)!).filter(Boolean);
 }
 
-/** Example plans: not discounted bundles, just common combinations so budgets are easy to picture. */
+/** Example plans: a package + a monthly plan, so budgets are easy to picture. */
 export const EXAMPLE_PLANS: { name: string; who: string; items: string[] }[] = [
-  { name: "Get found locally", who: "A local service business starting from scratch", items: ["gbp-setup", "site-launch", "website-care", "seo-local"] },
-  { name: "Leads on demand", who: "A business that wants calls this month", items: ["gbp-setup", "tracking-setup", "ads-management", "website-care"] },
-  { name: "Artist growth", who: "An artist building a fanbase around releases", items: ["site-artist", "social-setup", "tracking-setup", "ads-management"] },
-  { name: "Store that scales", who: "A Shopify brand ready to grow sales", items: ["site-shopify", "tracking-setup", "ads-management", "email-monthly"] },
+  { name: "Fix what I have", who: "You already have a site — you just aren't getting found or tracked", items: ["pkg-start", "care"] },
+  { name: "Calls this month", who: "A local service business that wants the phone ringing", items: ["pkg-launch", "growth"] },
+  { name: "Artist release push", who: "An artist growing fans and streams around releases", items: ["pkg-launch", "growth", "ads-additional"] },
+  { name: "Store that scales", who: "A Shopify brand ready to grow sales", items: ["pkg-dominate", "growth", "ads-additional"] },
 ];
 
 export function planTotals(ids: string[]) {
@@ -223,12 +271,14 @@ export function planTotals(ids: string[]) {
 }
 
 export const PRICING_FAQS = [
-  { q: "How much does CEO Turbo cost?", a: `Every service is priced on its own, so you only pay for what you need. One-time setups: Google Business Profile ${price("gbp-setup")}, social profiles ${price("social-setup")}, SEO/AEO/GEO foundation ${price("visibility-foundation")}, ads & tracking ${price("tracking-setup")}, email & SMS ${price("email-setup")}. Websites ${price("site-artist")}–${price("site-shopify")}. Monthly plans: Website Care ${price("website-care")}, SEO/AEO/GEO from ${price("seo-local")}, ads management from ${price("ads-management")}, email & SMS ${price("email-monthly")}.` },
-  { q: "Why is there a setup fee and a monthly fee?", a: "Setup is the one-time work of building something properly — a website, a Google profile, tracking. Monthly plans are only for things that need ongoing work to keep paying off: security and software updates, new content for Google and AI answers, ad optimization and email campaigns. If something doesn't need monthly work, we don't charge monthly for it." },
+  { q: "How much does CEO Turbo cost?", a: `Most clients pick one setup package and one monthly plan. Packages: Turbo Start ${price("pkg-start")}, Turbo Launch (the whole package, with a new website) ${price("pkg-launch")}, Turbo Dominate ${price("pkg-dominate")}. Monthly plans: Turbo Care ${price("care")}/mo, Turbo Growth ${price("growth")}/mo (includes ads management), Turbo Scale ${price("scale")}/mo. Need just one thing? Google Business Profile setup is ${price("gbp-setup")} and websites start at ${price("site-artist")}.` },
+  { q: "What's in the whole package?", a: `Turbo Launch (${price("pkg-launch")} one-time) is everything a business or artist needs to get found and get customers: a new website built for SEO, AEO and GEO; Google and Bing indexing so you show up on Google, Microsoft Bing, ChatGPT, Claude and Perplexity; Google Business Profile; up to 5 social profiles; Merchant Center for stores; GA4, Tag Manager, Meta, Microsoft, TikTok and Reddit tracking; an email system; your own booking calendar; ad campaigns on your 2 best-fit platforms; and 2 NFC review cards. Your first month of Turbo Care is free.` },
+  { q: "Why is there a setup fee and a monthly fee?", a: "Setup is the one-time work of building something properly — a website, a Google profile, tracking, ad campaigns. Monthly plans are for things that need constant work to keep paying off: security and software updates, the latest SEO and AI search changes, tag and pixel health, ad optimization and email campaigns." },
   { q: "Is there a contract?", a: PRICING_TERMS.contract },
-  { q: "Is ad spend included in ads management?", a: PRICING_TERMS.adSpend + " Most local businesses start with $10–$20 a day." },
-  { q: "Do I need Website Care if you build my site?", a: `We strongly recommend it. Websites need security patches, software updates, backups and speed checks to stay safe and keep ranking. Website Care covers all of that plus small edits for ${price("website-care")} a month — less than one hour of most developers' time.` },
-  { q: "Is SEO, AEO and GEO worth it for a small business?", a: `If one new customer is worth $300 to you, Local Visibility (${price("seo-local")}/mo) pays for itself with two extra customers a month — and unlike ads, the rankings keep bringing customers after you've earned them. ${PRICING_TERMS.results}` },
+  { q: "Is ad spend included?", a: PRICING_TERMS.adSpend + " Most local businesses start with $10–$20 a day." },
+  { q: "Do I need a monthly plan after setup?", a: `We strongly recommend Turbo Care (${price("care")}/mo). Websites need security patches, software updates, backups and tracking checks to stay safe and keep ranking — and search and AI change every month. Care covers all of that plus an email campaign and Google posts.` },
+  { q: "How do you compare to other agencies?", a: `Most small-business agencies quote thousands for a website alone, then charge separately for SEO, ads management and maintenance. Turbo Launch includes the website, SEO/AEO/GEO, tracking, profiles, email and ad setup for ${price("pkg-launch")} one-time, and Turbo Growth (${price("growth")}/mo) includes ads management, content and care — no contract.` },
+  { q: "Is SEO, AEO and GEO worth it for a small business?", a: `If one new customer is worth $300 to you, Turbo Growth (${price("growth")}/mo) pays for itself with two extra customers a month — and unlike ads, rankings keep bringing customers after you've earned them. ${PRICING_TERMS.results}` },
   { q: "Who owns the website and accounts?", a: PRICING_TERMS.ownership },
-  { q: "Can I start small?", a: "Yes. Many clients start with a Google Business Profile setup or a few review cards, see the results, then add a website, SEO or ads. Book a free Brand Boost call and we'll tell you the one thing to start with." },
+  { q: "Can I start small?", a: `Yes. Turbo Start (${price("pkg-start")}) fixes your Google profile, socials, indexing and tracking without a new website. Or start with a few review cards, see the results, then add more. Book a free Brand Boost call and we'll tell you the one thing to start with.` },
 ];

@@ -11,6 +11,8 @@ import { HOME_FAQS } from "@/content/faqs";
 import { ADS } from "@/content/ads";
 import { AD_TOTALS, money } from "@/content/results";
 import { CLIENTS } from "@/content/clients";
+import { PACKAGES, usd } from "@/content/pricing";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   return (
@@ -59,6 +61,39 @@ export default function Home() {
       <section className="pb-16" aria-label="Featured client result">
         <div className="container-x">
           <FeaturedResult />
+        </div>
+      </section>
+
+      <section className="pb-16" aria-labelledby="tutorial">
+        <div className="container-x">
+          <div className="cta-glow grid items-center gap-8 rounded-3xl p-6 sm:p-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+              <p className="text-sm font-semibold text-ignite">Free tutorial · 8 steps</p>
+              <h2 id="tutorial" className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">
+                How to get more customers in 2026 — <span className="text-turbo-grad">step by step.</span>
+              </h2>
+              <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground">Get found on Google, Bing, ChatGPT and Claude, get reviews, track every lead and run the right ads. Do it yourself, or we do the whole thing for you.</p>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <Link to="/how-to-get-more-customers" className="btn-ignite btn-shine">
+                  Start the free tutorial <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link to="/pricing" className="text-sm font-semibold text-turbo underline-offset-4 hover:underline">
+                  Or see the done-for-you packages
+                </Link>
+              </div>
+            </div>
+            <ul className="grid gap-2.5">
+              {PACKAGES.map((p) => (
+                <li key={p.id} className={cn("flex items-center justify-between gap-4 rounded-2xl px-5 py-4 ring-1", p.popular ? "bg-turbo/[0.08] ring-turbo/50" : "bg-white/[0.03] ring-white/10")}>
+                  <span className="min-w-0">
+                    <span className="block font-semibold">{p.name.split(" — ")[0]}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{p.popular ? "The whole package, new website included" : p.id === "pkg-start" ? "Fix what you have" : "Own your market"}</span>
+                  </span>
+                  <span className="whitespace-nowrap font-display text-2xl font-bold">{usd(p.price)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 

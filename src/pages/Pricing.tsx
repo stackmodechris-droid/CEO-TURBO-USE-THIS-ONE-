@@ -2,14 +2,14 @@ import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 import { Check, Info, Repeat, Wrench } from "lucide-react";
 import { EXAMPLE_PLANS, MONTHLY, PRICING_FAQS, PRICING_TERMS, SETUP, WEBSITES, planTotals, price, usd } from "@/content/pricing";
-import { PriceCard } from "@/components/blocks/PriceBlocks";
+import { PackageGrid, PriceCard } from "@/components/blocks/PriceBlocks";
 import { StripeProof } from "@/components/blocks/Proof";
 import { STRIPE } from "@/content/results";
 import { fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
 import { BookingSection } from "@/components/blocks/Sales";
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
-import { BookButton } from "@/components/cta/Actions";
+import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 function PaybackCalculator() {
   const id = useId();
   const [worth, setWorth] = useState(300);
-  const [planId, setPlanId] = useState("seo-local");
+  const [planId, setPlanId] = useState("growth");
   const plan = MONTHLY.find((p) => p.id === planId)!;
   const customers = Math.max(1, Math.ceil(plan.price / Math.max(worth, 1)));
   const yearly = worth * 12 * Math.max(customers + 2, 4);
@@ -50,7 +50,7 @@ function PaybackCalculator() {
             <div className="mt-2 flex flex-wrap gap-2">
               {MONTHLY.filter((p) => p.id !== "ads-additional").map((p) => (
                 <button key={p.id} type="button" aria-pressed={planId === p.id} onClick={() => setPlanId(p.id)} className={cn("choice !px-3 !py-2 !text-xs", planId === p.id && "choice-on")}>
-                  {p.name.replace(" (SEO, AEO & GEO)", "").replace(" — first platform", "")} · {usd(p.price)}
+                  {p.name} · {usd(p.price)}
                 </button>
               ))}
             </div>
@@ -76,9 +76,9 @@ export default function Pricing() {
         <div className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[900px] -translate-x-1/2 glow-ignite opacity-60" aria-hidden />
         <div className="container-x relative">
           <Breadcrumbs items={[{ name: "Pricing", path: "/pricing" }]} />
-          <SectionHeader as="h1" title={<>CEO Turbo pricing: clear prices, <span className="text-turbo-grad">pick only what you need</span></>} lede="Pay once to set things up properly. Pay monthly only for the work that has to keep happening — security updates, new content for Google and AI answers, ads and email. No contracts, no hidden fees." />
+          <SectionHeader as="h1" title={<>CEO Turbo pricing: <span className="text-turbo-grad">the whole package for {price("pkg-launch")}</span></>} lede="One setup package to get you found on Google, Bing and AI answers, tracked properly and running ads — then one monthly plan to keep it secure, updated and growing. No contracts, no hidden fees, ad spend never marked up." />
           <DirectAnswer label="Pricing at a glance">
-            One-time setups: Google Business Profile {price("gbp-setup")}, social profiles {price("social-setup")}, SEO/AEO/GEO foundation {price("visibility-foundation")}, ads &amp; tracking {price("tracking-setup")}, email &amp; SMS {price("email-setup")}. Websites {price("site-artist")}–{price("site-shopify")}. Monthly: Website Care {price("website-care")}, SEO/AEO/GEO from {price("seo-local")}, ads management from {price("ads-management")}, email &amp; SMS {price("email-monthly")}. Review cards from {fromPriceLabel}.
+            Setup packages: Turbo Start {price("pkg-start")}, Turbo Launch (the whole package, new website included) {price("pkg-launch")}, Turbo Dominate {price("pkg-dominate")}. Monthly plans: Turbo Care {price("care")}, Turbo Growth {price("growth")} (ads managed), Turbo Scale {price("scale")}. Single setups: Google Business Profile {price("gbp-setup")}, social profiles {price("social-setup")}, SEO/AEO/GEO foundation {price("visibility-foundation")}, ads &amp; tracking {price("tracking-setup")}, email &amp; SMS {price("email-setup")}; websites {price("site-artist")}–{price("site-shopify")}. Review cards from {fromPriceLabel}.
           </DirectAnswer>
           <ul className="mt-8 grid gap-3 text-sm sm:grid-cols-3">
             {[
@@ -98,6 +98,34 @@ export default function Pricing() {
         </div>
       </section>
 
+      <section className="section" aria-labelledby="packages">
+        <div className="container-x">
+          <SectionHeader title={<span id="packages">Setup packages — pick one</span>} lede="Everything done for you, priced lower than most agencies charge for a website alone." />
+          <div className="mt-10">
+            <PackageGrid source="Pricing" />
+          </div>
+        </div>
+      </section>
+
+      <section className="section border-t border-border" aria-labelledby="monthly">
+        <div className="container-x">
+          <SectionHeader title={<span id="monthly">Monthly plans — keep it growing</span>} lede="Security, software updates, the latest SEO and AI search changes, tag health, email campaigns — and ads managed weekly on Growth. Month to month, cancel with 30 days' notice." />
+          <ul className="mt-10 grid gap-5 pt-3 md:grid-cols-2 lg:grid-cols-4">
+            {MONTHLY.map((p) => (
+              <PriceCard key={p.id} p={p} />
+            ))}
+          </ul>
+          <p className="mt-6 text-sm text-muted-foreground">{PRICING_TERMS.adSpend}</p>
+          <div className="cta-glow mt-10 flex flex-col items-start gap-4 rounded-3xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div>
+              <p className="text-sm font-semibold text-ignite">Add-on · reviews on autopilot</p>
+              <p className="mt-1 text-xl font-bold">NFC Google review cards from {fromPriceLabel}. Customers tap, your review page opens.</p>
+            </div>
+            <ShopCardsButton className="shrink-0" />
+          </div>
+        </div>
+      </section>
+
       <section className="pt-16" aria-label="Payments to CEO Turbo">
         <div className="container-x">
           <StripeProof compact title="People pay CEO Turbo every week." lede={`Not a mockup — this is our own Stripe account: ${STRIPE.payments} successful payments in the last 12 months, up from ${STRIPE.paymentsBefore} the year before.`} />
@@ -106,7 +134,7 @@ export default function Pricing() {
 
       <section className="section" aria-labelledby="setup">
         <div className="container-x">
-          <SectionHeader title={<span id="setup">One-time setup</span>} lede="Each is an add-on. Do one, or stack the ones you need." />
+          <SectionHeader title={<span id="setup">Just need one thing?</span>} lede="Every piece is available on its own. (Two or more? A package is cheaper.)" />
           <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {SETUP.map((p) => (
               <PriceCard key={p.id} p={p} />
@@ -117,7 +145,7 @@ export default function Pricing() {
 
       <section className="section border-t border-border" aria-labelledby="sites">
         <div className="container-x">
-          <SectionHeader title={<span id="sites">Websites</span>} lede="Fast, mobile-first and built to rank and convert. Add Website Care to keep it secure and up to date." />
+          <SectionHeader title={<span id="sites">Websites</span>} lede="Fast, mobile-first and built to rank and convert. Add Turbo Care to keep it secure and up to date." />
           <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {WEBSITES.map((p) => (
               <PriceCard key={p.id} p={p} />
@@ -126,17 +154,6 @@ export default function Pricing() {
         </div>
       </section>
 
-      <section className="section border-t border-border" aria-labelledby="monthly">
-        <div className="container-x">
-          <SectionHeader title={<span id="monthly">Monthly plans</span>} lede="For the things that need constant work to keep bringing customers. Month to month — cancel with 30 days' notice." />
-          <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {MONTHLY.map((p) => (
-              <PriceCard key={p.id} p={p} />
-            ))}
-          </ul>
-          <p className="mt-6 text-sm text-muted-foreground">{PRICING_TERMS.adSpend}</p>
-        </div>
-      </section>
 
       <section className="section border-t border-border">
         <div className="container-x">
@@ -157,7 +174,7 @@ export default function Pricing() {
                   <ul className="mt-4 space-y-2 text-sm">
                     {t.items.map((i) => (
                       <li key={i.id} className="flex justify-between gap-3">
-                        <span>{i.name.replace(" (SEO, AEO & GEO)", "")}</span>
+                        <span>{i.name.replace(" — the whole package", "")}</span>
                         <span className="whitespace-nowrap text-muted-foreground">
                           {usd(i.price)}
                           {i.billing === "month" ? "/mo" : ""}

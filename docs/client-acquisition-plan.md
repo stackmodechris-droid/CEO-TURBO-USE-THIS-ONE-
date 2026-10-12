@@ -3,18 +3,21 @@
 **Goal:** monthly recurring revenue (MRR) from business owners and artists/producers. **First target: 3 paying monthly clients in 30 days.**
 **Rule:** every dollar and every hour goes to something that books a call. Cards are the easy first sale; the call is where retainers start.
 
-## The offers (from your real prices)
+## The offers (from your real prices, src/content/pricing.ts)
 | Who | Lead with (cash now) | Then (MRR) |
 |---|---|---|
-| LA business owner | Google profile setup $297, Launch website $1,497 | Local Visibility (SEO/AEO/GEO) $497/mo, Ads management $597/mo, Website Care $97/mo |
-| Rapper / producer | Artist website $997, social setup $197 | Website Care $97/mo, then ads management $597/mo when they can afford it |
+| Business owner | **Turbo Launch $1,697** (the whole package: site, SEO/AEO/GEO, Google + Bing indexing, tracking, profiles, email, booking, ads on 2 platforms) | **Turbo Growth $597/mo** (Care + ads managed). First month of Care is free. |
+| Has a site already / tight budget | **Turbo Start $697** (fix SEO, indexing, Google profile, socials, tracking, 1 ad campaign) | **Turbo Care $197/mo** |
+| Rapper / producer | Turbo Start $697 or Turbo Launch $1,697 | Turbo Care $197/mo, then Growth $597/mo for release pushes |
+| Shopify / store | **Turbo Dominate $3,497** (store build or 15 pages, 4 ad platforms, Shopping) | Turbo Growth $597/mo + $197 per extra platform |
+| Anyone with few reviews | Review cards from $24.99 (upsell on every call) | — |
 
-Artists rarely have $600 a month. Take the setup fee first, then add monthly work as they grow. Business owners are where MRR comes from fastest.
+On the call: quote ONE package and ONE plan. Ask for 50% of the setup fee on the call. Artists rarely have $600 a month, so take the setup fee first and add the plan as they grow.
 
 ## The three channels (one job each)
 | Channel | Daily budget | Job | Page it lands on |
 |---|---|---|---|
-| **Meta ads** | $10–15 | Book calls with LA business owners (and test artists) | `/plan` |
+| **Meta ads** | $10–15 | Book calls with LA business owners (and test artists) | `/how-to-get-more-customers` |
 | **Microsoft search** | $10 | Sell review cards. Every buyer is a business owner you can upsell. | `/google-review-cards` |
 | **Outreach (free)** | $0, 20 messages a day | Fastest clients, because it needs no ad learning | free visibility check, then `/book` |
 
@@ -24,7 +27,7 @@ Artists rarely have $600 a month. Take the setup fee first, then add monthly wor
 - **Ad set 2 — Artists and producers ($5/day).** Start only after ad set 1 has run 7 days. Interests: hip-hop, trap, music production, FL Studio, Spotify for Artists. Land on `/artist`.
   - If you only have $5/day total, run ad set 1 only.
 - **Creative (2–3 videos, face on top, site on the bottom):**
-  1. The `/plan` tutorial ("Your competitors aren't better than you. They're just easier to find.")
+  1. The `/how-to-get-more-customers` tutorial (script: `docs/how-to-get-more-customers-ad-script.md`)
   2. "I checked an LA business's Google profile" (screen-record the free visibility check).
   3. Artist version: "Your Spotify link isn't the problem" (website + socials + ads).
 - **Placements:** Reels, Stories, Feed only.
@@ -55,7 +58,7 @@ My estimate, not a promise: business-owner leads cost more than your consumer-le
 
 ## After a lead comes in
 - **Answer in 5 minutes.** Call or text. A fast reply books more calls than any ad tweak.
-- **Call outline (30 minutes):** show their site, Google profile and reviews live. Name the ONE money move. Quote from your published prices. Ask for the setup fee on the call.
+- **Call outline (30 minutes):** show their site, Google profile and reviews live. Name the ONE money move. Quote one package + one plan from the pricing page. Ask for the setup fee on the call.
 - **Close:** 50% to start, 50% at launch (your published terms).
 
 ## Timeline
@@ -70,7 +73,7 @@ My estimate, not a promise: business-owner leads cost more than your consumer-le
 
 ## Weekly numbers to track
 Spend · quiz leads · cost per lead · calls booked · calls held · clients closed · MRR.
-**Rough math to sanity-check:** $20 per lead → ~5 leads per booked call → ~4 calls per client = about $400 of ads per client. A $497/mo retainer plus a setup fee pays that back in the first month.
+**Rough math to sanity-check:** $20 per lead → ~5 leads per booked call → ~4 calls per client = about $400 of ads per client. A $1,697 Launch package alone pays that back four times, before the $597/mo plan starts.
 
 ## What blocks this today
 1. The lead sheet secret mismatch (leads aren't saving to the sheet).

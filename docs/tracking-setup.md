@@ -7,10 +7,10 @@ Everything in the code is done. This is the account-side setup, in order. Each s
 | Conversion | Where it happens | Meta | Google Ads / GA4 | Microsoft Ads | TikTok (once set up) |
 |---|---|---|---|---|---|
 | **Quiz lead** (main lead) | Brand Boost quiz: `/brand-boost`, `/book`, every "Book" button | `Lead` with value by budget: Pixel + CAPI, deduped by event id | `generate_lead` (lead_source = brand-boost-quiz, value) | `submit_lead_form` + revenue | `Lead`: Pixel + Events API |
-| **Booked call** | Cal.com (quiz calendar, modal or `/booked`) | `Schedule` with value: Pixel + CAPI, deduped by `book_<uid>` | `book_call` via GTM → Ads conversion | `book_appointment` | `Schedule`: Pixel + Events API |
+| **Booked call** | Cal.com (quiz calendar, modal or `/booked`) | `Schedule` with value: Pixel + CAPI, deduped by `book_<uid>` | `book_call` via the Google tag → Ads conversion | `book_appointment` | `Schedule`: Pixel + Events API |
 | **Free check lead** | `/free-audit`, homepage | `Lead`: Pixel + CAPI, deduped | `generate_lead` (lead_source = free_check) | `submit_lead_form` | `Lead` |
 | **Card purchase** | Shopify checkout | `Purchase` from the Facebook & Instagram app (Pixel + CAPI) | `purchase` from the Shopify custom pixel | `purchase` from the Shopify custom pixel | TikTok app on Shopify |
-| **Phone call click** | every `tel:` link ((470) 502-9543) | `Contact`: Pixel + CAPI (`/api/track`), deduped | `click_to_call` via GTM → Ads conversion *Phone call click* | `contact` | — |
+| **Phone call click** | every `tel:` link ((470) 502-9543) | `Contact`: Pixel + CAPI (`/api/track`), deduped | `click_to_call` via the Google tag → Ads conversion *Phone call click* | `contact` | — |
 | Funnel steps | site | ViewContent, AddToCart, InitiateCheckout, BookingOpen, QuizStart | view_item, add_to_cart, begin_checkout, booking_open, quiz_start, quiz_step | view_item, add_to_cart, begin_checkout | ViewContent, AddToCart, InitiateCheckout |
 
 **Lead values** (set in `src/content/quiz.ts`): the quiz Lead is worth $10 / $50 / $150 / $300 by budget answer ($10 for "Not sure yet"), and a booked call from the quiz is worth 3× that. Ad platforms use these to find higher-budget leads. The free check Lead is worth $10. Change them once you know your close rates.
@@ -54,22 +54,29 @@ The booking questions (business, what they do, website, goal, budget) are now as
    - Secret: the `CAL_WEBHOOK_SECRET` value
 3. **Booking questions:** make **Phone number** required or optional-but-shown. Phone is the second-strongest match signal for Meta and Google.
 
-## 4. Google Tag Manager (GTM-KRPRZ67Z, already installed on every page)
-1. GTM → Admin → **Import container** → choose `docs/gtm-container.json` → workspace *Default* → **Merge → Rename conflicting**.
-2. Variables → set the constants:
-   - `Const - Google Ads Conversion ID` → the number after `AW-`
-   - `Const - Ads Label - Booked call` / `Const - Ads Label - Lead` / `Const - Ads Label - Phone call` → labels from Google Ads → Goals → Conversions → each action → *Use Google Tag Manager*.
-3. In Google Ads, create those conversion actions first: **Booked call** (category *Book appointment*, Primary), **Lead** (category *Submit lead form*, Primary) and **Phone call click** (category *Contact*, Secondary — clicks aren't confirmed calls). Count: **One**. For real calls also add Google Ads → Conversions → **Phone calls → Calls from ads** (call extension/asset with (470) 502-9543, calls ≥ 60 s).
-4. **Enhanced conversions:** Google Ads → Goals → Settings → Enhanced conversions → on → method **Google Tag Manager**. The site already pushes `user_data` (email/phone) on every lead and booking.
-5. **Preview** → book a test call or run a free check → confirm the tags fire → **Submit / Publish**.
-6. GA4 (`G-XDWPSVBW53`) is the direct Google tag in `src/lib/ga.ts`, NOT in GTM: never add a Google tag / GA4 tag to the container (double counting). If the import is rejected, build by hand: Conversion Linker and two Google Ads Conversion tags on `book_call` and `generate_lead` with Order ID `{{DLV - event_id}}`.
+## 4. Google Ads (AW-18468746701, built into the site)
+The Google Ads tag loads with GA4 from `src/lib/ga.ts` on every page, so remarketing audiences start filling right away. Conversions fire from code with the event id as the transaction id (no double counting) and email/phone for enhanced conversions. **You don't need to import anything into GTM.** Don't add Google Ads conversion tags in GTM either, or every conversion counts twice.
+
+1. Google Ads → **Goals → Conversions → + New conversion action → Website** → enter `ceoturbo.com` → **Add a conversion action manually**. Create these 4:
+   | Name | Category | Value | Count | Primary/Secondary |
+   |---|---|---|---|---|
+   | Booked call | Book appointment | Use the same value: **$150** | One | **Primary** |
+   | Lead | Submit lead form | Use the same value: **$25** | One | **Primary** |
+   | Phone call click | Contact | Don't use a value | One | **Secondary** |
+   | Purchase | Purchase | Use different values | Every | **Primary** |
+2. On each one → **Tag setup → Use Google tag → Install the tag yourself**. Copy the label: the part after the slash in `send_to: 'AW-18468746701/XXXXXXXX'`. **Send me the 4 labels.** I paste them into `GOOGLE_ADS_LABELS` in `src/lib/ga.ts` and into `ADS_PURCHASE_LABEL` in `docs/shopify-custom-pixel.js`.
+3. **Enhanced conversions:** Goals → Settings → **Enhanced conversions for web** → on → method **Google tag**. Accept the customer data terms.
+4. **Real phone calls:** Assets → **Call** asset with (470) 502-9543, and Conversions → **Phone calls → Calls from ads** (calls ≥ 60 s, Primary).
+5. Check it: Google Ads → Goals → Conversions shows each action as "Recording conversions" within about 3 hours of a test lead.
+
+GTM (GTM-KRPRZ67Z) stays on the site for anything you add later. Its old Google Ads container file (`docs/gtm-container.json`) is no longer needed.
 
 ## 4b. GA4 (G-XDWPSVBW53)
 1. Admin → Events → mark as **key events**: `generate_lead`, `book_call`, `purchase`, `click_to_call`.
 2. Admin → Product links → **Google Ads links** → link your Ads account (and turn on auto-tagging in Google Ads).
 3. Admin → Data settings → Data collection → **Google signals** on; Data retention → **14 months**.
 4. Admin → Data streams → web → Configure tag settings → **List unwanted referrals**: `checkout.shopify.com`, `uweee2-sc.myshopify.com`, `cal.com`, `app.cal.com` (keeps the ad as the source of a purchase/booking).
-5. Import GA4 key events into Google Ads **only as Secondary** — the GTM tags are the Primary conversions (no double counting).
+5. Import GA4 key events into Google Ads **only as Secondary**. The site's Google Ads conversions (section 4) are the Primary ones, so nothing is counted twice.
 
 ## 5. Shopify (purchases)
 1. **Apps → Facebook & Instagram** (by Meta): connect pixel **3232222473609236**, Data sharing **Maximum**. That gives you Purchase via Pixel + Conversions API. Don't add Meta anywhere else on Shopify.
@@ -91,6 +98,6 @@ The booking questions (business, what they do, website, goal, budget) are now as
 - [ ] Run a free check with your real email: **Lead** appears twice (Browser + Server) and is marked *deduplicated*.
 - [ ] Take the quiz on `/brand-boost` with your real email: **Lead** (Browser + Server, deduplicated) and a row on the *Call Quiz Leads* tab.
 - [ ] Book a test call from the quiz calendar: **Schedule** appears from Browser + Server; a row lands on *Booked Calls* and the quiz row flips to **Booked? = Yes**.
-- [ ] GTM Preview: `book_call` fires *Google Ads - Booked call*; `generate_lead` fires *Google Ads - Lead*.
+- [ ] After the labels are in: a test free check shows the Google Ads *Lead* conversion as "Recording" within ~3h.
 - [ ] Place a real $24.99 order (refund it afterwards): Meta **Purchase**, GA4 **purchase** (Realtime), Google Ads conversion (shows within ~3h), and the order shows the gclid/fbclid notes.
 - [ ] Delete `META_TEST_EVENT_CODE`, then redeploy.

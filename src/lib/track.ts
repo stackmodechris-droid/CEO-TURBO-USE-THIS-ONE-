@@ -1,14 +1,15 @@
 // One event layer for every ad platform.
 //
 // Every call pushes a GA4-style event (with a unique event_id) to the dataLayer, where Google Tag
-// Manager (GTM-KRPRZ67Z) routes it to Google Ads (docs/gtm-container.json), and sends the same event to
-// GA4 through the direct Google tag (src/lib/ga.ts). Microsoft UET and
+// Manager (GTM-KRPRZ67Z) can use it, and sends the same event to GA4 and Google Ads through the direct
+// Google tag (src/lib/ga.ts). Microsoft UET, Reddit (src/lib/reddit.ts) and
 // the Meta Pixel are fired from code below, so do NOT add UET or Meta tags in GTM (double counting).
 // The Meta Pixel gets the matching standard event with the same id as eventID, so the server-side
 // Conversions API copy (api/_lib/meta-capi.js) is de-duplicated instead of double counted.
 // TikTok (src/lib/tiktok.ts) gets the same event and id once VITE_TIKTOK_PIXEL_ID is set.
 
-import { gaEvent } from "@/lib/ga";
+import { gaEvent, googleAdsConversion } from "@/lib/ga";
+import { redditEvent } from "@/lib/reddit";
 import { uetEvent } from "@/lib/uet";
 import { tiktokEvent } from "@/lib/tiktok";
 import { clarityEvent } from "@/lib/clarity";
@@ -159,6 +160,8 @@ export function track(event: string, params: Record<string, unknown> = {}, opts:
   if (user) w.dataLayer.push({ user_data: undefined });
 
   gaEvent(event, { event_id, ...params, ...(ecommerce ?? {}) });
+  googleAdsConversion(event, { eventId: event_id, value: ecommerce?.value ?? params.value, currency: ecommerce?.currency ?? params.currency, email: user?.email, phone: e164(user?.phone) });
+  redditEvent(event, { value: ecommerce?.value ?? params.value, currency: ecommerce?.currency ?? params.currency }, event_id, user ? { email: user.email, phone: e164(user.phone), externalId: user.externalId } : undefined);
 
   if (CLARITY_EVENTS.has(event)) clarityEvent(event);
 

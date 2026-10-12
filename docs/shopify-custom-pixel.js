@@ -7,7 +7,7 @@
 // or purchases are counted twice.
 
 const GA4_ID = "G-XDWPSVBW53"; // GA4 → Admin → Data streams → Measurement ID
-const ADS_ID = "AW-XXXXXXXXXX"; // Google Ads → Goals → Conversions → Purchase → Tag setup → "AW-…"
+const ADS_ID = "AW-18468746701"; // Google Ads → Goals → Conversions → Purchase → Tag setup → "AW-…"
 const ADS_PURCHASE_LABEL = "XXXXXXXXXXXXXXXXXXX"; // the part after the slash in send_to "AW-…/LABEL"
 const UET_ID = "187280408"; // Microsoft Ads → Tools → UET tag → Tag ID
 

@@ -1,6 +1,6 @@
-// Building blocks for the scroll-along tutorial pages filmed for 9:16 ads (/plan, /get-more-reviews):
+// Building blocks for the scroll-along tutorial pages filmed for 9:16 ads (/how-to-get-more-customers, /get-more-reviews):
 // a sticky "Step 2 of 5" rail, big step headings and count-up stats sized for a phone-width crop.
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { CountUp } from "@/components/visuals/CountUp";
 import { track } from "@/lib/track";
@@ -72,7 +72,7 @@ export function StepRail({ steps, active, intro }: { steps: readonly TutorialSte
         </p>
         <ol className="flex gap-1.5">
           {steps.map((s, i) => (
-            <li key={s.id} className={cn("h-1.5 w-6 rounded-full transition-colors duration-300 sm:w-10", i <= active ? "bg-turbo" : "bg-white/10")} />
+            <li key={s.id} className={cn("h-1.5 rounded-full transition-colors duration-300", steps.length > 6 ? "w-3.5 sm:w-8" : "w-6 sm:w-10", i <= active ? "bg-turbo" : "bg-white/10")} />
           ))}
         </ol>
       </div>
@@ -110,3 +110,34 @@ export const Tick = ({ children }: { children: ReactNode }) => (
     <span>{children}</span>
   </li>
 );
+
+/**
+ * Fades/slides its children in when they scroll into view. Server HTML and no-JS visitors see everything;
+ * only blocks that start below the fold are hidden on the client, so nothing visible ever blinks.
+ */
+export function Reveal({ children, className, delay = 0, from = "up", as: Tag = "div" }: { children: ReactNode; className?: string; delay?: number; from?: "up" | "left" | "right" | "zoom"; as?: "div" | "li" }) {
+  const ref = useRef<HTMLElement>(null);
+  const [state, setState] = useState<"idle" | "armed" | "in">("idle");
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.92) return;
+    setState("armed");
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        setState("in");
+        io.disconnect();
+      },
+      { rootMargin: "0px 0px -12% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const style: CSSProperties | undefined = delay ? { transitionDelay: `${delay}ms` } : undefined;
+  return (
+    <Tag ref={ref as never} className={cn("rv", `rv-${from}`, state === "armed" && "rv-armed", className)} style={style}>
+      {children}
+    </Tag>
+  );
+}

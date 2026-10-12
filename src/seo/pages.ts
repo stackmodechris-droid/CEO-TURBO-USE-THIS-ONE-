@@ -62,7 +62,7 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/brand-boost",
-    title: "Free Brand Boost Call — Get More Customers | CEO Turbo",
+    title: "Free 30-Min Growth Call With the Founder | CEO Turbo",
     description:
       "Answer 6 quick questions, get your #1 money move, then a free 30-minute call: we review your website, Google profile, reviews and ads live.",
     ogImage: "/og/brand-boost.jpg",
@@ -74,8 +74,8 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/pricing",
-    title: "CEO Turbo Pricing — Websites, SEO, AEO, GEO & Ads",
-    description: `Clear CEO Turbo pricing: Google profile setup ${price("gbp-setup")}, websites from ${price("site-artist")}, SEO/AEO/GEO from ${price("seo-local")}/mo, ads from ${price("ads-management")}/mo. No contracts.`,
+    title: `Pricing: Website, SEO & Ads Done for You — ${price("pkg-launch")} | CEO Turbo`,
+    description: `Website, SEO/AEO/GEO, Google & Bing indexing, tracking, profiles and ad setup for ${price("pkg-launch")} one-time. Plans from ${price("care")}/mo. No contracts.`,
     ogImage: "/og/brand-boost.jpg",
     priority: 0.9,
     changefreq: "monthly",
@@ -242,24 +242,27 @@ function build(): PageMeta[] {
     { path: "/terms", title: "Terms & Conditions | CEO Turbo", description: "Terms for using ceoturbo.com and buying CEO Turbo products and services.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
     { path: "/shipping-returns", title: "Shipping & Returns | CEO Turbo", description: "Shipping times, costs and the 5-day return policy for CEO Turbo Google review cards.", priority: 0.3, changefreq: "yearly", group: "Company", schema: base() },
     {
-      path: "/plan",
-      title: "How to Get More Customers in 2026: The 5-Step Plan | CEO Turbo",
-      description: "Get found on Google and ChatGPT, fix your socials, set up Google Business Profile and reviews, then run Meta + Google ads. The 5-step plan, with proof.",
-      ogImage: "/og/plan.jpg",
-      priority: 0.8,
+      path: "/how-to-get-more-customers",
+      title: "How to Get More Customers in 2026: Free Step-by-Step | CEO Turbo",
+      description: "Free visibility score, then 8 steps to get found on Google, Bing, ChatGPT & Claude, get reviews, track every lead and run the right ads — or we do it all.",
+      ogImage: "/og/how-to-get-more-customers.jpg",
+      priority: 0.9,
       changefreq: "monthly",
       group: "Core",
       schema: [
         ...base(),
-        S.webPage("/plan", "How to get more customers: the 5-step plan", "Website + SEO/AEO/GEO, social profiles, Google Business Profile and reviews, then Meta and Google Search ads."),
-        S.howTo("/plan", "How to get more customers for your business in 2026", [
-          ["Get found on Google, Maps and ChatGPT", "Build a fast website and optimize it for SEO (rank on Google and Maps), AEO (be the answer AI Overviews quote) and GEO (get named by ChatGPT, Gemini and Perplexity)."],
-          ["Fix your social profiles", "Clear bio, one-tap book/call buttons, pinned proof and the same name, photo and links everywhere."],
-          ["Get trusted with reviews", "Set up and verify a Google Business Profile and Trustpilot, then collect reviews with an NFC review card customers tap with their phone."],
-          ["Run Meta and Google Search ads", "Meta ads create demand from people who look like your best customers; Google Search ads catch people already searching. Both learn from the same tracking."],
-          ["Get a plan from the founder", "Book a free 30-minute Brand Boost call to get your #1 money move and a fixed-price plan."],
+        S.webPage("/how-to-get-more-customers", "How to get more customers: the free step-by-step tutorial", "Free visibility score, SEO/AEO/GEO with Google and Bing indexing, Google Business Profile and socials, reviews, tracking, ads on the right platforms, email and booking."),
+        S.howTo("/how-to-get-more-customers", "How to get more customers for your business in 2026", [
+          ["Get your visibility score", "Run a free check of your website, Google profile, reviews, socials and AI visibility to see what's costing you customers."],
+          ["Get found on Google, Bing, ChatGPT and Claude", "Build a fast website optimized for SEO, AEO and GEO; submit it to Google Search Console and Bing Webmaster Tools, ping IndexNow, add schema and llms.txt, and allow AI crawlers."],
+          ["Look legit", "Optimize your Google Business Profile and social profiles with clear bios, one-tap booking and consistent details; add Merchant Center for stores."],
+          ["Get reviews", "Make leaving a Google review effortless — for example with an NFC review card customers tap with their phone."],
+          ["Track everything", "Set up GA4, Google Tag Manager, Meta Pixel + Conversions API, Google Ads enhanced conversions, Microsoft UET, TikTok and Reddit pixels so ad platforms learn who books."],
+          ["Run ads on the right platforms", "Choose platforms by business type — Google and Microsoft Search for local services, Shopping for stores, Meta, TikTok and Spotify for artists, LinkedIn for B2B."],
+          ["Bring customers back", "Email campaigns and automations, an online booking calendar, and monthly website care for security, updates and the latest search changes."],
+          ["Get it done for you", "Book a free 30-minute call with CEO Turbo for your #1 money move and a fixed price to do it all."],
         ]),
-        S.breadcrumbs([{ name: "The 5-step plan", path: "/plan" }]),
+        S.breadcrumbs([{ name: "How to get more customers", path: "/how-to-get-more-customers" }]),
       ],
     },
     // Ad landing + post-booking pages: kept out of search so they don't compete with /brand-boost.

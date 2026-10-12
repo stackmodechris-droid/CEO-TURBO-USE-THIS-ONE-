@@ -6,7 +6,7 @@ import type { FAQ, Service } from "@/content/services";
 import type { Client } from "@/content/clients";
 import type { Guide } from "@/content/guides";
 import { guideImage, guidePath } from "@/content/guides";
-import { MONTHLY, SETUP, WEBSITES, pricesFor, type PriceItem } from "@/content/pricing";
+import { MONTHLY, PACKAGES, SETUP, WEBSITES, pricesFor, type PriceItem } from "@/content/pricing";
 
 const abs = (path: string) => (path.startsWith("http") ? path : `${SITE.url}${path}`);
 
@@ -92,7 +92,7 @@ export const webPage = (path: string, name: string, description: string, type = 
   inLanguage: "en-US",
 });
 
-/** Step-by-step how-to (the /plan tutorial). Steps are [name, text]. */
+/** Step-by-step how-to (the /how-to-get-more-customers tutorial). Steps are [name, text]. */
 export const howTo = (path: string, name: string, steps: [string, string][]): JsonLd => ({
   "@type": "HowTo",
   "@id": `${abs(path)}#howto`,
@@ -166,6 +166,7 @@ export const pricingCatalog = (): JsonLd => ({
   url: abs("/pricing"),
   provider: { "@id": ORG_ID },
   itemListElement: [
+    { "@type": "OfferCatalog", name: "Setup packages", itemListElement: PACKAGES.map(priceOffer) },
     { "@type": "OfferCatalog", name: "One-time setup", itemListElement: SETUP.map(priceOffer) },
     { "@type": "OfferCatalog", name: "Websites", itemListElement: WEBSITES.map(priceOffer) },
     { "@type": "OfferCatalog", name: "Monthly plans", itemListElement: MONTHLY.map(priceOffer) },

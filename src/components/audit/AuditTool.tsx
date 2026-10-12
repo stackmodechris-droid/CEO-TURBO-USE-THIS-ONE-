@@ -6,6 +6,7 @@ import { attribution, track, visitorId } from "@/lib/track";
 import { CallLink } from "@/components/site/CallLink";
 import { BOOKING, fromPriceLabel } from "@/config/site";
 import { CardFace, ScoreGauge } from "@/components/visuals/ReviewVisuals";
+import { rememberBusiness } from "@/lib/review-link";
 import { cn } from "@/lib/utils";
 
 /** What a free-check lead is worth to the ad platforms (same number on the Pixel and the Conversions API). */
@@ -131,6 +132,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
     if (form.business.trim().length < 2) return setErrors({ business: form.kind === "artist" ? "Enter your artist name." : "Enter your business name." });
     if (!started.current) started.current = Date.now();
     track("audit_start", { kind: form.kind, source });
+    rememberBusiness(form.business);
     setStage("questions");
   };
 

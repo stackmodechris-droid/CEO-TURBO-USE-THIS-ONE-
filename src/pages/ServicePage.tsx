@@ -7,7 +7,7 @@ import { ADS } from "@/content/ads";
 import { BookButton } from "@/components/cta/Actions";
 import { SearchScene, SCENES } from "@/components/visuals/Scenes";
 import { WorkGrid, AdResultsGrid, AdGallery } from "@/components/blocks/Proof";
-import { ServiceGrid, BookingSection } from "@/components/blocks/Sales";
+import { ServiceGrid, BookingSection, ReviewCardPromo } from "@/components/blocks/Sales";
 import { SectionHeader, DirectAnswer, Breadcrumbs, FAQList } from "@/components/blocks/Basics";
 import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { priceLabel, pricesFor } from "@/content/pricing";
@@ -113,7 +113,7 @@ export default function ServicePage() {
             <div>
               <h2 className="text-2xl font-bold sm:text-3xl">How much does {s.short} cost?</h2>
               <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
-                {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Every service is an add-on — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
+                {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Need more than one piece? A package covers it for less — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
               </p>
               <BookButton note={`${note} — pricing`} className="mt-6">
                 Which do I need? Get my free plan
@@ -134,6 +134,14 @@ export default function ServicePage() {
                 <AdGallery ads={ADS.slice(0, 8)} />
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {s.slug === "google-business-profile" && (
+        <section className="section border-t border-border" aria-label="Google review cards">
+          <div className="container-x">
+            <ReviewCardPromo title="A great profile needs reviews. Make them one tap." />
           </div>
         </section>
       )}

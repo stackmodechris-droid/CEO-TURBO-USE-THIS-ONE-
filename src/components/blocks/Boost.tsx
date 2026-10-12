@@ -110,10 +110,10 @@ export function FitCheck() {
 /** Price transparency right on the booking page: people book when they aren't afraid of the number. */
 export function PriceTeaser({ source }: { source: string }) {
   const rows = [
-    { label: "Google Business Profile setup", value: `${price("gbp-setup")} one-time` },
-    { label: "Websites", value: `from ${price("site-artist")} one-time` },
-    { label: "SEO, AEO & GEO", value: `from ${price("seo-local")}/mo` },
-    { label: "Ads management", value: `from ${price("ads-management")}/mo` },
+    { label: "Turbo Start — fix what you have", value: `${price("pkg-start")} one-time` },
+    { label: "Turbo Launch — the whole package", value: `${price("pkg-launch")} one-time` },
+    { label: "Turbo Care — security, updates, SEO", value: `${price("care")}/mo` },
+    { label: "Turbo Growth — Care + ads managed", value: `${price("growth")}/mo` },
   ];
   return (
     <section className="section border-t border-border" aria-labelledby="cost">
