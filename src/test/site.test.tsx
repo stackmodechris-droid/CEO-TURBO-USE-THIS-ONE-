@@ -11,6 +11,7 @@ import { GUIDES } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
 import { SERVICES } from "@/content/services";
 import { CSP } from "@/config/headers";
+import { GTM_IDS } from "@/lib/gtm";
 import { DEFAULT_UET_TAG_ID } from "@/lib/uet";
 import { DEFAULT_CLARITY_ID } from "@/lib/clarity";
 import { BOOKING, REVIEW_CARD, SITE, packSavings, packPath } from "@/config/site";
@@ -265,6 +266,14 @@ describe("phone + social", () => {
     expect(org.telephone).toBe("+14705029543");
     expect(org.sameAs).toEqual(SITE.social.map((s) => s.href));
     expect((founder() as Record<string, unknown>).sameAs).toEqual(SITE.founder.sameAs);
+  });
+});
+
+describe("Google Tag Manager containers", () => {
+  it("loads both containers from code and has a noscript fallback for each", () => {
+    expect(GTM_IDS).toEqual(["GTM-KRPRZ67Z", "GTM-KH6BCWD3"]);
+    const html = readFileSync(path.resolve(__dirname, "../../index.html"), "utf8");
+    for (const id of GTM_IDS) expect(html).toContain(`ns.html?id=${id}`);
   });
 });
 
