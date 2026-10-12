@@ -54,7 +54,51 @@ export const isBot = (body) => !!str(body.company_site, 200) || (typeof body.ela
 
 const csvSafe = (v) => (typeof v === "string" && /^[=+\-@\t\r]/.test(v) ? `'${v}` : v);
 
-/** Sends the lead to the configured webhook. Never throws. */
+/**
+ * The Apps Script answers HTTP 200 even when it rejects a lead, so the body decides:
+ * "ok" (filed) or "duplicate" (already filed) are success; "forbidden" means LEADS_WEBHOOK_SECRET
+ * doesn't match the SECRET in the script, "bad json" a broken request. Other webhooks (Zapier, Make…)
+ * answer with their own bodies, so anything else from a 2xx counts as delivered.
+ */
+export function deliveryResult(status, body) {
+  const text = String(body || "").trim().toLowerCase();
+  if (status < 200 || status >= 300) return { ok: false, retry: status >= 500 || status === 429, reason: `http ${status}` };
+  if (text === "forbidden") return { ok: false, retry: false, reason: "secret mismatch — LEADS_WEBHOOK_SECRET in Vercel must equal SECRET in the Apps Script" };
+  if (text === "bad json") return { ok: false, retry: false, reason: "bad json" };
+  if (/^<!doctype html|^<html/.test(text)) return { ok: false, retry: true, reason: "html error page (Apps Script not deployed as 'Anyone' web app?)" };
+  return { ok: true };
+}
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function post(url, payload) {
+  let last = "";
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ secret: process.env.LEADS_WEBHOOK_SECRET || "", ...payload }),
+        redirect: "follow",
+        signal: AbortSignal.timeout(8000),
+      });
+      const r = deliveryResult(res.status, await res.text().catch(() => ""));
+      if (r.ok) return true;
+      last = r.reason;
+      if (!r.retry) break;
+    } catch (e) {
+      last = e?.message || "network";
+    }
+    if (attempt === 1) await wait(700);
+  }
+  console.error(`[lead] NOT SAVED to ${url === process.env.LEADS_BACKUP_WEBHOOK_URL ? "backup webhook" : "sheet"}: ${last}`, JSON.stringify(payload));
+  return false;
+}
+
+/**
+ * Sends the lead to the configured webhook (one retry), then to LEADS_BACKUP_WEBHOOK_URL if the sheet
+ * didn't take it. Never throws; a lead that can't be saved anywhere is logged in full.
+ */
 export async function forwardLead(record) {
   const payload = Object.fromEntries(Object.entries({ ...record, receivedAt: new Date().toISOString() }).map(([k, v]) => [k, csvSafe(v)]));
   const url = process.env.LEADS_WEBHOOK_URL;
@@ -70,21 +114,11 @@ export async function forwardLead(record) {
         return { stored: false };
       }
     }
-    console.warn("[lead] LEADS_WEBHOOK_URL is not set — lead only in function logs:", JSON.stringify(payload));
+    console.error("[lead] LEADS_WEBHOOK_URL is not set — lead only in function logs:", JSON.stringify(payload));
     return { stored: false };
   }
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: process.env.LEADS_WEBHOOK_SECRET || "", ...payload }),
-      redirect: "follow",
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) console.error("[lead] webhook responded", res.status, JSON.stringify(payload));
-    return { stored: res.ok };
-  } catch (e) {
-    console.error("[lead] webhook failed", e?.message, JSON.stringify(payload));
-    return { stored: false };
-  }
+  if (await post(url, payload)) return { stored: true };
+  const backup = process.env.LEADS_BACKUP_WEBHOOK_URL;
+  if (backup && (await post(backup, payload))) return { stored: "backup" };
+  return { stored: false };
 }

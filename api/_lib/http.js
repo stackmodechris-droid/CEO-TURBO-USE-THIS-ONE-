@@ -35,13 +35,26 @@ export function rateLimited(key, max, windowMs) {
   return list.length > max;
 }
 
+/** Form endpoints only take JSON (blocks cross-site HTML form posts, which can't send it). */
+export const isJson = (req) => /^application\/json\b/i.test(String(req.headers["content-type"] || ""));
+
 /** Only accept browser POSTs from our own pages. */
 export function sameOrigin(req) {
   const origin = req.headers.origin;
-  if (!origin) return true; // same-origin fetches from older browsers can omit it
+  // Browsers always send Origin on a POST; a missing one is only accepted when the browser says same-origin.
+  if (!origin) return req.headers["sec-fetch-site"] === undefined ? !!req.headers.referer && refererOk(req) : req.headers["sec-fetch-site"] === "same-origin";
   try {
     const host = new URL(origin).host;
     return host === req.headers.host || host === req.headers["x-forwarded-host"] || /(^|\.)ceoturbo\.com$/.test(host) || /^localhost(:\d+)?$/.test(host) || /^127\.0\.0\.1(:\d+)?$/.test(host);
+  } catch {
+    return false;
+  }
+}
+
+function refererOk(req) {
+  try {
+    const host = new URL(req.headers.referer).host;
+    return host === req.headers.host || /(^|\.)ceoturbo\.com$/.test(host) || /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(host);
   } catch {
     return false;
   }

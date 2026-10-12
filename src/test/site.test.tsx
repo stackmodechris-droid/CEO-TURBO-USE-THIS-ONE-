@@ -11,16 +11,17 @@ import { GUIDES } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
 import { SERVICES } from "@/content/services";
 import { CSP } from "@/config/headers";
-import { BOOKING, REVIEW_CARD, packSavings, packPath } from "@/config/site";
+import { BOOKING, REVIEW_CARD, SITE, packSavings, packPath } from "@/config/site";
 import { merchantFeed, feedItems } from "@/seo/feed";
-import { reviewCardProduct } from "@/seo/schema";
+import { reviewCardProduct, organization, founder } from "@/seo/schema";
+import { Footer } from "@/components/site/Footer";
 import { findVariant } from "@/lib/shopify";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { checkReviewLink } from "@/lib/review-link";
 import { ALL_PRICES, PRICING_FAQS, pricesFor, usd } from "@/content/pricing";
 import { HOME_FAQS, BOOK_FAQS } from "@/content/faqs";
 import { BrandBoostQuiz } from "@/components/quiz/BrandBoostQuiz";
-import { AUDIENCES as QUIZ_AUDIENCES, BUDGETS, CAL_GOAL_OPTIONS, calGoal, moneyMove, EMPTY_ANSWERS, GOALS } from "@/content/quiz";
+import { AUDIENCES as QUIZ_AUDIENCES, BUDGETS, CAL_GOAL_OPTIONS, calGoal, moneyMove, EMPTY_ANSWERS, GOALS, BLOCKERS, STAGES, QUIZ_STEPS, labelOf } from "@/content/quiz";
 
 const pub = (p: string) => path.resolve(__dirname, "../../public", p.replace(/^\//, ""));
 const paths = new Set(PAGES.map((p) => p.path));
@@ -188,17 +189,34 @@ describe("Brand Boost quiz", () => {
   });
 
   it("only prefills Cal.com with values the booking form accepts", () => {
-    for (const goals of Object.values(GOALS)) for (const g of goals) expect(CAL_GOAL_OPTIONS).toContain(calGoal(g.key));
+    for (const byStage of Object.values(GOALS)) for (const goals of Object.values(byStage)) for (const g of goals) expect(CAL_GOAL_OPTIONS).toContain(calGoal(g.key));
     expect(BUDGETS.every((b) => b.value > 0)).toBe(true);
   });
 
   it("always has a money move for every audience and goal", () => {
-    for (const [audience, goals] of Object.entries(GOALS))
-      for (const g of goals) {
-        const m = moneyMove({ ...EMPTY_ANSWERS, audience: audience as never, goal: g.key });
-        expect(m.title.length).toBeGreaterThan(5);
-        expect(m.points.length).toBe(3);
-      }
+    for (const [audience, byStage] of Object.entries(GOALS))
+      for (const [stage, goals] of Object.entries(byStage))
+        for (const g of goals) {
+          const m = moneyMove({ ...EMPTY_ANSWERS, audience: audience as never, stage: stage as never, goal: g.key });
+          expect(m.title.length, `${audience}/${stage}/${g.key}`).toBeGreaterThan(5);
+          expect(m.points.length).toBe(3);
+        }
+  });
+
+  it("asks starting vs growing second, with questions that change by answer", () => {
+    expect(QUIZ_STEPS.slice(0, 3)).toEqual(["audience", "stage", "goal"]);
+    for (const a of QUIZ_AUDIENCES) {
+      expect(STAGES[a.id].map((s) => s.id)).toEqual(["start", "grow"]);
+      expect(GOALS[a.id].start.length).toBeGreaterThanOrEqual(4);
+      expect(BLOCKERS[a.id].start.length).toBeGreaterThanOrEqual(4);
+      expect(GOALS[a.id].start).not.toEqual(GOALS[a.id].grow);
+      expect(BLOCKERS[a.id].start).not.toEqual(BLOCKERS[a.id].grow);
+      for (const s of ["start", "grow"] as const) for (const g of GOALS[a.id][s]) expect(labelOf.goal(a.id, g.key, s)).toBe(g.label);
+    }
+    expect(STAGES.artist[1].sub).toMatch(/listeners/);
+    const starter = moneyMove({ ...EMPTY_ANSWERS, audience: "local", stage: "start", goal: "launch" });
+    const grower = moneyMove({ ...EMPTY_ANSWERS, audience: "local", stage: "grow", goal: "calls" });
+    expect(starter.title).not.toEqual(grower.title);
   });
 });
 
@@ -219,5 +237,31 @@ describe("pricing", () => {
     const p = PAGES.find((x) => x.path === "/pricing");
     expect(p && !p.noindex).toBe(true);
     expect(JSON.stringify(p!.schema)).toContain("OfferCatalog");
+  });
+});
+
+describe("phone + social", () => {
+  it("shows the phone number as a tap-to-call link and the brand socials as icon links", () => {
+    render(
+      <MemoryRouter>
+        <Footer />
+      </MemoryRouter>,
+    );
+    const tel = screen.getAllByRole("link", { name: /\(470\) 502-9543/ });
+    expect(tel.length).toBeGreaterThan(0);
+    for (const t of tel) expect(t).toHaveAttribute("href", "tel:+14705029543");
+    for (const s of SITE.social) {
+      const a = screen.getByRole("link", { name: `CEO Turbo on ${s.label}` });
+      expect(a).toHaveAttribute("href", s.href);
+      expect(a).toHaveAttribute("target", "_blank");
+      expect(a.querySelector("svg")).not.toBeNull();
+    }
+  });
+
+  it("puts the phone and brand profiles in Organization schema, personal ones on the founder", () => {
+    const org = organization() as Record<string, unknown>;
+    expect(org.telephone).toBe("+14705029543");
+    expect(org.sameAs).toEqual(SITE.social.map((s) => s.href));
+    expect((founder() as Record<string, unknown>).sameAs).toEqual(SITE.founder.sameAs);
   });
 });

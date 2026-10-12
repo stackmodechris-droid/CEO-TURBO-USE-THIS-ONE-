@@ -1,8 +1,11 @@
 // POST /api/audit — captures the lead, runs the free SEO/AEO/GEO audit and returns the report.
 import { runAudit } from "./_lib/audit.js";
 import { cleanLead, forwardLead, isBot } from "./_lib/leads.js";
-import { readJson, send, clientIp, rateLimited, sameOrigin } from "./_lib/http.js";
+import { readJson, send, clientIp, rateLimited, sameOrigin, isJson } from "./_lib/http.js";
 import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
+
+/** What a free-check lead is worth to the ad platforms (matches FREE_CHECK_VALUE in AuditTool.tsx). */
+const FREE_CHECK_VALUE = 10;
 import { buildTiktokEvent, sendTiktokEvents } from "./_lib/tiktok-events.js";
 
 const pick = (v, allowed) => (allowed.includes(v) ? v : "");
@@ -16,6 +19,7 @@ export default async function handler(req, res) {
     return send(res, 405, { error: "method" });
   }
   if (!sameOrigin(req)) return send(res, 403, { error: "origin" });
+  if (!isJson(req)) return send(res, 415, { error: "content-type" });
   if (rateLimited(`audit:${clientIp(req)}`, 6, 10 * 60_000)) return send(res, 429, { error: "rate" });
 
   let body;
@@ -33,6 +37,7 @@ export default async function handler(req, res) {
     what: text(body.what, 60),
     city: text(body.city, 60),
     website: text(body.website, 300),
+    stage: pick(body.stage, ["start", "grow"]),
     gbp: pick(body.gbp, ["yes", "unsure", "no"]),
     reviews: pick(body.reviews, ["0-9", "10-49", "50-99", "100+"]),
     press: pick(body.press, ["none", "some", "lots"]),
@@ -57,20 +62,23 @@ export default async function handler(req, res) {
   const url = `https://www.ceoturbo.com${text(body.page, 120) || "/free-audit"}`;
   const ip = signals.ip || clientIp(req);
   const contentName = kind === "artist" ? "Artist visibility check" : "Business visibility check";
+  const stageLabel = input.stage === "start" ? "Starting out" : input.stage === "grow" ? "Growing" : "";
+  const category = `${kind === "artist" ? "Artist" : "Business"}${stageLabel ? ` · ${stageLabel}` : ""}`;
+  const externalId = text(body.visitorId, 60) || undefined;
   const capi = Promise.all([
     sendMetaEvents([
       buildEvent({
         eventName: "Lead",
         eventId,
         url,
-        user: { email: lead.email, phone: lead.phone, name: lead.name, city: input.city },
+        user: { email: lead.email, phone: lead.phone, name: lead.name, city: input.city, externalId },
         attribution: attr,
         ip,
         userAgent: req.headers["user-agent"],
-        customData: { lead_source: "free_check", content_name: contentName },
+        customData: { lead_source: "free_check", content_name: contentName, content_category: category, value: FREE_CHECK_VALUE, currency: "USD" },
       }),
     ]),
-    sendTiktokEvents([buildTiktokEvent({ event: "Lead", eventId, url, user: { email: lead.email, phone: lead.phone }, attribution: attr, ip, userAgent: req.headers["user-agent"], properties: { content_name: contentName } })]),
+    sendTiktokEvents([buildTiktokEvent({ event: "Lead", eventId, url, user: { email: lead.email, phone: lead.phone, externalId }, attribution: attr, ip, userAgent: req.headers["user-agent"], properties: { content_name: contentName, value: FREE_CHECK_VALUE, currency: "USD" } })]),
   ]);
 
   const failing = report ? report.checks.filter((c) => report.top.includes(c.id)).map((c) => c.label) : [];
@@ -80,6 +88,7 @@ export default async function handler(req, res) {
     what: input.what,
     city: input.city,
     website: input.website,
+    stage: stageLabel,
     gbp: input.gbp,
     reviews: input.reviews,
     press: input.press,
@@ -91,6 +100,7 @@ export default async function handler(req, res) {
     reviewsScore: report?.scores.reviews ?? "",
     topIssues: failing.join(" | "),
     page: text(body.page, 120),
+    eventId,
     ...attr,
   });
   await capi;

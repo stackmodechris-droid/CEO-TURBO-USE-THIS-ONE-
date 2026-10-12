@@ -2,10 +2,14 @@ import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } fr
 import { Link } from "react-router-dom";
 import { AlertTriangle, ArrowRight, Building2, Check, ChevronDown, Loader2, Lock, Mic2, RotateCcw, Search, Sparkles, X } from "lucide-react";
 import { openBooking } from "@/lib/cal";
-import { attribution, track } from "@/lib/track";
+import { attribution, track, visitorId } from "@/lib/track";
+import { CallLink } from "@/components/site/CallLink";
 import { BOOKING, fromPriceLabel } from "@/config/site";
 import { CardFace, ScoreGauge } from "@/components/visuals/ReviewVisuals";
 import { cn } from "@/lib/utils";
+
+/** What a free-check lead is worth to the ad platforms (same number on the Pixel and the Conversions API). */
+const FREE_CHECK_VALUE = 10;
 
 type Kind = "business" | "artist";
 type Status = "pass" | "warn" | "fail";
@@ -28,6 +32,8 @@ type Form = {
   what: string;
   city: string;
   website: string;
+  /** Starting out or growing. */
+  stage: string;
   gbp: string;
   reviews: string;
   press: string;
@@ -39,7 +45,7 @@ type Form = {
   company_site: string;
 };
 
-const EMPTY: Form = { kind: "business", business: "", what: "", city: "", website: "", gbp: "", reviews: "", press: "", nameRank: "", name: "", email: "", phone: "", smsOptIn: false, company_site: "" };
+const EMPTY: Form = { kind: "business", business: "", what: "", city: "", website: "", stage: "", gbp: "", reviews: "", press: "", nameRank: "", name: "", email: "", phone: "", smsOptIn: false, company_site: "" };
 
 export const CATEGORY: Record<string, { short: string; title: string; question: string }> = {
   seo: { short: "SEO", title: "Search engine optimization", question: "Can Google find and rank you?" },
@@ -50,10 +56,12 @@ export const CATEGORY: Record<string, { short: string; title: string; question: 
 
 const QUESTIONS: Record<Kind, { key: keyof Form; label: string; options: [string, string][] }[]> = {
   business: [
+    { key: "stage", label: "Where is your business right now?", options: [["start", "Just starting out"], ["grow", "Up and running — want more customers"]] },
     { key: "gbp", label: "Is your Google Business Profile claimed?", options: [["yes", "Yes, verified"], ["unsure", "Not sure"], ["no", "No"]] },
     { key: "reviews", label: "How many Google reviews do you have?", options: [["0-9", "0–9"], ["10-49", "10–49"], ["50-99", "50–99"], ["100+", "100+"]] },
   ],
   artist: [
+    { key: "stage", label: "Where are you in your music career?", options: [["start", "Just starting out"], ["grow", "Releasing music — want more listeners"]] },
     { key: "nameRank", label: "Google your artist name. Are you the first result?", options: [["top", "Yes, #1"], ["somewhere", "On page 1"], ["no", "No"], ["unsure", "Haven't checked"]] },
     { key: "press", label: "Any press, blog or playlist features?", options: [["none", "None yet"], ["some", "A few"], ["lots", "Lots"]] },
   ],
@@ -140,13 +148,17 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
 
     setStage("scan");
     scrollTop();
-    const leadEventId = track("generate_lead", { lead_source: "free_check", kind: form.kind, source, value: 0, currency: "USD" }, { user: { email: form.email, phone: form.phone, name: form.name } });
+    const leadEventId = track(
+      "generate_lead",
+      { lead_source: "free_check", kind: form.kind, stage: form.stage, source, value: FREE_CHECK_VALUE, currency: "USD", content_name: form.kind === "artist" ? "Artist visibility check" : "Business visibility check", content_category: `${form.kind === "artist" ? "Artist" : "Business"} · ${form.stage === "start" ? "Starting out" : "Growing"}` },
+      { user: { email: form.email, phone: form.phone, name: form.name, externalId: visitorId() } },
+    );
     const minWait = new Promise((r) => setTimeout(r, 4200));
     try {
       const res = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, elapsedMs: Date.now() - (started.current || Date.now()), page: window.location.pathname, eventId: leadEventId, attribution: attribution() }),
+        body: JSON.stringify({ ...form, visitorId: visitorId(), elapsedMs: Date.now() - (started.current || Date.now()), page: window.location.pathname, eventId: leadEventId, attribution: attribution() }),
       });
       const data = await res.json().catch(() => ({}));
       await minWait;
@@ -259,7 +271,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
       {stage === "questions" && (
         <div className="relative animate-step">
           <p className="text-sm text-muted-foreground">
-            Two quick taps about <span className="font-semibold text-foreground">{form.business}</span>
+            Three quick taps about <span className="font-semibold text-foreground">{form.business}</span>
           </p>
           <div className="mt-4 space-y-5">
             {questions.map((q) => (
@@ -366,6 +378,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             <button type="button" className="btn-ignite btn-shine flex-1" onClick={() => openBooking(`${source} — scan failed`, `Free audit for ${form.business}${form.website ? ` (${form.website})` : ""}. The online scan didn't finish.`, { name: form.name, email: form.email, phone: form.phone })}>
               Book my free audit call
             </button>
+            <CallLink location="audit failed" icon className="btn-chrome" />
             <button type="button" className="btn-chrome" onClick={() => setStage("contact")}>
               <RotateCcw className="h-4 w-4" aria-hidden /> Try again
             </button>

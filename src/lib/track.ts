@@ -27,6 +27,7 @@ const META: Record<string, { name: string; custom?: boolean }> = {
   begin_checkout: { name: "InitiateCheckout" },
   generate_lead: { name: "Lead" },
   book_call: { name: "Schedule" },
+  click_to_call: { name: "Contact" },
   booking_open: { name: "BookingOpen", custom: true },
   audit_start: { name: "AuditStart", custom: true },
   audit_complete: { name: "AuditComplete", custom: true },
@@ -38,6 +39,27 @@ export const DEFAULT_PIXEL_ID = "3232222473609236";
 export const PIXEL_ID = () => (import.meta.env.VITE_META_PIXEL_ID as string | undefined) || DEFAULT_PIXEL_ID;
 
 export const newEventId = (prefix: string) => `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+
+/**
+ * A stable, anonymous id for this browser, sent (hashed server-side) as Meta/TikTok external_id on every
+ * event. The same id on the Pixel, the Conversions API and the booking ties a visitor's events together,
+ * which raises Event Match Quality.
+ */
+const VID_KEY = "ct_vid";
+let vid = "";
+export function visitorId() {
+  if (vid) return vid;
+  try {
+    vid = localStorage.getItem(VID_KEY) || "";
+    if (!vid) {
+      vid = newEventId("v");
+      localStorage.setItem(VID_KEY, vid);
+    }
+  } catch {
+    vid = vid || newEventId("v");
+  }
+  return vid;
+}
 
 const win = () => (typeof window === "undefined" ? null : (window as Win));
 
@@ -79,19 +101,27 @@ function metaParams(params: Record<string, unknown>, ecommerce?: Ecommerce) {
   };
 }
 
-/** Lets the Meta Pixel match the visitor (advanced matching). The pixel hashes these itself. */
+/**
+ * Lets the Meta Pixel match the visitor (advanced matching). The pixel hashes these itself.
+ * A second fbq("init") is ignored once the pixel is running, so the values are merged into the live
+ * pixel's user data (verified: the next event then carries ud[em]/ud[ph]); init is the fallback.
+ */
 export function identify(user: UserData) {
   const w = win();
   const id = PIXEL_ID();
   if (!w?.fbq || !id || (!user.email && !user.phone && !user.externalId)) return;
   const { first, last } = splitName(user.name);
-  w.fbq("init", id, {
+  const digits = user.phone?.replace(/\D/g, "") ?? "";
+  const ud = {
     ...(user.email ? { em: user.email.trim().toLowerCase() } : {}),
-    ...(user.phone ? { ph: user.phone.replace(/\D/g, "") } : {}),
+    ...(digits ? { ph: digits.length === 10 ? `1${digits}` : digits } : {}),
     ...(first ? { fn: first.toLowerCase() } : {}),
     ...(last ? { ln: last.toLowerCase() } : {}),
-    ...(user.externalId ? { external_id: user.externalId } : {}),
-  });
+    external_id: user.externalId || visitorId(),
+  };
+  const pixel = (w.fbq as Fn & { instance?: { pixelsByID?: Record<string, { userData?: Record<string, string> }> } }).instance?.pixelsByID?.[id];
+  if (pixel) pixel.userData = { ...pixel.userData, ...ud };
+  else w.fbq("init", id, ud);
 }
 
 /**
@@ -239,4 +269,43 @@ export function attribution(): Attribution {
   const fbc = cookie("_fbc");
   const ttp = cookie("_ttp");
   return { ...stored, ...(fbp ? { fbp } : {}), ...(fbc ? { fbc } : {}), ...(ttp ? { ttp } : {}) };
+}
+
+/** Events the server also sends to the Conversions API (same event_id, so Meta de-duplicates). */
+const SERVER_COPY = new Set(["begin_checkout", "click_to_call"]);
+
+/** Server-side copy of a browser event (api/track.js). Fire-and-forget; never throws. */
+export function serverTrack(event: string, eventId: string, data: { value?: number; currency?: string; contentName?: string; contentIds?: string[]; numItems?: number; user?: UserData } = {}) {
+  if (typeof window === "undefined" || !SERVER_COPY.has(event)) return;
+  try {
+    void fetch("/api/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({ event, eventId, page: window.location.pathname, visitorId: visitorId(), attribution: attribution(), ...data }),
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Every tel: link on the site counts as a phone lead: GA4/Google Ads (click_to_call), Meta "Contact"
+ * (browser + Conversions API), Microsoft and TikTok. One delegated listener covers every page.
+ */
+export function installCallTracking() {
+  const w = win();
+  if (!w || (w as Win & { __ctCall?: boolean }).__ctCall) return;
+  (w as Win & { __ctCall?: boolean }).__ctCall = true;
+  document.addEventListener(
+    "click",
+    (e) => {
+      const a = (e.target as Element | null)?.closest?.('a[href^="tel:"]') as HTMLAnchorElement | null;
+      if (!a) return;
+      const location = a.dataset.callLocation || "link";
+      const id = track("click_to_call", { location, content_name: "Phone call" });
+      serverTrack("click_to_call", id, { contentName: "Phone call" });
+    },
+    { capture: true },
+  );
 }

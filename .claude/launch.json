@@ -45,6 +45,17 @@
         "--strictPort"
       ],
       "port": 4175
+    },
+    {
+      "name": "ceoturbo-dev-testpixel",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "VITE_META_PIXEL_ID=1111111111111111",
+        "npm",
+        "run",
+        "dev"
+      ],
+      "port": 8080
     }
   ]
 }

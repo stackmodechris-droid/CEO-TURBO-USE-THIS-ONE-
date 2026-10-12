@@ -17,12 +17,14 @@ import {
   Lock,
   Mic2,
   Phone,
+  Rocket,
   Search,
   ShoppingBag,
   ShoppingCart,
   Sparkles,
   Star,
   Ticket,
+  TrendingUp,
   Users,
   Wallet,
   Wrench,
@@ -30,15 +32,16 @@ import {
 } from "lucide-react";
 import {
   AUDIENCES,
-  BLOCKERS,
   BUDGETS,
   CALL_MULTIPLIER,
   EMPTY_ANSWERS,
-  GOALS,
   QUIZ_STEPS,
+  STAGES,
   TIMELINES,
+  blockersFor,
   calBudget,
   calGoal,
+  goalsFor,
   labelOf,
   leadValue,
   moneyMove,
@@ -49,7 +52,9 @@ import {
 import { BOOKING, SITE, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
 import { QUIZ_NS, mountInlineBooking, openBooking } from "@/lib/cal";
-import { attribution, e164, newEventId, setCallContext, track } from "@/lib/track";
+import { attribution, e164, newEventId, setCallContext, track, visitorId } from "@/lib/track";
+import { sendLead } from "@/lib/lead-outbox";
+import { CallLink } from "@/components/site/CallLink";
 import { cn } from "@/lib/utils";
 
 const ICON: Record<IconKey, typeof Wrench> = {
@@ -69,9 +74,11 @@ const ICON: Record<IconKey, typeof Wrench> = {
   calendar: CalendarDays,
   compass: Compass,
   wallet: Wallet,
+  rocket: Rocket,
+  trending: TrendingUp,
 };
 
-const STORE = "ct_quiz_v1";
+const STORE = "ct_quiz_v2";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 const SECONDS_PER_STEP = 5;
 
@@ -182,6 +189,7 @@ export function BrandBoostQuiz({
 
   const index = step === "result" ? QUIZ_STEPS.length : QUIZ_STEPS.indexOf(step);
   const audience = answers.audience ?? "local";
+  const stage = answers.stage ?? "grow";
   const isArtist = answers.audience === "artist";
 
   const go = (next: QuizStep, patch: Partial<Answers> = {}) => {
@@ -249,23 +257,22 @@ export function BrandBoostQuiz({
     const id = idRef.current || newEventId("q");
     const value = leadValue(answers.budget);
     const move = moneyMove(answers);
-    const user = { email: answers.email.trim(), phone: answers.phone.trim(), name: answers.name.trim(), externalId: id };
+    const user = { email: answers.email.trim(), phone: answers.phone.trim(), name: answers.name.trim(), externalId: visitorId() };
+    const category = `${labelOf.audience(answers.audience)} · ${answers.stage === "start" ? "Starting out" : "Growing"}`;
     const eventId = track(
       "generate_lead",
-      { lead_source: "brand-boost-quiz", source, value, currency: "USD", content_name: "Brand Boost quiz", audience: answers.audience, goal: answers.goal, budget: answers.budget },
+      { lead_source: "brand-boost-quiz", source, value, currency: "USD", content_name: "Brand Boost quiz", content_category: category, audience: answers.audience, stage: answers.stage, goal: answers.goal, budget: answers.budget },
       { user },
     );
     setCallContext({ value: value * CALL_MULTIPLIER, user });
 
-    try {
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    // Never block the calendar on the sheet: sendLead retries from an outbox if this request fails.
+    await sendLead({
           type: "brand-boost-quiz",
           eventId,
           value,
           quizId: id,
+          visitorId: user.externalId,
           name: user.name,
           email: user.email,
           phone: user.phone,
@@ -273,7 +280,8 @@ export function BrandBoostQuiz({
           business: answers.business.trim(),
           website: answers.website.trim(),
           audience: labelOf.audience(answers.audience),
-          goal: labelOf.goal(answers.audience, answers.goal),
+          stage: labelOf.stage(answers.audience, answers.stage),
+          goal: labelOf.goal(answers.audience, answers.goal, answers.stage),
           blockers: answers.blockers.join(", "),
           budget: labelOf.budget(answers.budget),
           timeline: labelOf.timeline(answers.timeline),
@@ -283,12 +291,7 @@ export function BrandBoostQuiz({
           attribution: attribution(),
           company_site: honeypot,
           elapsedMs: startedAt.current ? Date.now() - startedAt.current : 99_999,
-        }),
-        signal: AbortSignal.timeout(10_000),
-      });
-    } catch {
-      /* never block the calendar on the sheet */
-    }
+    });
     setSending(false);
     setQuizId(id);
     go("result");
@@ -340,16 +343,26 @@ export function BrandBoostQuiz({
             <Question title="What do you do?" hint="Pick one — we'll tailor your plan.">
               <Options cols={2}>
                 {AUDIENCES.map((o, i) => (
-                  <Option key={o.id} n={i + 1} icon={o.icon} label={o.label} sub={o.sub} on={answers.audience === o.id} first={i === 0} onClick={() => choose({ audience: o.id, goal: answers.audience === o.id ? answers.goal : undefined, blockers: answers.audience === o.id ? answers.blockers : [] }, "goal")} />
+                  <Option key={o.id} n={i + 1} icon={o.icon} label={o.label} sub={o.sub} on={answers.audience === o.id} first={i === 0} onClick={() => choose(answers.audience === o.id ? { audience: o.id } : { audience: o.id, stage: undefined, goal: undefined, blockers: [] }, "stage")} />
+                ))}
+              </Options>
+            </Question>
+          )}
+
+          {step === "stage" && (
+            <Question title={isArtist ? "Where are you in your music career?" : answers.audience === "store" ? "Where is your store right now?" : "Where is your business right now?"} hint="Your plan is different for launching vs. growing." onBack={back}>
+              <Options cols={2}>
+                {STAGES[audience].map((o, i) => (
+                  <Option key={o.id} n={i + 1} icon={o.icon} label={o.label} sub={o.sub} on={answers.stage === o.id} first={i === 0} onClick={() => choose(answers.stage === o.id ? { stage: o.id } : { stage: o.id, goal: undefined, blockers: [] }, "goal")} />
                 ))}
               </Options>
             </Question>
           )}
 
           {step === "goal" && (
-            <Question title="What do you want most in the next 90 days?" hint="Your #1 goal decides what we look at first." onBack={back}>
+            <Question title={stage === "start" ? "What do you need most to get going?" : "What do you want most in the next 90 days?"} hint="Your #1 goal decides what we look at first." onBack={back}>
               <Options cols={2}>
-                {GOALS[audience].map((o, i) => (
+                {goalsFor(audience, stage).map((o, i) => (
                   <Option key={o.key} n={i + 1} icon={o.icon} label={o.label} on={answers.goal === o.key} first={i === 0} onClick={() => choose({ goal: o.key }, "blockers")} />
                 ))}
               </Options>
@@ -359,7 +372,7 @@ export function BrandBoostQuiz({
           {step === "blockers" && (
             <Question title="What's holding you back?" hint="Pick all that apply." onBack={back}>
               <div className="flex flex-wrap gap-2.5" role="group" aria-label="What's holding you back?">
-                {BLOCKERS[audience].map((b, i) => {
+                {blockersFor(audience, stage).map((b, i) => {
                   const on = answers.blockers.includes(b);
                   return (
                     <button
@@ -452,6 +465,9 @@ export function BrandBoostQuiz({
                   <Link to="/privacy-policy" className="underline underline-offset-2">
                     Privacy
                   </Link>
+                </p>
+                <p className="text-center text-xs text-muted-foreground">
+                  Prefer to talk? <CallLink location="quiz contact" className="font-semibold text-foreground underline underline-offset-2" />
                 </p>
               </form>
             </Question>
@@ -558,7 +574,9 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
       businessName: answers.business.trim(),
       whatTheyDo: labelOf.audience(answers.audience),
       website: answers.website.trim(),
-      goalLabel: labelOf.goal(answers.audience, answers.goal),
+      stage: labelOf.stage(answers.audience, answers.stage),
+      visitorId: visitorId(),
+      goalLabel: labelOf.goal(answers.audience, answers.goal, answers.stage),
       budgetLabel: labelOf.budget(answers.budget),
       blockers: answers.blockers.join(", "),
       timeline: labelOf.timeline(answers.timeline),
@@ -652,7 +670,10 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
         </div>
       )}
 
-      <button type="button" onClick={onRestart} className="mt-4 min-h-[44px] text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground">
+      <p className="mt-4 text-sm text-muted-foreground">
+        No time that works? Call us: <CallLink location="quiz result" className="font-semibold text-foreground underline underline-offset-2" />
+      </p>
+      <button type="button" onClick={onRestart} className="mt-2 min-h-[44px] text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground">
         Start over with different answers
       </button>
     </div>

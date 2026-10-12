@@ -30,6 +30,11 @@ export const organization = (): JsonLd => ({
   slogan: SITE.tagline,
   founder: { "@id": PERSON_ID },
   address: { "@type": "PostalAddress", ...SITE.address },
+  telephone: SITE.phone.e164,
+  contactPoint: [
+    { "@type": "ContactPoint", telephone: SITE.phone.e164, contactType: "sales", areaServed: "US", availableLanguage: ["English"] },
+    { "@type": "ContactPoint", telephone: SITE.phone.e164, contactType: "customer service", areaServed: "US", availableLanguage: ["English"] },
+  ],
   areaServed: { "@type": "Country", name: "United States" },
   sameAs: SITE.sameAs,
   knowsAbout: [
@@ -63,7 +68,7 @@ export const founder = (): JsonLd => ({
   image: abs(SITE.founder.image),
   url: abs("/about"),
   worksFor: { "@id": ORG_ID },
-  sameAs: SITE.sameAs,
+  sameAs: SITE.founder.sameAs,
   knowsAbout: ["Website design", "SEO", "AI search optimization", "Paid social advertising", "Brand growth"],
 });
 

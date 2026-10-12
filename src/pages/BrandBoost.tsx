@@ -24,7 +24,7 @@ export default function BrandBoost() {
         }
         lede={
           <>
-            Answer 5 quick questions, see your #1 money move instantly, then pick a time.<span className="hidden sm:inline"> {SITE.founder.name} reviews your website, Google profile, reviews, socials and ads with you — live — and hands you the fixes that bring customers fastest.</span>
+            Answer 6 quick questions, see your #1 money move instantly, then pick a time.<span className="hidden sm:inline"> {SITE.founder.name} reviews your website, Google profile, reviews, socials and ads with you — live — and hands you the fixes that bring customers fastest.</span>
           </>
         }
       />

@@ -149,7 +149,7 @@ export function ShippingReturns() {
       <section>
         <h2>Contact</h2>
         <p>
-          Reach us by booking a quick call from any page or by mail at {SITE.address.streetAddress}, {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}. Include your name and order details.
+          Call or text us at <a href={SITE.phone.href} data-call-location="shipping page">{SITE.phone.display}</a>, book a quick call from any page, or write to us at {SITE.address.streetAddress}, {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}. Include your name and order details.
         </p>
       </section>
     </LegalShell>

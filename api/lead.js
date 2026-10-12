@@ -1,7 +1,7 @@
 // POST /api/lead — Brand Boost quiz leads, review card order requests (fallback when Shopify checkout
 // is unreachable) and any other simple lead form.
 import { cleanLead, forwardLead, isBot, scoreLead } from "./_lib/leads.js";
-import { readJson, send, clientIp, rateLimited, sameOrigin } from "./_lib/http.js";
+import { readJson, send, clientIp, rateLimited, sameOrigin, isJson } from "./_lib/http.js";
 import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
 import { buildTiktokEvent, sendTiktokEvents } from "./_lib/tiktok-events.js";
 
@@ -12,6 +12,7 @@ export function quizFields(body) {
   return {
     quizId: text(body.quizId, 60),
     audience: text(body.audience, 60),
+    stage: text(body.stage, 60),
     goal: text(body.goal, 80),
     blockers: text(body.blockers, 300),
     budget: text(body.budget, 40),
@@ -27,6 +28,7 @@ export default async function handler(req, res) {
     return send(res, 405, { error: "method" });
   }
   if (!sameOrigin(req)) return send(res, 403, { error: "origin" });
+  if (!isJson(req)) return send(res, 415, { error: "content-type" });
   if (rateLimited(`lead:${clientIp(req)}`, 5, 10 * 60_000)) return send(res, 429, { error: "rate" });
 
   let body;
@@ -48,7 +50,7 @@ export default async function handler(req, res) {
   const value = Number(body.value) > 0 ? Math.min(Number(body.value), 100000) : 0;
   const url = `https://www.ceoturbo.com${text(body.page, 120) || "/"}`;
   const ip = signals.ip || clientIp(req);
-  const user = { email: lead.email, phone: lead.phone, name: lead.name, externalId: quiz?.quizId || undefined };
+  const user = { email: lead.email, phone: lead.phone, name: lead.name, externalId: text(body.visitorId, 60) || quiz?.quizId || undefined };
 
   const capi = sendMetaEvents([
     buildEvent({
@@ -61,7 +63,7 @@ export default async function handler(req, res) {
       userAgent: req.headers["user-agent"],
       customData: {
         lead_source: type,
-        ...(quiz ? { content_name: "Brand Boost quiz", content_category: quiz.audience } : {}),
+        ...(quiz ? { content_name: "Brand Boost quiz", content_category: [quiz.audience, quiz.stage].filter(Boolean).join(" · ") } : {}),
         ...(value ? { value, currency: "USD" } : {}),
       },
     }),
@@ -80,6 +82,7 @@ export default async function handler(req, res) {
     total: text(body.total, 20),
     note: text(body.note, 500),
     page: text(body.page, 120),
+    eventId,
     ...attr,
   });
   await Promise.all([capi, tiktok]);

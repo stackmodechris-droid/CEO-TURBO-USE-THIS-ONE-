@@ -17,6 +17,9 @@
     },
     "api/shopify-webhook.js": {
       "maxDuration": 15
+    },
+    "api/track.js": {
+      "maxDuration": 10
     }
   },
   "redirects": [

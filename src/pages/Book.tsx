@@ -29,7 +29,7 @@ export default function Book() {
         }
         lede={
           <>
-            Answer 5 quick questions and see your #1 money move instantly.<span className="hidden sm:inline"> Then grab a free 30-minute call — {SITE.founder.name} looks at your website, Google profile, reviews and ads with you, live.</span>
+            Answer 6 quick questions and see your #1 money move instantly.<span className="hidden sm:inline"> Then grab a free 30-minute call — {SITE.founder.name} looks at your website, Google profile, reviews and ads with you, live.</span>
           </>
         }
       />

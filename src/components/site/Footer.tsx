@@ -5,14 +5,8 @@ import { GUIDES, guidePath } from "@/content/guides";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
 import { BookButton } from "@/components/cta/Actions";
-
-const SOCIAL = [
-  { label: "YouTube", href: "https://www.youtube.com/@ChristopherRobinson-CEO" },
-  { label: "Instagram", href: "https://www.instagram.com/christopherrobinsonceo/" },
-  { label: "TikTok", href: "https://www.tiktok.com/@stackmodechris___" },
-  { label: "X", href: "https://x.com/ChristopherRCEO" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/stackmodechris/" },
-];
+import { CallLink } from "./CallLink";
+import { SocialLinks } from "./SocialLinks";
 
 export function Footer({ focus = false }: { focus?: boolean }) {
   const year = 2026;
@@ -21,7 +15,8 @@ export function Footer({ focus = false }: { focus?: boolean }) {
       <footer className="border-t border-border pb-28 pt-10 text-sm text-muted-foreground sm:pb-10">
         <div className="container-x flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {SITE.name} · {SITE.address.addressLocality}, {SITE.address.addressRegion}
+            © {year} {SITE.name} · {SITE.address.addressLocality}, {SITE.address.addressRegion} ·{" "}
+            <CallLink location="footer (ad page)" className="text-foreground hover:text-turbo" />
           </p>
           <p className="flex gap-4">
             <Link to="/privacy-policy" className="hover:text-foreground">Privacy</Link>
@@ -45,7 +40,9 @@ export function Footer({ focus = false }: { focus?: boolean }) {
           </p>
           <div className="flex flex-col gap-3">
             <BookButton note="Footer" />
-            <p className="text-sm text-muted-foreground">Free · 30 minutes · No pitch deck</p>
+            <p className="text-sm text-muted-foreground">
+              Free · 30 minutes · No pitch deck · or call <CallLink location="footer cta" className="font-semibold text-foreground hover:text-turbo" />
+            </p>
           </div>
         </div>
 
@@ -59,7 +56,10 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               {SITE.address.streetAddress}
               <br />
               {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}
+              <br />
+              <CallLink location="footer" icon className="mt-2 font-semibold text-foreground hover:text-turbo" />
             </address>
+            <SocialLinks className="mt-5" />
           </div>
           <FooterCol
             title="Who we help"
@@ -97,13 +97,6 @@ export function Footer({ focus = false }: { focus?: boolean }) {
             </a>
           </p>
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
-            {SOCIAL.map((s) => (
-              <li key={s.label}>
-                <a href={s.href} target="_blank" rel="noopener me" className="hover:text-foreground">
-                  {s.label}
-                </a>
-              </li>
-            ))}
             <li>
               <Link to="/privacy-policy" className="hover:text-foreground">Privacy</Link>
             </li>

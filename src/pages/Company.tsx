@@ -6,6 +6,8 @@ import { AD_TOTALS, money } from "@/content/results";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { BookingSection, Founder, PathPicker, ServiceGrid } from "@/components/blocks/Sales";
 import { ProofStats, WorkGrid, GSCProof } from "@/components/blocks/Proof";
+import { CallLink } from "@/components/site/CallLink";
+import { SocialLinks } from "@/components/site/SocialLinks";
 import { Breadcrumbs, DirectAnswer, SectionHeader } from "@/components/blocks/Basics";
 
 export function About() {
@@ -101,9 +103,20 @@ export function Contact() {
                 <br />
                 {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}
               </address>
-              <a href="https://www.instagram.com/christopherrobinsonceo/" target="_blank" rel="noopener" className="btn-chrome mt-6">
-                DM on Instagram <ArrowUpRight className="h-4 w-4" />
+              <a href="https://www.instagram.com/ceoturbo_/" target="_blank" rel="noopener" className="btn-chrome mt-6">
+                DM us on Instagram <ArrowUpRight className="h-4 w-4" />
               </a>
+            </div>
+          </div>
+          <div className="panel mt-5 flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Call or text us</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Questions about a project or a review card order? Talk to a real person.</p>
+              <CallLink location="contact page" icon className="mt-3 font-display text-2xl font-bold text-foreground hover:text-turbo" />
+            </div>
+            <div>
+              <p className="mb-2 text-sm font-semibold">Follow {SITE.name}</p>
+              <SocialLinks />
             </div>
           </div>
         </div>

@@ -42,6 +42,7 @@ const TABS = {
       Status: "",
       "Follow-up notes": "",
       "What they do": "audience",
+      Stage: "stage",
       Website: "website",
       "Biggest goal": "goal",
       "Holding them back": "blockers",
@@ -51,7 +52,7 @@ const TABS = {
       "Text opt-in": "smsOptIn",
     },
     ATTR,
-    { "Form page": "page", "Quiz ID": "quizId" }
+    { "Form page": "page", "Quiz ID": "quizId", "Event ID": "eventId" }
   ),
   "Free Check Leads": Object.assign(
     {
@@ -62,6 +63,7 @@ const TABS = {
       Company: "business",
       Type: "type",
       "What they do": "what",
+      Stage: "stage",
       City: "city",
       Website: "website",
       "Google profile claimed": "gbp",
@@ -77,7 +79,7 @@ const TABS = {
       "Top issues": "topIssues",
     },
     ATTR,
-    { "Form page": "page" }
+    { "Form page": "page", "Event ID": "eventId" }
   ),
   // One row per booked Brand Boost call, laid out for call prep: when, who, how hot, what they told you.
   "Booked Calls": Object.assign(
@@ -95,6 +97,7 @@ const TABS = {
       "Follow-up date": "",
       "Follow-up notes": "",
       "What they do": "whatTheyDo",
+      Stage: "stage",
       Website: "website",
       "Biggest goal": "goal",
       "Holding them back": "blockers",
@@ -132,7 +135,7 @@ const TABS = {
       Note: "note",
     },
     ATTR,
-    { "Form page": "page", "Order ID": "orderId" }
+    { "Form page": "page", "Order ID": "orderId", "Event ID": "eventId" }
   ),
   "Other Leads": Object.assign({ Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Company: "business", Type: "type", Note: "note" }, ATTR, { "Form page": "page" }),
 };
@@ -243,8 +246,13 @@ function doPost(e) {
       headers = headers.concat(missing);
     }
 
-    // Each booking / paid order is recorded once, even if Cal.com or Shopify retries the webhook.
-    const dedupe = name === "Booked Calls" ? ["Booking ID", data.uid] : name === "Card Orders" && data.type === "shopify-order" ? ["Order ID", data.orderId] : null;
+    // Each booking / paid order / form lead is recorded once, even if Cal.com, Shopify or the website's
+    // retry outbox sends it again.
+    const dedupe =
+      name === "Booked Calls" ? ["Booking ID", data.uid]
+      : name === "Card Orders" && data.type === "shopify-order" ? ["Order ID", data.orderId]
+      : data.eventId ? ["Event ID", data.eventId]
+      : null;
     if (dedupe && dedupe[1]) {
       const idCol = headers.indexOf(dedupe[0]) + 1;
       if (idCol > 0 && sheet.getLastRow() > 1) {

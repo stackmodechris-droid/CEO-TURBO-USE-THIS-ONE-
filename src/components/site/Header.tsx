@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { BookButton } from "@/components/cta/Actions";
 import { SERVICES } from "@/content/services";
-import { fromPriceLabel } from "@/config/site";
+import { SITE, fromPriceLabel } from "@/config/site";
+import { CallLink } from "./CallLink";
 import { SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { cn } from "@/lib/utils";
 
@@ -97,6 +98,11 @@ export function Header({ focus = false }: { focus?: boolean }) {
         )}
 
         <div className="flex items-center gap-2">
+          <CallLink location={focus ? "ad page header" : "header"} icon className="hidden min-h-[44px] px-2 text-sm font-semibold text-chrome transition-colors hover:text-foreground xl:inline-flex" />
+          <CallLink location={focus ? "ad page header icon" : "header icon"} className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-foreground ring-1 ring-white/10 hover:bg-white/5 xl:hidden">
+            <Phone className="h-[18px] w-[18px]" aria-hidden />
+            <span className="sr-only">Call {SITE.name} at {SITE.phone.display}</span>
+          </CallLink>
           <BookButton note={focus ? "Ad page header" : "Header"} className={cn("!px-4 !py-2.5 !text-sm", focus ? "inline-flex" : "hidden sm:inline-flex")}>
             Book a free call
           </BookButton>

@@ -6,6 +6,10 @@ import { cleanLead, isBot, scoreLead } from "../../api/_lib/leads.js";
 import { buildEvent, hashedUser, cleanAttribution, requestSignals, withSignals } from "../../api/_lib/meta-capi.js";
 import { buildTiktokEvent } from "../../api/_lib/tiktok-events.js";
 import { quizFields } from "../../api/lead.js";
+import { trackPayload } from "../../api/track.js";
+import { sameOrigin, isJson } from "../../api/_lib/http.js";
+import { deliveryResult, forwardLead } from "../../api/_lib/leads.js";
+import { vi, afterEach } from "vitest";
 import { validSignature, parseBooking } from "../../api/cal-webhook.js";
 import { validSignature as shopifySig, parseOrder } from "../../api/shopify-webhook.js";
 import { createHash, createHmac } from "node:crypto";
@@ -147,13 +151,13 @@ describe("Shopify order webhook", () => {
 
 describe("Brand Boost quiz lead", () => {
   it("keeps only the known quiz answers, trimmed and tag-free", () => {
-    const q = quizFields({ quizId: "q_1", audience: "Local service business", goal: "More calls & bookings", blockers: "Hard to find on Google, <script>", budget: "$500 to $2,000", timeline: "Within 30 days", website: " mor.com ", move: "Turn searches into phone calls", evil: "x" });
-    expect(q).toEqual({ quizId: "q_1", audience: "Local service business", goal: "More calls & bookings", blockers: "Hard to find on Google,  script", budget: "$500 to $2,000", timeline: "Within 30 days", website: "mor.com", move: "Turn searches into phone calls" });
+    const q = quizFields({ quizId: "q_1", audience: "Local service business", stage: "Growing my business", goal: "More calls & bookings", blockers: "Hard to find on Google, <script>", budget: "$500 to $2,000", timeline: "Within 30 days", website: " mor.com ", move: "Turn searches into phone calls", evil: "x" });
+    expect(q).toEqual({ quizId: "q_1", audience: "Local service business", stage: "Growing my business", goal: "More calls & bookings", blockers: "Hard to find on Google,  script", budget: "$500 to $2,000", timeline: "Within 30 days", website: "mor.com", move: "Turn searches into phone calls" });
   });
 
   it("reads quiz answers from booking metadata when the hidden booking fields are empty", () => {
-    const b = parseBooking({ payload: { uid: "u2", attendees: [{ name: "Al", email: "al@x.co" }], responses: {}, metadata: { quizId: "q_9", businessName: "Mor Handy", goalLabel: "More calls & bookings", budgetLabel: "$5,000+", blockers: "No time", timeline: "ASAP — this week", leadValue: "900", ttclid: "tt1" } } });
-    expect(b).toMatchObject({ quizId: "q_9", businessName: "Mor Handy", goal: "More calls & bookings", budget: "$5,000+", blockers: "No time", timeline: "ASAP — this week", value: 900, attribution: { ttclid: "tt1" } });
+    const b = parseBooking({ payload: { uid: "u2", attendees: [{ name: "Al", email: "al@x.co" }], responses: {}, metadata: { quizId: "q_9", stage: "Just starting out", visitorId: "v_1", businessName: "Mor Handy", goalLabel: "More calls & bookings", budgetLabel: "$5,000+", blockers: "No time", timeline: "ASAP — this week", leadValue: "900", ttclid: "tt1" } } });
+    expect(b).toMatchObject({ quizId: "q_9", stage: "Just starting out", visitorId: "v_1", businessName: "Mor Handy", goal: "More calls & bookings", budget: "$5,000+", blockers: "No time", timeline: "ASAP — this week", value: 900, attribution: { ttclid: "tt1" } });
   });
 });
 
@@ -211,7 +215,8 @@ describe("leads Apps Script (docs/leads-apps-script.js)", () => {
     for (const [tab, map] of Object.entries(TABS)) expect(new Set(Object.keys(map)).size, tab).toBe(Object.keys(map).length);
     const status = ctx.STATUS as Record<string, string[][]>;
     expect(status["Booked Calls"].map((s) => s[0])).toEqual(["New", "Confirmed", "Showed", "No-show", "Rescheduled", "Won", "Lost"]);
-    expect(Object.keys(TABS["Booked Calls"])).toEqual(expect.arrayContaining(["Call time", "Priority", "Lead score", "Status", "Outcome", "Quote $", "Follow-up date", "#1 move shown", "Booking ID", "Quiz ID"]));
+    expect(Object.keys(TABS["Booked Calls"])).toEqual(expect.arrayContaining(["Call time", "Priority", "Lead score", "Status", "Outcome", "Quote $", "Follow-up date", "#1 move shown", "Booking ID", "Quiz ID", "Stage"]));
+    for (const tab of ["Call Quiz Leads", "Free Check Leads"]) expect(TABS[tab], tab).toMatchObject({ Stage: "stage", "Event ID": "eventId" });
   });
 
   it("fills Booked Calls from fields the booking webhook actually sends", () => {
@@ -229,5 +234,76 @@ describe("leads Apps Script (docs/leads-apps-script.js)", () => {
     });
     expect(cells.length).toBeGreaterThan(30);
     expect(seen.size).toBeGreaterThan(10);
+  });
+});
+
+describe("lead delivery to the Google Sheet", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it("only counts a lead as saved when the Apps Script says so", () => {
+    expect(deliveryResult(200, "ok").ok).toBe(true);
+    expect(deliveryResult(200, "duplicate").ok).toBe(true);
+    expect(deliveryResult(200, "forbidden")).toMatchObject({ ok: false, retry: false });
+    expect(deliveryResult(200, "bad json").ok).toBe(false);
+    expect(deliveryResult(200, "<!DOCTYPE html><html>Sign in</html>")).toMatchObject({ ok: false, retry: true });
+    expect(deliveryResult(503, "")).toMatchObject({ ok: false, retry: true });
+    expect(deliveryResult(400, "")).toMatchObject({ ok: false, retry: false });
+  });
+
+  it("retries a failed send, then falls back to the backup webhook", async () => {
+    vi.stubEnv("LEADS_WEBHOOK_URL", "https://sheet.test/x");
+    vi.stubEnv("LEADS_BACKUP_WEBHOOK_URL", "https://backup.test/y");
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      calls.push(url);
+      return new Response(url.includes("sheet") ? "" : "ok", { status: url.includes("sheet") ? 500 : 200 });
+    }));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const r = await forwardLead({ type: "brand-boost-quiz", name: "Jo" });
+    expect(calls).toEqual(["https://sheet.test/x", "https://sheet.test/x", "https://backup.test/y"]);
+    expect(r.stored).toBe("backup");
+  });
+
+  it("reports a secret mismatch as not saved (no silent loss)", async () => {
+    vi.stubEnv("LEADS_WEBHOOK_URL", "https://sheet.test/x");
+    vi.stubEnv("LEADS_BACKUP_WEBHOOK_URL", "");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("forbidden", { status: 200 })));
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect((await forwardLead({ type: "x" })).stored).toBe(false);
+    expect(String(err.mock.calls[0][0])).toMatch(/secret mismatch/);
+  });
+});
+
+describe("form endpoint guards", () => {
+  const req = (headers: Record<string, string>) => ({ headers: { host: "www.ceoturbo.com", ...headers } }) as never;
+  it("accepts our own pages and rejects other sites and header-less scripts", () => {
+    expect(sameOrigin(req({ origin: "https://www.ceoturbo.com" }))).toBe(true);
+    expect(sameOrigin(req({ origin: "http://localhost:8080" }))).toBe(true);
+    expect(sameOrigin(req({ origin: "https://evil.example" }))).toBe(false);
+    expect(sameOrigin(req({ origin: "https://ceoturbo.com.evil.example" }))).toBe(false);
+    expect(sameOrigin(req({}))).toBe(false);
+    expect(sameOrigin(req({ "sec-fetch-site": "same-origin" }))).toBe(true);
+    expect(sameOrigin(req({ "sec-fetch-site": "cross-site" }))).toBe(false);
+    expect(sameOrigin(req({ referer: "https://www.ceoturbo.com/book" }))).toBe(true);
+  });
+  it("requires JSON bodies", () => {
+    expect(isJson(req({ "content-type": "application/json" }))).toBe(true);
+    expect(isJson(req({ "content-type": "text/plain" }))).toBe(false);
+    expect(isJson(req({}))).toBe(false);
+  });
+});
+
+describe("server copies of browser events (/api/track)", () => {
+  it("only sends whitelisted events, mapped to Meta names", () => {
+    expect(trackPayload({ event: "click_to_call", contentName: "Phone call" })).toEqual({ eventName: "Contact", customData: { content_name: "Phone call" } });
+    expect(trackPayload({ event: "begin_checkout", value: 39.99, currency: "usd", contentIds: ["CT-NFC-REVIEW-2"], numItems: 1 })).toEqual({
+      eventName: "InitiateCheckout",
+      customData: { value: 39.99, currency: "USD", content_ids: ["CT-NFC-REVIEW-2"], content_type: "product", num_items: 1 },
+    });
+    expect(trackPayload({ event: "Purchase", value: 1 })).toBeNull();
+    expect(trackPayload({ event: "generate_lead" })).toBeNull();
   });
 });

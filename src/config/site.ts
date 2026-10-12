@@ -12,6 +12,21 @@ export const SITE = {
     alternateName: "StackmodeChris",
     jobTitle: "Founder & CEO",
     image: "/img/brand/christopher-robinson.webp",
+    /** Christopher's personal profiles (Person schema). */
+    sameAs: [
+      "https://www.youtube.com/@ChristopherRobinson-CEO",
+      "https://x.com/ChristopherRCEO",
+      "https://www.instagram.com/christopherrobinsonceo/",
+      "https://www.tiktok.com/@stackmodechris___",
+      "https://www.linkedin.com/in/stackmodechris/",
+      "https://stackmode.net",
+    ],
+  },
+  /** Call or text the company. `href` is what every tel: link uses. */
+  phone: {
+    display: "(470) 502-9543",
+    e164: "+14705029543",
+    href: "tel:+14705029543",
   },
   email: "",
   address: {
@@ -23,13 +38,20 @@ export const SITE = {
   },
   logo: "/img/brand/ceo-turbo-logo.png",
   ogImage: "/og/ceoturbo.jpg",
+  /** CEO Turbo's own profiles (Organization schema + the social icons). */
+  social: [
+    { network: "instagram", label: "Instagram", href: "https://www.instagram.com/ceoturbo_/" },
+    { network: "facebook", label: "Facebook", href: "https://www.facebook.com/profile.php?id=61595439263484" },
+    { network: "youtube", label: "YouTube", href: "https://www.youtube.com/@CEOTurbo7" },
+    { network: "x", label: "X", href: "https://x.com/CEO_Turbo" },
+    { network: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/showcase/ceoturbo" },
+  ],
   sameAs: [
-    "https://www.youtube.com/@ChristopherRobinson-CEO",
-    "https://x.com/ChristopherRCEO",
-    "https://www.instagram.com/christopherrobinsonceo/",
-    "https://www.tiktok.com/@stackmodechris___",
-    "https://www.linkedin.com/in/stackmodechris/",
-    "https://stackmode.net",
+    "https://www.instagram.com/ceoturbo_/",
+    "https://www.facebook.com/profile.php?id=61595439263484",
+    "https://www.youtube.com/@CEOTurbo7",
+    "https://x.com/CEO_Turbo",
+    "https://www.linkedin.com/showcase/ceoturbo",
   ],
 } as const;
 

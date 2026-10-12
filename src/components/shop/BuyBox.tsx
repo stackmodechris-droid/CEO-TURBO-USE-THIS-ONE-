@@ -1,13 +1,13 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent, type TouchEvent } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, BadgeCheck, Check, ChevronLeft, ChevronRight, Loader2, Lock, Search, ShieldCheck, Smartphone, Truck, Zap, Repeat } from "lucide-react";
-import { REVIEW_CARD, money2, packSavings, packSku, type ReviewPack } from "@/config/site";
+import { ArrowRight, BadgeCheck, Check, ChevronLeft, ChevronRight, Loader2, Lock, Phone, Search, ShieldCheck, Smartphone, Truck, Zap, Repeat } from "lucide-react";
+import { REVIEW_CARD, SITE, money2, packSavings, packSku, type ReviewPack } from "@/config/site";
 import { GALLERY, INCLUDED, PRODUCT_POINTS, SETUP_PATH } from "@/content/review-cards";
 import { CardFace, ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { BookButton } from "@/components/cta/Actions";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { googleSearchUrl, rememberBusiness } from "@/lib/review-link";
-import { attribution, track, type Ecommerce } from "@/lib/track";
+import { attribution, track, type Ecommerce, serverTrack, visitorId } from "@/lib/track";
 import { createCheckout, loadVariants } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
@@ -93,7 +93,8 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
     setBusy(true);
     try {
       const { url } = await createCheckout(pack, business);
-      track("begin_checkout", { pack: pack.id, checkout: "shopify" }, { ecommerce });
+      const checkoutId = track("begin_checkout", { pack: pack.id, checkout: "shopify" }, { ecommerce });
+      serverTrack("begin_checkout", checkoutId, { value: ecommerce.value, currency: ecommerce.currency, contentName: REVIEW_CARD.fullName, contentIds: ecommerce.items.map((i) => i.item_id), numItems: ecommerce.items.reduce((n, i) => n + i.quantity, 0) });
       // Give the pixels a beat to send before leaving the page.
       setTimeout(() => window.location.assign(url), 250);
     } catch {
@@ -288,6 +289,15 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
               <Lock className="mt-0.5 h-4 w-4 shrink-0 text-chrome" aria-hidden />
               Secure checkout powered by Shopify. We never see your card number.
             </p>
+            <p className="mt-2 flex items-start gap-2 text-xs text-muted-foreground">
+              <Phone className="mt-0.5 h-4 w-4 shrink-0 text-chrome" aria-hidden />
+              <span>
+                Questions before you order? Call or text{" "}
+                <a href={SITE.phone.href} data-call-location="shop buy box" className="font-semibold text-foreground underline underline-offset-2">
+                  {SITE.phone.display}
+                </a>
+              </span>
+            </p>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
             <Link to={SETUP_PATH} className="font-semibold text-turbo underline-offset-4 hover:underline">
@@ -352,10 +362,10 @@ function OrderDialog({ open, onOpenChange, pack, business }: { open: boolean; on
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, eventId, attribution: attribution(), type: "order-request", product: REVIEW_CARD.name, pack: pack.label, total: money2(pack.price), value: pack.price, elapsedMs: Date.now() - opened.current, page: window.location.pathname }),
+        body: JSON.stringify({ ...f, eventId, visitorId: visitorId(), attribution: attribution(), type: "order-request", product: REVIEW_CARD.name, pack: pack.label, total: money2(pack.price), value: pack.price, elapsedMs: Date.now() - opened.current, page: window.location.pathname }),
       });
       if (!res.ok) throw new Error(String(res.status));
-      track("generate_lead", { lead_source: "order_request", value: pack.price, currency: REVIEW_CARD.currency, pack: pack.id }, { eventId, user: { email: f.email, phone: f.phone, name: f.name } });
+      track("generate_lead", { lead_source: "order_request", value: pack.price, currency: REVIEW_CARD.currency, pack: pack.id }, { eventId, user: { email: f.email, phone: f.phone, name: f.name, externalId: visitorId() } });
       rememberBusiness(f.business);
       setState("done");
     } catch {

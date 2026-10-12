@@ -56,6 +56,8 @@ export function parseBooking(body) {
     notes: str(val(r.notes) || p.description, 500),
     businessName: pick("businessName", 140),
     whatTheyDo: pick("whatTheyDo", 120),
+    stage: str(meta.stage, 60),
+    visitorId: str(meta.visitorId, 60),
     website: pick("website", 200),
     goal: str(meta.goalLabel, 100) || pick("goal", 100),
     budget: str(meta.budgetLabel, 60) || pick("budget", 60),
@@ -95,7 +97,7 @@ export default async function handler(req, res) {
   const b = parseBooking(body);
   const eventId = b.uid ? `book_${b.uid}` : undefined;
   const url = `https://www.ceoturbo.com${b.page || "/brand-boost"}`;
-  const user = { email: b.email, phone: b.phone, name: b.name, externalId: b.quizId || undefined };
+  const user = { email: b.email, phone: b.phone, name: b.name, externalId: b.visitorId || b.quizId || undefined };
   const worth = b.value ? { value: b.value, currency: "USD" } : {};
   const [capi, , sheet] = await Promise.all([
     sendMetaEvents([
@@ -110,7 +112,7 @@ export default async function handler(req, res) {
       }),
     ]),
     sendTiktokEvents([buildTiktokEvent({ event: "Schedule", eventId, eventTime: body.createdAt, url, user, attribution: b.attribution, properties: { content_name: b.title || "Brand Boost call", ...worth } })]),
-    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, website: b.website, goal: b.goal, budget: b.budget, blockers: b.blockers, timeline: b.timeline, move: b.move, value: b.value, ...scoreLead(b), quizId: b.quizId, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
+    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, stage: b.stage, website: b.website, goal: b.goal, budget: b.budget, blockers: b.blockers, timeline: b.timeline, move: b.move, value: b.value, ...scoreLead(b), quizId: b.quizId, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
   ]);
   return send(res, 200, { ok: true, meta: !!capi.sent, sheet: !!sheet.stored });
 }

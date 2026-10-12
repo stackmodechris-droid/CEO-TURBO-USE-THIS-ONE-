@@ -64,12 +64,12 @@ function build(): PageMeta[] {
     path: "/brand-boost",
     title: "Free Brand Boost Call — Get More Customers | CEO Turbo",
     description:
-      "Answer 5 quick questions, get your #1 money move, then a free 30-minute call: we review your website, Google profile, reviews and ads live.",
+      "Answer 6 quick questions, get your #1 money move, then a free 30-minute call: we review your website, Google profile, reviews and ads live.",
     ogImage: "/og/brand-boost.jpg",
     priority: 0.9,
     changefreq: "monthly",
     group: "Core",
-    schema: [...base(), S.webPage("/brand-boost", "Free Brand Boost call", "Answer 5 quick questions, see your #1 money move, then book a free 30-minute growth call with CEO Turbo."), S.brandBoost(), S.video("/brand-boost"), S.breadcrumbs([{ name: "Brand Boost call", path: "/brand-boost" }]), S.faqPage(BOOK_FAQS, "/brand-boost")],
+    schema: [...base(), S.webPage("/brand-boost", "Free Brand Boost call", "Answer 6 quick questions, see your #1 money move, then book a free 30-minute growth call with CEO Turbo."), S.brandBoost(), S.video("/brand-boost"), S.breadcrumbs([{ name: "Brand Boost call", path: "/brand-boost" }]), S.faqPage(BOOK_FAQS, "/brand-boost")],
   });
 
   pages.push({
