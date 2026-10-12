@@ -1,6 +1,6 @@
 // Meta Pixel (id in src/lib/track.ts; VITE_META_PIXEL_ID overrides it).
 // Loads after the page is interactive so it never slows first paint; PageView fires on every route.
-import { PIXEL_ID as pixelId, metaPixelReady, newEventId, visitorId } from "@/lib/track";
+import { PIXEL_ID as pixelId, metaPixelReady, newEventId, serverTrack, visitorId } from "@/lib/track";
 type Fbq = ((...args: unknown[]) => void) & { callMethod?: (...a: unknown[]) => void; queue: unknown[]; loaded: boolean; version: string; push: unknown };
 
 const PIXEL_ID = pixelId();
@@ -25,10 +25,18 @@ export function startPixel() {
   s.src = "https://connect.facebook.net/en_US/fbevents.js";
   document.head.appendChild(s);
   n("init", PIXEL_ID, { external_id: visitorId() });
-  n("track", "PageView", {}, { eventID: newEventId("pv") });
+  pageView(n);
   metaPixelReady();
 }
 
+/** PageView on the Pixel plus the same event (same id) through the Conversions API, so Meta covers it twice and de-duplicates. */
+function pageView(fbq: Fbq) {
+  const id = newEventId("pv");
+  fbq("track", "PageView", {}, { eventID: id });
+  serverTrack("page_view", id);
+}
+
 export function pixelPageView() {
-  (window as unknown as { fbq?: Fbq }).fbq?.("track", "PageView", {}, { eventID: newEventId("pv") });
+  const fbq = (window as unknown as { fbq?: Fbq }).fbq;
+  if (fbq) pageView(fbq);
 }

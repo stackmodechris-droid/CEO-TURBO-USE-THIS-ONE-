@@ -103,8 +103,8 @@ export default async function handler(req, res) {
     eventId,
     ...attr,
   });
-  await capi;
+  const [meta] = await capi;
 
-  if (!report) return send(res, 503, { error: "audit" });
-  return send(res, 200, { report });
+  if (!report) return send(res, 503, { error: "audit", meta: !!meta.sent });
+  return send(res, 200, { report, meta: !!meta.sent });
 }

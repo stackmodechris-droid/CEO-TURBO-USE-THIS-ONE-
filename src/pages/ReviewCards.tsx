@@ -174,7 +174,7 @@ export default function ReviewCards() {
       <FAQList faqs={SHOP_FAQS} title="Review card questions" />
 
       <p className="container-x pb-10 text-xs leading-relaxed text-muted-foreground">
-        Google and the Google logo are trademarks of Google LLC. CEO Turbo is not affiliated with, sponsored or endorsed by Google. Results vary by business; we don't guarantee a number of reviews or rankings. See{" "}
+        Google and the Google logo are trademarks of Google LLC. CEO Turbo is not affiliated with, sponsored or endorsed by Google. The businesses that hand the card to every happy customer get the most reviews. See{" "}
         <Link to="/shipping-returns" className="underline underline-offset-2">
           shipping &amp; returns
         </Link>

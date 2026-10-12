@@ -303,6 +303,9 @@ describe("server copies of browser events (/api/track)", () => {
       eventName: "InitiateCheckout",
       customData: { value: 39.99, currency: "USD", content_ids: ["CT-NFC-REVIEW-2"], content_type: "product", num_items: 1 },
     });
+    expect(trackPayload({ event: "page_view" })).toEqual({ eventName: "PageView", customData: {} });
+    expect(trackPayload({ event: "view_item", value: 39.99, contentIds: ["CT-NFC-REVIEW-2"] })?.eventName).toBe("ViewContent");
+    expect(trackPayload({ event: "add_to_cart", value: 39.99 })?.eventName).toBe("AddToCart");
     expect(trackPayload({ event: "Purchase", value: 1 })).toBeNull();
     expect(trackPayload({ event: "generate_lead" })).toBeNull();
   });

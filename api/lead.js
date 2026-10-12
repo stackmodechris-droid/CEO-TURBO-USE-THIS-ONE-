@@ -85,6 +85,6 @@ export default async function handler(req, res) {
     eventId,
     ...attr,
   });
-  await Promise.all([capi, tiktok]);
-  return send(res, 200, { ok: true, stored: !!stored });
+  const [meta] = await Promise.all([capi, tiktok]);
+  return send(res, 200, { ok: true, stored: !!stored, meta: !!meta.sent });
 }

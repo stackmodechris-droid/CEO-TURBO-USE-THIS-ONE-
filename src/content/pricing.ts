@@ -26,7 +26,7 @@ export const PRICING_TERMS = {
   payment: "Setup fees are paid 50% to start and 50% at launch. Monthly plans are billed on the same day each month.",
   adSpend: "Ad spend is paid by you, directly to Meta, Google, Microsoft or TikTok, from your own ad account — we never mark it up.",
   ownership: "You own your website, domain, ad accounts, pixel data, content and email list. If you leave, it all stays yours.",
-  results: "SEO, AEO and GEO compound: most clients see movement in 30–90 days and the biggest gains after 3–6 months. Nobody can honestly guarantee a #1 ranking, and we won't.",
+  results: "SEO, AEO and GEO compound: most clients see movement in 30–90 days and the biggest gains after 3–6 months — and every month builds on the last.",
 } as const;
 
 export const SETUP: PriceItem[] = [

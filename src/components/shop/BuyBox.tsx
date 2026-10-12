@@ -9,6 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { googleSearchUrl, rememberBusiness } from "@/lib/review-link";
 import { attribution, track, type Ecommerce, serverTrack, visitorId } from "@/lib/track";
 import { createCheckout, loadVariants } from "@/lib/shopify";
+
+/** The Conversions API copy of a shop event (same values as the Pixel's). */
+const serverEcommerce = (e: Ecommerce) => ({ value: e.value, currency: e.currency, contentName: REVIEW_CARD.fullName, contentIds: e.items.map((i) => i.item_id), numItems: e.items.reduce((n, i) => n + i.quantity, 0) });
 import { cn } from "@/lib/utils";
 
 const POINT_ICONS = [Smartphone, Zap, Repeat, BadgeCheck];
@@ -49,7 +52,8 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
   useEffect(() => {
     const pk = REVIEW_CARD.packs.find((x) => x.id === new URLSearchParams(window.location.search).get("pack"));
     if (pk) setPackId(pk.id);
-    track("view_item", { content_name: REVIEW_CARD.fullName }, { ecommerce: ecommerceFor(pk ?? REVIEW_CARD.packs.find((x) => x.id === "2")!) });
+    const viewed = ecommerceFor(pk ?? REVIEW_CARD.packs.find((x) => x.id === "2")!);
+    serverTrack("view_item", track("view_item", { content_name: REVIEW_CARD.fullName }, { ecommerce: viewed }), serverEcommerce(viewed));
     // Back from Shopify checkout (bfcache): re-enable the button.
     const onShow = (e: PageTransitionEvent) => e.persisted && setBusy(false);
     window.addEventListener("pageshow", onShow);
@@ -89,12 +93,12 @@ export function BuyBox({ business, onBusiness }: { business: string; onBusiness:
     if (busy) return;
     rememberBusiness(business);
     const ecommerce = ecommerceFor(pack);
-    track("add_to_cart", { pack: pack.id }, { ecommerce });
+    serverTrack("add_to_cart", track("add_to_cart", { pack: pack.id }, { ecommerce }), serverEcommerce(ecommerce));
     setBusy(true);
     try {
       const { url } = await createCheckout(pack, business);
       const checkoutId = track("begin_checkout", { pack: pack.id, checkout: "shopify" }, { ecommerce });
-      serverTrack("begin_checkout", checkoutId, { value: ecommerce.value, currency: ecommerce.currency, contentName: REVIEW_CARD.fullName, contentIds: ecommerce.items.map((i) => i.item_id), numItems: ecommerce.items.reduce((n, i) => n + i.quantity, 0) });
+      serverTrack("begin_checkout", checkoutId, serverEcommerce(ecommerce));
       // Give the pixels a beat to send before leaving the page.
       setTimeout(() => window.location.assign(url), 250);
     } catch {

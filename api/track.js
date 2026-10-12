@@ -1,11 +1,11 @@
-// POST /api/track — server-side (Conversions API) copies of a few browser events, sent with the same
-// event_id as the Pixel so Meta de-duplicates them: InitiateCheckout (review card checkout) and Contact
-// (tap-to-call). Leads, bookings and purchases have their own server paths (api/lead.js, api/audit.js,
+// POST /api/track — server-side (Conversions API) copies of browser events, sent with the same event_id
+// as the Pixel so Meta de-duplicates them: PageView, ViewContent / AddToCart / InitiateCheckout (review
+// card shop) and Contact (tap-to-call). Raises Meta's "events covered by Conversions API" rate. Leads, bookings and purchases have their own server paths (api/lead.js, api/audit.js,
 // api/cal-webhook.js, Shopify's Facebook & Instagram app).
 import { readJson, send, clientIp, rateLimited, sameOrigin, isJson } from "./_lib/http.js";
 import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
 
-const EVENTS = { begin_checkout: "InitiateCheckout", click_to_call: "Contact" };
+const EVENTS = { page_view: "PageView", view_item: "ViewContent", add_to_cart: "AddToCart", begin_checkout: "InitiateCheckout", click_to_call: "Contact" };
 const text = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f<>]/g, " ").trim().slice(0, max) : "");
 
 /** Validated CAPI custom_data for an allowed event, or null (exported for tests). */
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   }
   if (!sameOrigin(req)) return send(res, 403, { error: "origin" });
   if (!isJson(req)) return send(res, 415, { error: "content-type" });
-  if (rateLimited(`track:${clientIp(req)}`, 20, 10 * 60_000)) return send(res, 429, { error: "rate" });
+  if (rateLimited(`track:${clientIp(req)}`, 150, 10 * 60_000)) return send(res, 429, { error: "rate" });
 
   let body;
   try {
@@ -46,11 +46,11 @@ export default async function handler(req, res) {
 
   const signals = requestSignals(req, res);
   const attr = withSignals(cleanAttribution(body.attribution), signals);
-  await sendMetaEvents([
+  const meta = await sendMetaEvents([
     buildEvent({
       eventName: p.eventName,
       eventId,
-      url: `https://www.ceoturbo.com${text(body.page, 120) || "/"}`,
+      url: `https://www.ceoturbo.com${text(body.page, 600).replace(/^(?!\/)/, "/") || "/"}`,
       user: { externalId: text(body.visitorId, 60) || undefined },
       attribution: attr,
       ip: signals.ip || clientIp(req),
@@ -58,5 +58,5 @@ export default async function handler(req, res) {
       customData: p.customData,
     }),
   ]);
-  return send(res, 200, { ok: true });
+  return send(res, 200, { ok: true, meta: !!meta.sent });
 }
