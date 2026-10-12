@@ -10,11 +10,14 @@ Everything in the code is done. This is the account-side setup, in order. Each s
 | **Booked call** | Cal.com (quiz calendar, modal or `/booked`) | `Schedule` with value: Pixel + CAPI, deduped by `book_<uid>` | `book_call` via GTM → Ads conversion | `book_appointment` | `Schedule`: Pixel + Events API |
 | **Free check lead** | `/free-audit`, homepage | `Lead`: Pixel + CAPI, deduped | `generate_lead` (lead_source = free_check) | `submit_lead_form` | `Lead` |
 | **Card purchase** | Shopify checkout | `Purchase` from the Facebook & Instagram app (Pixel + CAPI) | `purchase` from the Shopify custom pixel | `purchase` from the Shopify custom pixel | TikTok app on Shopify |
+| **Phone call click** | every `tel:` link ((470) 502-9543) | `Contact`: Pixel + CAPI (`/api/track`), deduped | `click_to_call` via GTM → Ads conversion *Phone call click* | `contact` | — |
 | Funnel steps | site | ViewContent, AddToCart, InitiateCheckout, BookingOpen, QuizStart | view_item, add_to_cart, begin_checkout, booking_open, quiz_start, quiz_step | view_item, add_to_cart, begin_checkout | ViewContent, AddToCart, InitiateCheckout |
 
-**Lead values** (set in `src/content/quiz.ts`): the quiz Lead is worth $10 / $50 / $150 / $300 by budget answer ($10 for "Not sure yet"), and a booked call from the quiz is worth 3× that. Ad platforms use these to find higher-budget leads. Change them once you know your close rates.
+**Lead values** (set in `src/content/quiz.ts`): the quiz Lead is worth $10 / $50 / $150 / $300 by budget answer ($10 for "Not sure yet"), and a booked call from the quiz is worth 3× that. Ad platforms use these to find higher-budget leads. The free check Lead is worth $10. Change them once you know your close rates.
 
-**Meta match quality:** the site runs Meta's official Conversions API Parameter Builder (browser + server) to build `_fbp`/`_fbc` and the best client IP, adds the quiz id as `external_id`, and passes hashed email/phone/name. Ad click ids (fbclid, gclid, msclkid, ttclid) are also added to the Shopify checkout URL, so purchases on Shopify's domain still tie back to the ad.
+**Starting vs growing:** both lead forms ask it. It's in the Sheet ("Stage" column) and in Meta as `content_category` (e.g. `Local service business · Growing`), so you can build custom conversions/audiences for either group.
+
+**Meta match quality:** the site runs Meta's official Conversions API Parameter Builder (browser + server) to build `_fbp`/`_fbc` and the best client IP, adds a persistent visitor id as `external_id` on every event (Pixel, CAPI and bookings), and passes hashed email/phone/name on the browser Lead too (verified in the Pixel request on 2026-10-12). Ad click ids (fbclid, gclid, msclkid, ttclid) are also added to the Shopify checkout URL, so purchases on Shopify's domain still tie back to the ad.
 
 **Meta Conversions API Gateway:** your pixel has Meta's CAPI Gateway ("openbridge") switched on. The site's security policy allows its two endpoints (`src/config/headers.ts`). If Events Manager ever shows a new gateway URL, add it there.
 
@@ -56,17 +59,24 @@ The booking questions (business, what they do, website, goal, budget) are now as
 1. GTM → Admin → **Import container** → choose `docs/gtm-container.json` → workspace *Default* → **Merge → Rename conflicting**.
 2. Variables → set the constants:
    - `Const - Google Ads Conversion ID` → the number after `AW-`
-   - `Const - Ads Label - Booked call` / `Const - Ads Label - Lead` → labels from Google Ads → Goals → Conversions → each action → *Use Google Tag Manager*.
-3. In Google Ads, create those conversion actions first: **Booked call** (category *Book appointment*, Primary) and **Lead** (category *Submit lead form*, Primary or Secondary). Count: **One**.
+   - `Const - Ads Label - Booked call` / `Const - Ads Label - Lead` / `Const - Ads Label - Phone call` → labels from Google Ads → Goals → Conversions → each action → *Use Google Tag Manager*.
+3. In Google Ads, create those conversion actions first: **Booked call** (category *Book appointment*, Primary), **Lead** (category *Submit lead form*, Primary) and **Phone call click** (category *Contact*, Secondary — clicks aren't confirmed calls). Count: **One**. For real calls also add Google Ads → Conversions → **Phone calls → Calls from ads** (call extension/asset with (470) 502-9543, calls ≥ 60 s).
 4. **Enhanced conversions:** Google Ads → Goals → Settings → Enhanced conversions → on → method **Google Tag Manager**. The site already pushes `user_data` (email/phone) on every lead and booking.
 5. **Preview** → book a test call or run a free check → confirm the tags fire → **Submit / Publish**.
 6. GA4 (`G-XDWPSVBW53`) is the direct Google tag in `src/lib/ga.ts`, NOT in GTM: never add a Google tag / GA4 tag to the container (double counting). If the import is rejected, build by hand: Conversion Linker and two Google Ads Conversion tags on `book_call` and `generate_lead` with Order ID `{{DLV - event_id}}`.
+
+## 4b. GA4 (G-XDWPSVBW53)
+1. Admin → Events → mark as **key events**: `generate_lead`, `book_call`, `purchase`, `click_to_call`.
+2. Admin → Product links → **Google Ads links** → link your Ads account (and turn on auto-tagging in Google Ads).
+3. Admin → Data settings → Data collection → **Google signals** on; Data retention → **14 months**.
+4. Admin → Data streams → web → Configure tag settings → **List unwanted referrals**: `checkout.shopify.com`, `uweee2-sc.myshopify.com`, `cal.com`, `app.cal.com` (keeps the ad as the source of a purchase/booking).
+5. Import GA4 key events into Google Ads **only as Secondary** — the GTM tags are the Primary conversions (no double counting).
 
 ## 5. Shopify (purchases)
 1. **Apps → Facebook & Instagram** (by Meta): connect pixel **3232222473609236**, Data sharing **Maximum**. That gives you Purchase via Pixel + Conversions API. Don't add Meta anywhere else on Shopify.
 2. **Settings → Customer events → Add custom pixel:** paste `docs/shopify-custom-pixel.js`, fill in GA4 / Ads / UET ids → Save → **Connect**. That gives you Purchase in GA4, Google Ads (with enhanced conversions) and Microsoft.
 3. In Google Ads, create a **Purchase** conversion action (*Website → manual → Google tag*), value: *use different values*, count: **Every**. Its label goes in `ADS_PURCHASE_LABEL`.
-4. In Microsoft Ads → Conversion goals → **Event**: Action equals `purchase`, revenue *varies*. Add goals for `book_appointment` and `submit_lead_form` too.
+4. In Microsoft Ads → Conversion goals → **Event**: Action equals `purchase`, revenue *varies*. Add goals for `book_appointment`, `submit_lead_form` (revenue *varies*) and `contact` (phone clicks, secondary) too.
 5. Do the listing and store settings in `shopify-listing.md`. The site's Buy button goes live as soon as the **Pack** variants exist.
 
 ## 6. Google Merchant Center + Microsoft Merchant Center (free listings + Shopping ads)

@@ -108,6 +108,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
             </li>
           </ul>
         </div>
+        <p className="mt-6 text-xs text-muted-foreground">This site is not part of the Facebook website or Meta Platforms, Inc., and is not endorsed by Google or Microsoft. Results shown are from real client campaigns and are not a guarantee of future results.</p>
       </div>
     </footer>
   );
