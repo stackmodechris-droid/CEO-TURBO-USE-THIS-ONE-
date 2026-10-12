@@ -6,12 +6,21 @@ export const DEFAULT_UET_TAG_ID = "187280408";
 const TAG_ID = (import.meta.env.VITE_UET_TAG_ID as string | undefined) || DEFAULT_UET_TAG_ID;
 let started = false;
 
+/** The queue, with consent granted as its FIRST entry (Microsoft wants it before pageLoad and any event). */
+function queue() {
+  const w = window as unknown as { uetq?: Uetq };
+  if (!w.uetq) {
+    w.uetq = [] as unknown as Uetq;
+    w.uetq.push("consent", "default", { ad_storage: "granted" });
+  }
+  return w.uetq;
+}
+
 export function startUet() {
   if (!TAG_ID || started || typeof window === "undefined") return;
   started = true;
   const w = window as unknown as { uetq?: Uetq; UET?: new (o: object) => Uetq };
-  w.uetq = w.uetq || ([] as unknown as Uetq);
-  w.uetq.push("consent", "default", { ad_storage: "granted" });
+  queue();
   const s = document.createElement("script");
   s.async = true;
   s.src = `https://bat.bing.net/bat.js?ti=${encodeURIComponent(TAG_ID)}`;
@@ -44,11 +53,10 @@ const e164Phone = (p: string) => {
 export function uetEvent(event: string, params: { value?: unknown; currency?: unknown; lead_source?: unknown }, user?: { email?: string; phone?: string }) {
   const action = ACTIONS[event];
   if (!action || typeof window === "undefined") return;
-  const w = window as unknown as { uetq?: Uetq };
-  w.uetq = w.uetq || ([] as unknown as Uetq);
+  const uetq = queue();
   // Enhanced conversions: UET hashes these before sending.
-  if (user?.email || user?.phone) w.uetq.push("set", { pid: { ...(user.email ? { em: user.email.trim().toLowerCase() } : {}), ...(user.phone ? { ph: e164Phone(user.phone) } : {}) } });
-  w.uetq.push("event", action, {
+  if (user?.email || user?.phone) uetq.push("set", { pid: { ...(user.email ? { em: user.email.trim().toLowerCase() } : {}), ...(user.phone ? { ph: e164Phone(user.phone) } : {}) } });
+  uetq.push("event", action, {
     event_category: event === "click_to_call" ? "phone" : event === "book_call" || event === "generate_lead" ? "lead" : "ecommerce",
     ...(typeof params.lead_source === "string" ? { event_label: params.lead_source } : {}),
     ...(typeof params.value === "number" && params.value > 0 ? { revenue_value: params.value, currency: params.currency || "USD" } : {}),

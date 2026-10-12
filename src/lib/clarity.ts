@@ -21,3 +21,9 @@ export function startClarity() {
   s.src = `https://www.clarity.ms/tag/${encodeURIComponent(id)}`;
   document.head.appendChild(s);
 }
+
+/** Tags the recording with a conversion so sessions can be filtered by it in Clarity. No-op until Clarity has started. */
+export function clarityEvent(name: string) {
+  if (typeof window === "undefined") return;
+  (window as unknown as { clarity?: (...args: unknown[]) => void }).clarity?.("event", name);
+}

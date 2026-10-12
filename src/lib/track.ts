@@ -11,6 +11,7 @@
 import { gaEvent } from "@/lib/ga";
 import { uetEvent } from "@/lib/uet";
 import { tiktokEvent } from "@/lib/tiktok";
+import { clarityEvent } from "@/lib/clarity";
 
 type Fn = (...args: unknown[]) => void;
 type Win = Window & { dataLayer?: unknown[]; fbq?: Fn };
@@ -37,6 +38,9 @@ const META: Record<string, { name: string; custom?: boolean }> = {
 /** CEO Turbo's Meta Pixel (Events Manager → Data sources). VITE_META_PIXEL_ID overrides it. */
 export const DEFAULT_PIXEL_ID = "3232222473609236";
 export const PIXEL_ID = () => (import.meta.env.VITE_META_PIXEL_ID as string | undefined) || DEFAULT_PIXEL_ID;
+
+/** Conversions worth filtering session recordings by in Clarity. */
+const CLARITY_EVENTS = new Set(["generate_lead", "book_call", "click_to_call", "add_to_cart", "begin_checkout"]);
 
 export const newEventId = (prefix: string) => `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
@@ -155,6 +159,8 @@ export function track(event: string, params: Record<string, unknown> = {}, opts:
   if (user) w.dataLayer.push({ user_data: undefined });
 
   gaEvent(event, { event_id, ...params, ...(ecommerce ?? {}) });
+
+  if (CLARITY_EVENTS.has(event)) clarityEvent(event);
 
   uetEvent(event, { value: ecommerce?.value ?? params.value, currency: ecommerce?.currency ?? params.currency, lead_source: params.lead_source }, user);
 

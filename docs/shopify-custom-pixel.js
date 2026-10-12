@@ -26,6 +26,7 @@ gtag("config", ADS_ID, { allow_enhanced_conversions: true });
 
 // --- Microsoft UET --------------------------------------------------------------------------
 window.uetq = window.uetq || [];
+window.uetq.push("consent", "default", { ad_storage: "granted" }); // no cookie banner: consent granted up front
 const us = document.createElement("script");
 us.async = true;
 us.src = `https://bat.bing.net/bat.js?ti=${UET_ID}`;
@@ -73,7 +74,8 @@ analytics.subscribe("checkout_completed", (event) => {
   });
   gtag("event", "conversion", { send_to: `${ADS_ID}/${ADS_PURCHASE_LABEL}`, value, currency, transaction_id: orderId });
 
-  window.uetq.push("set", { pid: { em: c.email, ph: phone } });
+  const msPhone = phone ? (phone.startsWith("+") ? phone : phone.length === 10 ? `+1${phone}` : `+${phone}`) : undefined; // E.164
+  window.uetq.push("set", { pid: { ...(c.email ? { em: String(c.email).trim().toLowerCase() } : {}), ...(msPhone ? { ph: msPhone } : {}) } });
   window.uetq.push("event", "purchase", { revenue_value: value, currency, transaction_id: orderId });
 });
 
