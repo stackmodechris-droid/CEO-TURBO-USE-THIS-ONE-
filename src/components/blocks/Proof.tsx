@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Check, Landmark, CreditCard } from "lucide-react";
 import { BookButton } from "@/components/cta/Actions";
 import { CLIENTS, CATEGORY_LABEL, domainOf, type Category, type Client } from "@/content/clients";
-import { AD_RESULTS, AD_TOTALS, GSC, APPLIANCE_KING_PAGE, FEATURED_RESULT, money, type AdResult } from "@/content/results";
+import { AD_RESULTS, AD_TOTALS, GSC, APPLIANCE_KING_PAGE, FEATURED_RESULT, STRIPE, money, type AdResult } from "@/content/results";
 import type { AdCreative } from "@/content/ads";
 import { cn } from "@/lib/utils";
 import { CountUp } from "@/components/visuals/CountUp";
+import { useInView } from "@/components/visuals/ReviewVisuals";
 
 export function ProofStats() {
   const stats = [
     { value: String(CLIENTS.length), label: "client websites live right now" },
     { value: String(AD_TOTALS.leads), label: `Meta leads at ${money(AD_TOTALS.avgCpl)} average` },
     { value: money(AD_TOTALS.lowestCpl), label: "lowest cost per lead" },
-    { value: GSC.impressions, label: "Google impressions on stackmode.net" },
+    { value: String(STRIPE.payments), label: `paid orders in our Stripe this year (${STRIPE.paymentsGrowth})` },
   ];
   return (
     <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-border md:grid-cols-4">
@@ -275,6 +276,110 @@ export function FeaturedResult() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Real payouts from CEO Turbo's Stripe, scrolling like a live feed. Static for reduced motion. */
+export function PayoutFeed({ className }: { className?: string }) {
+  const [ref, inView] = useInView<HTMLDivElement>();
+  const row = (p: (typeof STRIPE.payouts)[number], i: number, hidden = false) => (
+    <li key={`${hidden ? "b" : "a"}${i}`} aria-hidden={hidden || undefined} className="flex items-center gap-3 border-b border-white/5 px-4 py-3">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#635bff]/15 text-[#a5a0ff]">
+        {p.to === "Visa" ? <CreditCard className="h-4 w-4" aria-hidden /> : <Landmark className="h-4 w-4" aria-hidden />}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-[17px] font-bold tabular-nums">{money(p.amount)}</span>
+        <span className="block truncate text-xs text-muted-foreground">
+          To {p.to} ••••{p.date ? ` · ${p.date}` : ""}
+        </span>
+      </span>
+      <span className="rounded-md bg-emerald-400/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">Paid</span>
+    </li>
+  );
+  return (
+    <div ref={ref} data-play={inView} className={cn("payout-feed relative overflow-hidden rounded-[1.6rem] border-[5px] border-[#1a1f29] bg-[#0b0f16] shadow-[0_30px_60px_-30px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.08)]", className)}>
+      <div className="relative z-10 flex items-center justify-between border-b border-white/5 bg-[#0b0f16] px-4 py-3">
+        <span className="text-sm font-semibold">Payouts</span>
+        <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-300">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden /> Stripe · CEO Turbo
+        </span>
+      </div>
+      <div className="relative h-[300px] overflow-hidden sm:h-[340px]">
+        <ul className="animate-feed" aria-label="Recent Stripe payouts to CEO Turbo">
+          {STRIPE.payouts.map((p, i) => row(p, i))}
+          {STRIPE.payouts.map((p, i) => row(p, i, true))}
+        </ul>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0b0f16] to-transparent" aria-hidden />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Proof that people pay us — CEO Turbo's own Stripe numbers, not client revenue.
+ * `compact` = the numbers + payout feed; full adds the unedited screenshots.
+ */
+export function StripeProof({ compact = false, title, lede }: { compact?: boolean; title?: string; lede?: string }) {
+  const stats = [
+    { v: STRIPE.gross, l: "collected in our Stripe", sub: STRIPE.period },
+    { v: String(STRIPE.payments), l: "successful payments", sub: `${STRIPE.paymentsBefore} the year before` },
+    { v: STRIPE.paymentsGrowth, l: "more payments than last year", sub: `net volume ${STRIPE.net} (${STRIPE.netGrowth})` },
+  ];
+  return (
+    <div className="panel overflow-hidden p-6 sm:p-8">
+      <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <div>
+          <p className="chip">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#635bff]" aria-hidden /> Our own Stripe account · unedited
+          </p>
+          <h2 className="h-section mt-4">{title ?? "Businesses keep paying us. Here's the receipt."}</h2>
+          <p className="lede">
+            {lede ??
+              "Most agencies show you a mockup. This is CEO Turbo's own Stripe: what businesses paid us over the last 12 months. People don't keep paying for something that doesn't work."}
+          </p>
+          <dl className="mt-7 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 sm:gap-5">
+            {stats.map((x, i) => (
+              <div key={x.l} className={i === 0 ? "col-span-2 sm:col-span-1" : ""}>
+                <dd className={cn("font-display font-bold text-chrome-grad sm:text-5xl", i === 0 ? "text-5xl" : "text-[32px]")}>
+                  <CountUp value={x.v} />
+                </dd>
+                <dt className="mt-1 text-xs font-medium text-foreground/90 sm:text-sm">{x.l}</dt>
+                <dd className="mt-0.5 text-[11px] text-muted-foreground sm:text-xs">{x.sub}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-6 text-xs text-muted-foreground">
+            Payments to CEO Turbo, {STRIPE.period}. This is our revenue, not a client's profit or a promise of yours.
+          </p>
+        </div>
+        <PayoutFeed className="mx-auto w-full max-w-[340px]" />
+      </div>
+      {!compact && (
+        <div className="mt-8 grid gap-4 border-t border-border pt-8 md:grid-cols-[1fr_auto]">
+          <ul className="grid grid-cols-2 content-start items-center gap-3">
+            {STRIPE.images.map((i) => (
+              <li key={i.src} className={i.w < 500 ? "" : "col-span-2"}>
+                <a href={i.src} target="_blank" rel="noopener" className="block overflow-hidden rounded-xl bg-white p-1 ring-1 ring-white/10 transition-transform hover:-translate-y-0.5">
+                  <img src={i.src} alt={i.alt} width={i.w} height={i.h} loading="lazy" decoding="async" className="h-auto w-full" />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <ul className="grid grid-cols-2 gap-3 md:w-[300px]">
+            {STRIPE.lists.map((i) => (
+              <li key={i.src}>
+                <a href={i.src} target="_blank" rel="noopener" className="block overflow-hidden rounded-xl bg-white ring-1 ring-white/10 transition-transform hover:-translate-y-0.5">
+                  <img src={i.src} alt={i.alt} width={i.w} height={i.h} loading="lazy" decoding="async" className="h-auto w-full" />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="flex items-center gap-1 text-xs text-muted-foreground md:col-span-2">
+            Tap any screenshot to see it full size <ArrowUpRight className="h-3 w-3" />
+          </p>
+        </div>
+      )}
     </div>
   );
 }

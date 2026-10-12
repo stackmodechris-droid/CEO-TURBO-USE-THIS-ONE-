@@ -375,6 +375,14 @@
 
 .animate-marquee { animation: marquee-x 60s linear infinite; }
 .animate-marquee-rev { animation: marquee-x-rev 70s linear infinite; }
+/* Stripe payout feed: a duplicated list scrolling upward, paused off screen and on hover. */
+@keyframes feed-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.animate-feed { animation: feed-up 38s linear infinite; }
+.payout-feed[data-play="false"] .animate-feed,
+.payout-feed:hover .animate-feed { animation-play-state: paused; }
 .animate-float { animation: float-y 6s ease-in-out infinite; }
 
 /* Primary buttons: a light sweep on hover */

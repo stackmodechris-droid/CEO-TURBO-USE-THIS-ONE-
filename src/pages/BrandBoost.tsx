@@ -3,7 +3,7 @@ import { BOOK_FAQS } from "@/content/faqs";
 import { AD_TOTALS, money } from "@/content/results";
 import { CLIENTS } from "@/content/clients";
 import { BrandBoostSteps, Founder, VideoPitch } from "@/components/blocks/Sales";
-import { AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
+import { AdResultsGrid, StripeProof, WorkGrid } from "@/components/blocks/Proof";
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { BoostHero, FitCheck, PriceTeaser, WalkAway } from "@/components/blocks/Boost";
 import { BookButton } from "@/components/cta/Actions";
@@ -41,6 +41,13 @@ export default function BrandBoost() {
       </section>
 
       <WalkAway />
+
+      <section className="pb-16" aria-label="Payments to CEO Turbo">
+        <div className="container-x">
+          <StripeProof compact />
+        </div>
+      </section>
+
 
       <section id="results" className="section scroll-mt-20 border-t border-border" aria-labelledby="proof">
         <div className="container-x">

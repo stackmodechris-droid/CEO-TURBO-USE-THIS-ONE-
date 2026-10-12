@@ -241,6 +241,27 @@ function build(): PageMeta[] {
     { path: "/privacy-policy", title: "Privacy Policy | CEO Turbo", description: "How CEO Turbo collects, uses and protects your personal information, including what we collect, why, and how you can control it.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
     { path: "/terms", title: "Terms & Conditions | CEO Turbo", description: "Terms for using ceoturbo.com and buying CEO Turbo products and services.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
     { path: "/shipping-returns", title: "Shipping & Returns | CEO Turbo", description: "Shipping times, costs and the 30-day return and replacement policy for CEO Turbo Google review cards.", priority: 0.3, changefreq: "yearly", group: "Company", schema: base() },
+    {
+      path: "/plan",
+      title: "How to Get More Customers in 2026: The 5-Step Plan | CEO Turbo",
+      description: "Get found on Google and ChatGPT, fix your socials, set up Google Business Profile and reviews, then run Meta + Google ads. The 5-step plan, with proof.",
+      ogImage: "/og/brand-boost.jpg",
+      priority: 0.8,
+      changefreq: "monthly",
+      group: "Core",
+      schema: [
+        ...base(),
+        S.webPage("/plan", "How to get more customers: the 5-step plan", "Website + SEO/AEO/GEO, social profiles, Google Business Profile and reviews, then Meta and Google Search ads."),
+        S.howTo("/plan", "How to get more customers for your business in 2026", [
+          ["Get found on Google, Maps and ChatGPT", "Build a fast website and optimize it for SEO (rank on Google and Maps), AEO (be the answer AI Overviews quote) and GEO (get named by ChatGPT, Gemini and Perplexity)."],
+          ["Fix your social profiles", "Clear bio, one-tap book/call buttons, pinned proof and the same name, photo and links everywhere."],
+          ["Get trusted with reviews", "Set up and verify a Google Business Profile and Trustpilot, then collect reviews with an NFC review card customers tap with their phone."],
+          ["Run Meta and Google Search ads", "Meta ads create demand from people who look like your best customers; Google Search ads catch people already searching. Both learn from the same tracking."],
+          ["Get a plan from the founder", "Book a free 30-minute Brand Boost call to get your #1 money move and a fixed-price plan."],
+        ]),
+        S.breadcrumbs([{ name: "The 5-step plan", path: "/plan" }]),
+      ],
+    },
     // Ad landing + post-booking pages: kept out of search so they don't compete with /brand-boost.
     { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },

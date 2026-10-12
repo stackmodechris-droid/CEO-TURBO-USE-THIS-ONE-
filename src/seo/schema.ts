@@ -92,6 +92,15 @@ export const webPage = (path: string, name: string, description: string, type = 
   inLanguage: "en-US",
 });
 
+/** Step-by-step how-to (the /plan tutorial). Steps are [name, text]. */
+export const howTo = (path: string, name: string, steps: [string, string][]): JsonLd => ({
+  "@type": "HowTo",
+  "@id": `${abs(path)}#howto`,
+  name,
+  url: abs(path),
+  step: steps.map(([n, text], i) => ({ "@type": "HowToStep", position: i + 1, name: n, text })),
+});
+
 export const breadcrumbs = (items: { name: string; path: string }[]): JsonLd => ({
   "@type": "BreadcrumbList",
   itemListElement: [{ name: "Home", path: "/" }, ...items].map((item, i) => ({

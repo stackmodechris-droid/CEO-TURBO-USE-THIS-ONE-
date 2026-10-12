@@ -165,3 +165,52 @@ export const FEATURED_RESULT = {
     "Optimized their Google Business Profile",
   ],
 };
+
+/**
+ * CEO Turbo's own Stripe account (what businesses paid us), read from dashboard screenshots in
+ * /Images/Stripe Results, Oct 12 2026. Keep exact. This is our revenue, not client earnings or profit.
+ */
+export type Payout = { amount: number; date?: string; to: "Visa" | "Wells Fargo" };
+
+export const STRIPE = {
+  gross: "$11.2K",
+  net: "$10.7K",
+  netGrowth: "+1,930.7%",
+  payments: 152,
+  paymentsBefore: 10,
+  paymentsGrowth: "+1,420%",
+  period: "Nov 2025 – Oct 2026",
+  periodBefore: "Nov 2024 – Oct 2025",
+  /** Newest first. The three bank payouts were cropped without dates. */
+  payouts: [
+    { amount: 46.99, date: "Oct 11", to: "Visa" },
+    { amount: 95.52, date: "Oct 11", to: "Visa" },
+    { amount: 286.7, date: "Oct 10", to: "Visa" },
+    { amount: 28.33, date: "Oct 10", to: "Visa" },
+    { amount: 94.48, date: "Oct 9", to: "Visa" },
+    { amount: 57.1, date: "Oct 7", to: "Visa" },
+    { amount: 47.54, date: "Oct 7", to: "Visa" },
+    { amount: 354.62, date: "Sep 30", to: "Visa" },
+    { amount: 47.04, date: "Sep 30", to: "Visa" },
+    { amount: 94.09, date: "Sep 28", to: "Visa" },
+    { amount: 248.26, date: "Sep 25", to: "Visa" },
+    { amount: 23.08, date: "Sep 21", to: "Visa" },
+    { amount: 18.62, date: "Sep 17", to: "Visa" },
+    { amount: 8.84, date: "Sep 17", to: "Visa" },
+    { amount: 340.6, to: "Wells Fargo" },
+    { amount: 332, to: "Wells Fargo" },
+    { amount: 312.66, to: "Wells Fargo" },
+  ] as Payout[],
+  images: [
+    { src: "/img/results/stripe/stripe-payments-yoy.webp", w: 828, h: 173, alt: "Stripe dashboard: successful payments up 1,420%, from 10 (Nov 2024 – Oct 2025) to 152 (Nov 2025 – Oct 2026)" },
+    { src: "/img/results/stripe/stripe-gross-volume.webp", w: 456, h: 100, alt: "Stripe dashboard: gross volume $11.2K" },
+    { src: "/img/results/stripe/stripe-net-volume.webp", w: 230, h: 134, alt: "Stripe dashboard: net volume $10.7K, up 1,930.7%" },
+    { src: "/img/results/stripe/stripe-payout-340.webp", w: 828, h: 134, alt: "Stripe payout of $340.60 to Wells Fargo, paid" },
+    { src: "/img/results/stripe/stripe-payout-332.webp", w: 728, h: 124, alt: "Stripe payout of $332.00 to Wells Fargo" },
+    { src: "/img/results/stripe/stripe-payout-312.webp", w: 828, h: 143, alt: "Stripe payout of $312.66 to Wells Fargo, paid" },
+  ],
+  lists: [
+    { src: "/img/results/stripe/stripe-payouts-oct.webp", w: 322, h: 1420, alt: "Stripe payouts to Visa, Oct 7 – Oct 11 2026: $46.99, $95.52, $286.70, $28.33, $94.48, $57.10, $47.54" },
+    { src: "/img/results/stripe/stripe-payouts-sep.webp", w: 314, h: 1374, alt: "Stripe payouts to Visa, Sep 17 – Sep 30 2026: $354.62, $47.04, $94.09, $248.26, $23.08, $18.62, $8.84" },
+  ],
+};

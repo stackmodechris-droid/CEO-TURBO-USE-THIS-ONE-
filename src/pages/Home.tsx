@@ -4,7 +4,7 @@ import { BookButton } from "@/components/cta/Actions";
 import { AuditHero } from "@/components/audit/AuditHero";
 import { SiteWall } from "@/components/visuals/SiteWall";
 import { SearchScene } from "@/components/visuals/Scenes";
-import { ProofStats, FeaturedResult, WorkGrid, AdResultsGrid, AdGallery, GSCProof } from "@/components/blocks/Proof";
+import { ProofStats, StripeProof, FeaturedResult, WorkGrid, AdResultsGrid, AdGallery, GSCProof } from "@/components/blocks/Proof";
 import { PathPicker, ServiceGrid, ReviewCardPromo, BrandBoostSteps, Founder, BookingSection, VideoPitch } from "@/components/blocks/Sales";
 import { SectionHeader, FAQList } from "@/components/blocks/Basics";
 import { HOME_FAQS } from "@/content/faqs";
@@ -47,6 +47,12 @@ export default function Home() {
       <section className="pb-8" aria-label="Results at a glance">
         <div className="container-x">
           <ProofStats />
+        </div>
+      </section>
+
+      <section className="pb-16" aria-label="Payments to CEO Turbo">
+        <div className="container-x">
+          <StripeProof compact />
         </div>
       </section>
 

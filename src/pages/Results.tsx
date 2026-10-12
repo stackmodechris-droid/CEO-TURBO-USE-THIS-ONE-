@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { AD_RESULTS, AD_TOTALS, money } from "@/content/results";
 import { ADS } from "@/content/ads";
-import { AdResultsGrid, AdGallery, GSCProof, FeaturedResult } from "@/components/blocks/Proof";
+import { AdResultsGrid, AdGallery, GSCProof, FeaturedResult, StripeProof } from "@/components/blocks/Proof";
 import { BookingSection } from "@/components/blocks/Sales";
 import { SectionHeader, Breadcrumbs, DirectAnswer } from "@/components/blocks/Basics";
 import { BookButton } from "@/components/cta/Actions";
@@ -22,6 +22,12 @@ export default function Results() {
           <DirectAnswer label="The numbers">
             Across {AD_TOTALS.campaigns} Meta lead campaigns, CEO Turbo clients got {AD_TOTALS.leads} leads for {money(AD_TOTALS.leadSpend)} — {money(AD_TOTALS.avgCpl)} per lead on average, with the best at {money(AD_TOTALS.lowestCpl)}. An artist profile campaign drove 165 visits at $0.32 each, and stackmode.net reached 3.34K Google impressions.
           </DirectAnswer>
+        </div>
+      </section>
+
+      <section className="pb-8 pt-10" aria-label="Payments to CEO Turbo">
+        <div className="container-x">
+          <StripeProof />
         </div>
       </section>
 

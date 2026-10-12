@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Check, Info, Repeat, Wrench } from "lucide-react";
 import { EXAMPLE_PLANS, MONTHLY, PRICING_FAQS, PRICING_TERMS, SETUP, WEBSITES, planTotals, price, usd } from "@/content/pricing";
 import { PriceCard } from "@/components/blocks/PriceBlocks";
+import { StripeProof } from "@/components/blocks/Proof";
+import { STRIPE } from "@/content/results";
 import { fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
 import { BookingSection } from "@/components/blocks/Sales";
@@ -93,6 +95,12 @@ export default function Pricing() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      <section className="pt-16" aria-label="Payments to CEO Turbo">
+        <div className="container-x">
+          <StripeProof compact title="People pay CEO Turbo every week." lede={`Not a mockup — this is our own Stripe account: ${STRIPE.payments} successful payments in the last 12 months, up from ${STRIPE.paymentsBefore} the year before.`} />
         </div>
       </section>
 
