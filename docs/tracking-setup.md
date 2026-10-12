@@ -44,8 +44,8 @@ The Meta Pixel id is built into the code, so you don't need to set `VITE_META_PI
 4. **Campaigns:** agency ads optimize for **Schedule** (use **Lead** while you're under ~50 bookings a week). Card ads optimize for **Purchase**.
 
 ## 3. Cal.com (event type `ceoturbo-brandboost`)
-The booking questions (business, what they do, website, goal, budget) are now asked by the quiz on the site and passed to Cal.com as hidden, prefilled fields, so the Cal.com form only confirms name, email and phone. That was set through the Cal.com API on 2026-10-11, together with the redirect below.
-1. **Event → Advanced → Redirect on booking:** `https://www.ceoturbo.com/booked`, with **Forward parameters** turned **on**.
+The booking questions (business, what they do, website, goal, budget) are now asked by the quiz on the site and passed to Cal.com as hidden, prefilled fields, so the Cal.com form only confirms name, email and phone (now required). That was set through the Cal.com API on 2026-10-11.
+1. **Redirect on booking** (`https://www.ceoturbo.com/booked`, Forward parameters on) needs a Cal.com **Team** plan, so it is not set. Bookings are still tracked: the on-site calendar fires `book_call` the moment a booking succeeds, and the webhook below sends the server-side copy. Turn the redirect on later if you upgrade.
 2. **Settings → Developer → Webhooks → New:**
    - URL: `https://www.ceoturbo.com/api/cal-webhook` (use **www**, the bare domain redirects)
    - Trigger: **Booking Created**
