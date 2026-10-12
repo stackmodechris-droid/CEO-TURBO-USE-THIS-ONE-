@@ -9,7 +9,7 @@
 // trigger "Booking Created", secret = CAL_WEBHOOK_SECRET (same value in Vercel).
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { send } from "./_lib/http.js";
-import { forwardLead } from "./_lib/leads.js";
+import { forwardLead, scoreLead } from "./_lib/leads.js";
 import { buildEvent, cleanAttribution, sendMetaEvents } from "./_lib/meta-capi.js";
 import { buildTiktokEvent, sendTiktokEvents } from "./_lib/tiktok-events.js";
 
@@ -61,6 +61,7 @@ export function parseBooking(body) {
     budget: str(meta.budgetLabel, 60) || pick("budget", 60),
     blockers: str(meta.blockers, 300),
     timeline: str(meta.timeline, 60),
+    move: str(meta.move, 120),
     quizId: str(meta.quizId, 60),
     value: Math.max(0, Math.min(Number(meta.leadValue) || 0, 100000)),
     source: str(meta.source, 80),
@@ -109,7 +110,7 @@ export default async function handler(req, res) {
       }),
     ]),
     sendTiktokEvents([buildTiktokEvent({ event: "Schedule", eventId, eventTime: body.createdAt, url, user, attribution: b.attribution, properties: { content_name: b.title || "Brand Boost call", ...worth } })]),
-    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, website: b.website, goal: b.goal, budget: b.budget, blockers: b.blockers, timeline: b.timeline, quizId: b.quizId, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
+    forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, website: b.website, goal: b.goal, budget: b.budget, blockers: b.blockers, timeline: b.timeline, move: b.move, value: b.value, ...scoreLead(b), quizId: b.quizId, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
   ]);
   return send(res, 200, { ok: true, meta: !!capi.sent, sheet: !!sheet.stored });
 }

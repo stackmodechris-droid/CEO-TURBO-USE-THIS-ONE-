@@ -562,6 +562,7 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
       budgetLabel: labelOf.budget(answers.budget),
       blockers: answers.blockers.join(", "),
       timeline: labelOf.timeline(answers.timeline),
+      move: move.title,
       leadValue: value,
     },
   };

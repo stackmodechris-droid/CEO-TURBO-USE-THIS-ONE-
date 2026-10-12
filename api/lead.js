@@ -1,6 +1,6 @@
 // POST /api/lead — Brand Boost quiz leads, review card order requests (fallback when Shopify checkout
 // is unreachable) and any other simple lead form.
-import { cleanLead, forwardLead, isBot } from "./_lib/leads.js";
+import { cleanLead, forwardLead, isBot, scoreLead } from "./_lib/leads.js";
 import { readJson, send, clientIp, rateLimited, sameOrigin } from "./_lib/http.js";
 import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
 import { buildTiktokEvent, sendTiktokEvents } from "./_lib/tiktok-events.js";
@@ -73,6 +73,7 @@ export default async function handler(req, res) {
     type,
     ...lead,
     ...(quiz ?? {}),
+    ...(quiz ? scoreLead(quiz) : {}),
     product: text(body.product, 120),
     style: text(body.style, 40),
     pack: text(body.pack, 40),

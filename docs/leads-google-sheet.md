@@ -7,18 +7,31 @@ Google Sheet with a tiny Apps Script. Nothing is stored on the website itself.
 
 ## 1. The sheet and script
 
-The sheet is **FREE Lead Magnet Leads** (tabs: Call Quiz Leads, Free Check Leads, Booked Calls, Card Orders, with
+The sheet is **FREE Lead Magnet Leads** (tabs: Call Dashboard, Booked Calls, Call Quiz Leads, Free Check Leads, Card Orders, with
 headers, filters, a Status dropdown and colors). The script that fills it is
 [`docs/leads-apps-script.js`](leads-apps-script.js).
 
+**Booked Calls** is your call-prep list, soonest call first when you sort by *Call time*. Each row has a
+**Priority** (HOT / Warm / Cool, from budget + how soon + a website to review) and **Lead score**, everything the
+person told you in the quiz (what they do, goal, what's holding them back, budget, how soon, the #1 move they were
+shown), the meeting link and the ad that brought them. After the call fill in **Status** (New → Confirmed →
+Showed / No-show / Rescheduled → Won / Lost), **Outcome**, **Quote $** and a **Follow-up date**; calls in the next
+24 hours light up yellow and overdue follow-ups turn red.
+
+**Call Dashboard** (first tab) updates by itself: calls today / next 7 days, calls booked, show rate, close rate,
+revenue won, open pipeline, the next calls with their prep info, quiz leads who haven't booked yet, follow-ups due,
+and which ads book calls.
+
 **Call Quiz Leads** is the Brand Boost quiz: one row per person who answered the questions and left their details,
-with every answer (what they do, goal, what's holding them back, budget, how soon, the #1 move they were shown) and
-the ad that brought them. When the same person books, their row flips to **Booked? = Yes** with the call time and
-Status "Booked". **Anyone still "No" is your follow-up list:** call or text them the same day.
+with every answer and the ad that brought them. When the same person books, their row flips to **Booked? = Yes**
+with the call time and Status "Booked". **Anyone still "No" is your follow-up list:** call or text them the same day.
 The script creates missing tabs and adds any new columns to existing tabs by itself.
 
-> **Updated 2026-10-11: re-paste the script** (steps 1, 2 and 4 below) so quiz leads get their own tab and bookings
-> link back to the quiz. Until you do, quiz leads land on the "Card Orders" tab.
+> **Updated 2026-10-12: re-paste the script** (steps 1, 2 and 4 below), then in the Apps Script editor choose
+> `setupSheet` in the function dropdown and press **Run** once (it re-applies dropdowns, colors and the dashboard and
+> is safe to run again). The Google Sheet itself was already upgraded; the re-paste is what makes new bookings fill
+> Priority, Lead score, "How soon" and "#1 move shown" and quiz leads land on their own tab. Until then quiz leads
+> land on the "Card Orders" tab and bookings leave those columns blank.
 
 1. Open the sheet → **Extensions → Apps Script**. Delete what's there and paste the whole file.
 2. On the `const SECRET = ...` line, replace the placeholder with your `LEADS_WEBHOOK_SECRET`.

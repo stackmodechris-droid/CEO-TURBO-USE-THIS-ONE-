@@ -55,6 +55,26 @@ describe("page registry (SEO)", () => {
   });
 });
 
+describe("favicon (Google results)", () => {
+  const html = readFileSync(path.resolve(__dirname, "../../index.html"), "utf8");
+  it("links a crawlable icon set on every page", () => {
+    expect(html).toMatch(/rel="icon"[^>]*favicon\.ico/);
+    expect(html).toMatch(/rel="icon"[^>]*favicon-48\.png[^>]*sizes="48x48"|sizes="48x48"[^>]*favicon-48\.png/);
+    expect(html).toMatch(/rel="apple-touch-icon"/);
+    for (const f of ["favicon.ico", "favicon-48.png", "icon-192.png", "icon-512.png", "apple-touch-icon.png"]) expect(existsSync(pub(f)), f).toBe(true);
+  });
+  it("ships favicon.ico with 16, 32 and 48 px images, and the 48 px PNG is a multiple of 48", () => {
+    const ico = readFileSync(pub("favicon.ico"));
+    const sizes = Array.from({ length: ico.readUInt16LE(4) }, (_, i) => ico[6 + i * 16]);
+    expect(sizes).toEqual([16, 32, 48]);
+    const png = readFileSync(pub("favicon-48.png"));
+    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([48, 48]);
+  });
+  it("does not block crawlers from the icons", () => {
+    expect(readFileSync(pub("robots.txt"), "utf8")).not.toMatch(/Disallow:\s*\/(favicon|icon)/);
+  });
+});
+
 describe("assets", () => {
   it("has screenshots for every client", () => {
     for (const c of CLIENTS) {

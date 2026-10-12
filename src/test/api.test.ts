@@ -2,13 +2,16 @@
 import { describe, it, expect } from "vitest";
 import { isPrivateIp, normalizeUrl, fetchPage } from "../../api/_lib/fetch-page.js";
 import { parseHtml, blockedAiBots, scoreChecks, platformFor } from "../../api/_lib/audit.js";
-import { cleanLead, isBot } from "../../api/_lib/leads.js";
+import { cleanLead, isBot, scoreLead } from "../../api/_lib/leads.js";
 import { buildEvent, hashedUser, cleanAttribution, requestSignals, withSignals } from "../../api/_lib/meta-capi.js";
 import { buildTiktokEvent } from "../../api/_lib/tiktok-events.js";
 import { quizFields } from "../../api/lead.js";
 import { validSignature, parseBooking } from "../../api/cal-webhook.js";
 import { validSignature as shopifySig, parseOrder } from "../../api/shopify-webhook.js";
 import { createHash, createHmac } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import vm from "node:vm";
 
 const sha = (v: string) => createHash("sha256").update(v).digest("hex");
 
@@ -174,5 +177,57 @@ describe("TikTok Events API payload", () => {
   it("hashes email/phone (E.164) and passes click ids unhashed with the shared event id", () => {
     const e = buildTiktokEvent({ event: "Lead", eventId: "generate_lead_x", url: "https://www.ceoturbo.com/brand-boost", user: { email: " A@B.co ", phone: "(404) 555-0123" }, attribution: { ttclid: "TT", ttp: "P" }, ip: "1.2.3.4" });
     expect(e).toMatchObject({ event: "Lead", event_id: "generate_lead_x", user: { email: sha("a@b.co"), phone: sha("+14045550123"), ttclid: "TT", ttp: "P", ip: "1.2.3.4" }, page: { url: "https://www.ceoturbo.com/brand-boost" } });
+  });
+});
+
+describe("Booked-call priority score", () => {
+  it("ranks big budget + urgent + website as HOT and vague browsers as Cool", () => {
+    expect(scoreLead({ budget: "$5,000+", timeline: "ASAP — this week", website: "a.com" })).toEqual({ score: 100, priority: "HOT" });
+    expect(scoreLead({ budget: "$2,000 to $5,000", timeline: "Within 30 days" })).toEqual({ score: 70, priority: "HOT" });
+    expect(scoreLead({ budget: "$500 to $2,000", timeline: "Within 30 days", website: "a.com" })).toEqual({ score: 65, priority: "Warm" });
+    expect(scoreLead({ budget: "$500 to $2,000", timeline: "In the next few months" })).toEqual({ score: 35, priority: "Cool" });
+    expect(scoreLead({ budget: "Not sure yet", timeline: "Just exploring" })).toEqual({ score: 0, priority: "Cool" });
+    expect(scoreLead()).toEqual({ score: 0, priority: "Cool" });
+  });
+
+  it("keeps the #1 move from the booking metadata for the call-prep sheet", () => {
+    expect(parseBooking({ payload: { uid: "u3", attendees: [{ name: "Al", email: "al@x.co" }], metadata: { move: "Turn searches into phone calls" } } }).move).toBe("Turn searches into phone calls");
+  });
+});
+
+describe("leads Apps Script (docs/leads-apps-script.js)", () => {
+  const ctx: Record<string, unknown> = {};
+  vm.createContext(ctx);
+  vm.runInContext(`${readFileSync(path.resolve(__dirname, "../../docs/leads-apps-script.js"), "utf8")}\nthis.TABS=TABS;this.STATUS=STATUS;this.dashboardCells_=dashboardCells_;this.tabFor=tabFor;`, ctx);
+  const TABS = ctx.TABS as Record<string, Record<string, string>>;
+  const dashboardCells = ctx.dashboardCells_ as (r: (tab: string, h: string) => string) => [string, string][];
+
+  it("routes every lead type to its tab", () => {
+    const tabFor = ctx.tabFor as (t: string) => string;
+    expect([tabFor("booking"), tabFor("brand-boost-quiz"), tabFor("audit-business"), tabFor("shopify-order"), tabFor("zzz")]).toEqual(["Booked Calls", "Call Quiz Leads", "Free Check Leads", "Card Orders", "Other Leads"]);
+  });
+
+  it("has unique headers per tab and a Status dropdown for the call tabs", () => {
+    for (const [tab, map] of Object.entries(TABS)) expect(new Set(Object.keys(map)).size, tab).toBe(Object.keys(map).length);
+    const status = ctx.STATUS as Record<string, string[][]>;
+    expect(status["Booked Calls"].map((s) => s[0])).toEqual(["New", "Confirmed", "Showed", "No-show", "Rescheduled", "Won", "Lost"]);
+    expect(Object.keys(TABS["Booked Calls"])).toEqual(expect.arrayContaining(["Call time", "Priority", "Lead score", "Status", "Outcome", "Quote $", "Follow-up date", "#1 move shown", "Booking ID", "Quiz ID"]));
+  });
+
+  it("fills Booked Calls from fields the booking webhook actually sends", () => {
+    const sent = Object.keys(parseBooking({ payload: { uid: "u" } })).concat(["type", "event", "priority", "score", "receivedAt", "meetingLink", "endTime", "landing", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "msclkid", "fbclid", "ttclid"]);
+    const known = new Set([...sent, "startTime", "name", "email", "phone"]);
+    for (const [header, field] of Object.entries(TABS["Booked Calls"])) if (field) expect(known.has(field), `${header} ← ${field}`).toBe(true);
+  });
+
+  it("builds a dashboard that only references real columns", () => {
+    const seen = new Set<string>();
+    const cells = dashboardCells((tab, h) => {
+      expect(Object.keys(TABS[tab]), `${tab} / ${h}`).toContain(h);
+      seen.add(`${tab}/${h}`);
+      return `'${tab}'!A2:A`;
+    });
+    expect(cells.length).toBeGreaterThan(30);
+    expect(seen.size).toBeGreaterThan(10);
   });
 });

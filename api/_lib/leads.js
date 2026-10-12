@@ -26,6 +26,29 @@ export function cleanLead(body) {
   };
 }
 
+const BUDGET_POINTS = [
+  [/5,?000\s*\+|\$5,?000\+/i, 50],
+  [/2,?000.*5,?000/i, 40],
+  [/500.*2,?000/i, 25],
+  [/under/i, 5],
+];
+const TIMELINE_POINTS = [
+  [/asap|this week/i, 40],
+  [/30 days/i, 30],
+  [/few months/i, 10],
+];
+
+/**
+ * Call-priority score (0-100) from the quiz answers: budget (up to 50), how soon (up to 40) and a website
+ * to review (10). 70+ is "HOT" (call first), 45+ "Warm", otherwise "Cool". Shown on the sheet so the
+ * booked-call list can be worked from the top.
+ */
+export function scoreLead({ budget = "", timeline = "", website = "" } = {}) {
+  const pts = (table, v) => (table.find(([re]) => re.test(String(v)))?.[1]) ?? 0;
+  const score = pts(BUDGET_POINTS, budget) + pts(TIMELINE_POINTS, timeline) + (String(website).trim() ? 10 : 0);
+  return { score, priority: score >= 70 ? "HOT" : score >= 45 ? "Warm" : "Cool" };
+}
+
 /** A bot filled the hidden field, or submitted faster than a human could. */
 export const isBot = (body) => !!str(body.company_site, 200) || (typeof body.elapsedMs === "number" && body.elapsedMs < 1500);
 
