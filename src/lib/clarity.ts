@@ -5,7 +5,10 @@ export const DEFAULT_CLARITY_ID = "ywmvopjye1";
 let started = false;
 
 export function startClarity() {
-  const id = (import.meta.env.VITE_CLARITY_ID as string | undefined) || DEFAULT_CLARITY_ID;
+  // An override must look like a Clarity project id (short, lowercase letters/digits); anything else, such as a
+  // pasted API token, is ignored so it can never break the tag.
+  const override = import.meta.env.VITE_CLARITY_ID as string | undefined;
+  const id = override && /^[a-z0-9]{6,16}$/.test(override.trim()) ? override.trim() : DEFAULT_CLARITY_ID;
   if (!id || started || typeof window === "undefined") return;
   started = true;
   const w = window as unknown as { clarity?: (...args: unknown[]) => void };

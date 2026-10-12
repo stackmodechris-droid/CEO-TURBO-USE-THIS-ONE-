@@ -3,7 +3,9 @@
 // overrides it. No cookie banner (US audience), so consent is granted up front.
 type Uetq = unknown[] & { push: (...a: unknown[]) => void };
 export const DEFAULT_UET_TAG_ID = "187280408";
-const TAG_ID = (import.meta.env.VITE_UET_TAG_ID as string | undefined) || DEFAULT_UET_TAG_ID;
+const override = import.meta.env.VITE_UET_TAG_ID as string | undefined;
+// An override must be a numeric UET tag id; anything else is ignored so it can never break the tag.
+const TAG_ID = override && /^\d{6,12}$/.test(override.trim()) ? override.trim() : DEFAULT_UET_TAG_ID;
 let started = false;
 
 /** The queue, with consent granted as its FIRST entry (Microsoft wants it before pageLoad and any event). */
