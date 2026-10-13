@@ -7,7 +7,7 @@
 // with a Status dropdown and Outcome / Quote $ / Follow-up columns, and "Call Dashboard" summarises it.
 // After pasting, run setupSheet() once from the editor (▶ Run) to add dropdowns, colors and the dashboard.
 
-const SECRET = "PASTE_YOUR_LEADS_WEBHOOK_SECRET_HERE"; // same value as LEADS_WEBHOOK_SECRET in Vercel
+const SECRET = "REPLACE_WITH_LEADS_WEBHOOK_SECRET"; // same value as LEADS_WEBHOOK_SECRET in Vercel (copy in docs/leads-apps-script.local.js, gitignored)
 const SHEET_ID = "1sToqSfGp6eDAowaqvmtKxDPUHqDGNUruWsnIUzkr1GI"; // FREE Lead Magnet Leads (works even if this script is not attached to the sheet)
 
 // header label shown in the sheet  ->  field name sent by the website
