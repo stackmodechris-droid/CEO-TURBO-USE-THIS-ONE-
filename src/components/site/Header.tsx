@@ -22,14 +22,14 @@ const MENUS: Menu[] = [
       { to: "/artist", label: "Artists & producers", sub: "More listeners, fans and bookings" },
       { to: "/shopify", label: "Shopify & online stores", sub: "More traffic that actually buys" },
       { to: "/atlanta", label: "Atlanta businesses", sub: "Local, founder-led growth" },
-      { to: "/app-marketing", label: "App developers", sub: "More installs, better marketing" },
+      { to: "/app-marketing", label: "Software & app developers", sub: "More users & installs, zero fluff" },
     ],
   },
   {
     label: "Services",
     to: "/services",
     wide: true,
-    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: "/app-marketing", label: "App & software marketing", sub: "More installs for your app or SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
+    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
   },
   {
     label: "Results",
