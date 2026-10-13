@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { AuditHero } from "@/components/audit/AuditHero";
-import { ProofStats } from "@/components/blocks/Proof";
+import { ProofStats, AdResultsGrid } from "@/components/blocks/Proof";
 import { Founder, BookingSection } from "@/components/blocks/Sales";
 import { FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { AUDIT_FAQS } from "@/content/faqs";
@@ -16,7 +16,7 @@ const PILLARS = [
 
 export default function FreeAudit() {
   return (
-    <>
+    <div className="pb-16 sm:pb-0">
       <AuditHero
         source="Free audit page"
         eyebrow="Free · about 60 seconds · no credit card"
@@ -69,6 +69,18 @@ export default function FreeAudit() {
         </div>
       </section>
 
+      <section className="section border-t border-border" aria-label="Real ad results">
+        <div className="container-x">
+          <SectionHeader
+            title="Real ad &amp; lead results we deliver"
+            lede="From actual Meta Ads Manager dashboards. Lower cost per lead, more phone calls, and real customers for local businesses."
+          />
+          <div className="mt-10">
+            <AdResultsGrid keys={["stackmode-repair", "mor-handy-carpet", "appliance-king"]} />
+          </div>
+        </div>
+      </section>
+
       <section className="section border-t border-border" aria-label="Founder">
         <div className="container-x">
           <Founder />
@@ -77,6 +89,19 @@ export default function FreeAudit() {
 
       <FAQList faqs={AUDIT_FAQS} title="Audit questions" />
       <BookingSection note="Free audit page — booking section" title="Rather talk it through? Pick a time." />
-    </>
+
+      {/* Mobile floating action bar for ad visitors who scroll */}
+      <aside aria-label="Quick audit" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-background/95 px-4 py-3 backdrop-blur-xl sm:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-xs font-bold text-foreground">Free Visibility Audit</p>
+            <p className="truncate text-[11px] text-muted-foreground">Takes 60s · No credit card</p>
+          </div>
+          <a href="#audit" className="btn-ignite btn-shine shrink-0 !px-4 !py-2.5 !text-xs font-semibold">
+            Scan business <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+          </a>
+        </div>
+      </aside>
+    </div>
   );
 }

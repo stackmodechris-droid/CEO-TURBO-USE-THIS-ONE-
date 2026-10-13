@@ -134,6 +134,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
     track("audit_start", { kind: form.kind, source });
     rememberBusiness(form.business);
     setStage("questions");
+    scrollTop();
   };
 
   const questions = QUESTIONS[form.kind];
@@ -211,7 +212,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
   if (stage === "report" && report) return <div ref={top} className="scroll-mt-24"><AuditReport report={report} form={form} source={source} onRestart={restart} /></div>;
 
   return (
-    <div ref={top} className={cn("audit-card relative scroll-mt-24 overflow-clip rounded-3xl p-5 sm:p-7", compact && "sm:p-6")}>
+    <div ref={top} className={cn("audit-card relative scroll-mt-20 overflow-clip rounded-3xl p-5 sm:scroll-mt-24 sm:p-7", compact && "sm:p-6")}>
       <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-turbo/20 blur-3xl" aria-hidden />
       {stage !== "scan" && stage !== "failed" && (
         <div className="relative mb-5 flex items-center justify-between gap-3">
@@ -253,10 +254,10 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             </Field>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field id={`${uid}-what`} label={form.kind === "artist" ? "Genre / what you do" : "What do you do?"}>
-                <input id={`${uid}-what`} data-clarity-mask="true" className="field" value={form.what} onChange={(e) => set("what", e.target.value)} placeholder={form.kind === "artist" ? "e.g. R&B singer" : "e.g. plumber, barber"} maxLength={60} />
+                <input id={`${uid}-what`} data-clarity-mask="true" className="field" value={form.what} onChange={(e) => set("what", e.target.value)} placeholder={form.kind === "artist" ? "e.g. R&B singer, producer" : "e.g. plumber, barber, electrician, lawyer"} maxLength={60} />
               </Field>
               <Field id={`${uid}-city`} label={form.kind === "artist" ? "City (optional)" : "City"}>
-                <input id={`${uid}-city`} data-clarity-mask="true" className="field" value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="e.g. Atlanta, GA" autoComplete="address-level2" maxLength={60} />
+                <input id={`${uid}-city`} data-clarity-mask="true" className="field" value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="e.g. Atlanta, GA or Los Angeles, CA" autoComplete="address-level2" maxLength={60} />
               </Field>
             </div>
             <Field id={`${uid}-web`} label={form.kind === "artist" ? "Website or main link (optional)" : "Website (optional)"}>
@@ -290,10 +291,10 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             ))}
           </div>
           <div className="mt-6 flex items-center gap-3">
-            <button type="button" onClick={() => setStage("business")} className="btn-chrome !px-4">
+            <button type="button" onClick={() => { setStage("business"); scrollTop(); }} className="btn-chrome !px-4">
               Back
             </button>
-            <button type="button" disabled={!answered} onClick={() => setStage("contact")} className="btn-ignite btn-shine flex-1 disabled:pointer-events-none disabled:opacity-40">
+            <button type="button" disabled={!answered} onClick={() => { setStage("contact"); scrollTop(); }} className="btn-ignite btn-shine flex-1 disabled:pointer-events-none disabled:opacity-40">
               Continue <ArrowRight className="h-4 w-4" aria-hidden />
             </button>
           </div>
@@ -335,7 +336,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             </label>
           </div>
           <div className="mt-5 flex items-center gap-3">
-            <button type="button" onClick={() => setStage("questions")} className="btn-chrome !px-4">
+            <button type="button" onClick={() => { setStage("questions"); scrollTop(); }} className="btn-chrome !px-4">
               Back
             </button>
             <button type="submit" className="btn-ignite btn-shine flex-1 !py-4">
