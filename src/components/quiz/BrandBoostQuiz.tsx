@@ -51,7 +51,7 @@ import {
 } from "@/content/quiz";
 import { BOOKING, SITE, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
-import { QUIZ_NS, mountInlineBooking, openBooking } from "@/lib/cal";
+import { QUIZ_NS, bookingFallbackUrl, mountInlineBooking, openBooking } from "@/lib/cal";
 import { attribution, e164, newEventId, setCallContext, track, visitorId } from "@/lib/track";
 import { sendLead } from "@/lib/lead-outbox";
 import { CallLink } from "@/components/site/CallLink";
@@ -554,8 +554,8 @@ function Field({ id, label, error, children }: { id: string; label: string; erro
 function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { answers: Answers; quizId: string; source: string; prefill?: string; booked: boolean; uid: string; onRestart: () => void }) {
   const move = moneyMove(answers);
   const first = answers.name.trim().split(/\s+/)[0] || "Here";
-  const calId = `quiz-cal-${uid}`;
-  const [cal, setCal] = useState<"loading" | "ready" | "failed">("loading");
+  const calId = `quiz-cal-${uid.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const [cal, setCal] = useState<"loading" | "ready" | "slow" | "failed">("loading");
   const value = leadValue(answers.budget) * CALL_MULTIPLIER;
 
   const booking = {
@@ -585,10 +585,12 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
     },
   };
 
+  const fallbackUrl = bookingFallbackUrl(prefill, booking.person, booking.fields);
+
   useEffect(() => {
     if (booked) return;
     let live = true;
-    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((ok) => live && setCal(ok ? "ready" : "failed"));
+    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((state) => live && setCal(state));
     return () => {
       live = false;
     };
@@ -633,18 +635,28 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
       </div>
 
       <div className="relative mt-4 min-h-[520px] overflow-hidden rounded-2xl bg-black/20 ring-1 ring-white/5">
-        {cal !== "ready" && (
-          <div className="absolute inset-0 grid place-items-center p-6 text-center">
+        {(cal === "loading" || cal === "failed") && (
+          <div className="absolute inset-0 z-10 grid place-items-center bg-black/40 p-6 text-center">
             <div>
-              <p className="text-sm text-muted-foreground">{cal === "failed" ? "The calendar didn't load." : "Loading open times…"}</p>
-              <button type="button" className="btn-ignite mt-4" onClick={() => void openBooking(booking.source, prefill, booking.person, { fields: booking.fields, meta: booking.meta })}>
-                Open the booking calendar
-              </button>
+              <p className="text-sm text-muted-foreground">{cal === "failed" ? "The calendar didn't load here." : "Loading open times…"}</p>
+              {cal === "failed" && (
+                <a href={fallbackUrl} target="_blank" rel="noopener noreferrer" className="btn-ignite mt-4 inline-flex" onClick={() => track("booking_open", { source: `${booking.source} — fallback link` })}>
+                  Open the booking calendar
+                </a>
+              )}
             </div>
           </div>
         )}
         <div id={calId} className="relative h-full min-h-[520px] w-full overflow-auto" />
       </div>
+      {(cal === "slow" || cal === "ready") && (
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          {cal === "slow" ? "Calendar not showing? " : "Prefer a full page? "}
+          <a href={fallbackUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground underline underline-offset-2" onClick={() => track("booking_open", { source: `${booking.source} — fallback link` })}>
+            Open it in a new tab
+          </a>
+        </p>
+      )}
 
       {move.offer && (
         <div className="mt-5 grid gap-3 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5 sm:grid-cols-[1fr_auto] sm:items-center">

@@ -17,7 +17,9 @@ declare global {
   }
 }
 
-const EMBED_SRC = "https://app.cal.com/embed/embed.js";
+const EMBED_ORIGIN = "https://app.cal.com";
+const EMBED_SRC = `${EMBED_ORIGIN}/embed/embed.js`;
+const SCRIPT_TIMEOUT_MS = 8000;
 let ready: Promise<boolean> | null = null;
 
 /** Official Cal.com bootstrap snippet, kept verbatim in behaviour. */
@@ -69,7 +71,8 @@ function initNamespace(ns: string) {
   const Cal = window.Cal!;
   if (inited.has(ns)) return;
   inited.add(ns);
-  Cal("init", ns, { origin: "https://cal.com" });
+  // Same host as embed.js (Cal.com's current default), so the booking iframe never hops domains.
+  Cal("init", ns, { origin: EMBED_ORIGIN });
   Cal.ns[ns]("ui", { ...UI, hideEventTypeDetails: ns === QUIZ_NS });
   // Real bookings (not just calendar opens) are the conversion the ad platforms should optimize for.
   Cal.ns[ns]("on", {
@@ -82,16 +85,39 @@ function initNamespace(ns: string) {
   });
 }
 
+let attempts = 0;
+
 export function loadCal(ns: string = BOOKING.namespace): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(false);
   if (!ready) {
-    ready = new Promise((resolve) => {
+    const attempt = new Promise<boolean>((resolve) => {
       bootstrap();
       initNamespace(BOOKING.namespace);
-      const script = document.querySelector<HTMLScriptElement>(`script[src="${EMBED_SRC}"]`);
-      if (!script) return resolve(false);
-      script.addEventListener("load", () => resolve(true), { once: true });
-      script.addEventListener("error", () => resolve(false), { once: true });
+      let script = document.querySelector<HTMLScriptElement>(`script[src="${EMBED_SRC}"]`);
+      if (script && attempts > 0) {
+        // A previous attempt failed: replace the dead tag with a fresh request.
+        script.remove();
+        script = null;
+      }
+      if (!script) {
+        script = document.createElement("script");
+        script.src = EMBED_SRC;
+        script.async = true;
+        document.head.appendChild(script);
+      }
+      attempts++;
+      const done = (ok: boolean) => {
+        clearTimeout(timer);
+        resolve(ok);
+      };
+      const timer = setTimeout(() => done(false), SCRIPT_TIMEOUT_MS);
+      script.addEventListener("load", () => done(true), { once: true });
+      script.addEventListener("error", () => done(false), { once: true });
+    });
+    ready = attempt;
+    // Never cache a failure: the next open gets a fresh chance.
+    void attempt.then((ok) => {
+      if (!ok && ready === attempt) ready = null;
     });
   }
   initNamespace(ns);
@@ -133,6 +159,12 @@ function attributionMeta() {
   return { ...Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!])), ...(navigator.userAgent ? { "metadata[ua]": navigator.userAgent.slice(0, 400) } : {}) };
 }
 
+/** Plain Cal.com page link carrying the same prefill, for when the embed can't show (blockers, in-app browsers). */
+export function bookingFallbackUrl(prefill?: string, person?: Person, fields?: Record<string, string | undefined>) {
+  const q = new URLSearchParams(defined({ name: person?.name, email: person?.email, attendeePhoneNumber: person?.phone, notes: prefill, ...fields }) as Record<string, string>);
+  return `${BOOKING.url}${q.toString() ? `?${q}` : ""}`;
+}
+
 /** Opens the Brand Boost booking modal; falls back to the Cal.com page if the embed can't load. */
 export async function openBooking(source?: string, prefill?: string, person?: Person, extra: Omit<Prefill, "source" | "prefill" | "person"> = {}) {
   track("booking_open", { source });
@@ -141,22 +173,43 @@ export async function openBooking(source?: string, prefill?: string, person?: Pe
   if (ok && window.Cal?.ns[ns]) {
     window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
   } else {
-    const q = new URLSearchParams(defined({ name: person?.name, email: person?.email, attendeePhoneNumber: person?.phone, notes: prefill, ...extra.fields }) as Record<string, string>);
-    window.open(`${BOOKING.url}${q.toString() ? `?${q}` : ""}`, "_blank", "noopener,noreferrer");
+    window.open(bookingFallbackUrl(prefill, person, extra.fields), "_blank", "noopener,noreferrer");
   }
 }
 
-/** Inline booking calendar mounted into an element by id. */
-export async function mountInlineBooking(elementId: string, source?: string, prefill?: string, opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {}) {
+/**
+ * Inline booking calendar mounted into an element by id.
+ * "ready" only once the calendar iframe reports it has loaded (not merely when the embed was queued),
+ * "failed" if the script or booking page can't load, "slow" if neither happens in time, so the caller
+ * can always offer another way to book.
+ */
+export async function mountInlineBooking(
+  elementId: string,
+  source?: string,
+  prefill?: string,
+  opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {},
+): Promise<"ready" | "failed" | "slow"> {
   const { ns = BOOKING.namespace, ...rest } = opts;
   const ok = await loadCal(ns);
-  if (!ok || !window.Cal?.ns[ns]) return false;
-  window.Cal.ns[ns]("inline", {
-    elementOrSelector: `#${elementId}`,
-    calLink: BOOKING.calLink,
-    config: calConfig({ source, prefill, ...rest }),
+  if (!ok || !window.Cal?.ns[ns]) return "failed";
+  const api = window.Cal.ns[ns];
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (r: "ready" | "failed" | "slow") => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(r);
+    };
+    const timer = setTimeout(() => finish("slow"), 10000);
+    api("on", { action: "linkReady", callback: () => finish("ready") });
+    api("on", { action: "linkFailed", callback: () => finish("failed") });
+    api("inline", {
+      elementOrSelector: `#${elementId}`,
+      calLink: BOOKING.calLink,
+      config: calConfig({ source, prefill, ...rest }),
+    });
   });
-  return true;
 }
 
 /** Best-effort booker details from the Cal.com success payload (field names vary by version). */
