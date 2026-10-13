@@ -10,6 +10,28 @@ import { startGtm } from "./lib/gtm";
 import { captureAttribution, installCallTracking } from "./lib/track";
 import { flushLeadOutbox } from "./lib/lead-outbox";
 
+// ── Chunk load error handler ──────────────────────────────────────────────────
+// After a new deploy, old cached pages request chunk filenames that no longer
+// exist on the server (hash changed). Auto-reload once to pick up fresh bundle.
+window.addEventListener("vite:preloadError", () => {
+  const reloaded = sessionStorage.getItem("chunk-reload");
+  if (!reloaded) {
+    sessionStorage.setItem("chunk-reload", "1");
+    window.location.reload();
+  }
+});
+// Catch dynamic import() failures the same way (older Vite / fallback)
+window.addEventListener("error", (e) => {
+  if (e.message?.includes("dynamically imported module") || e.message?.includes("Failed to fetch")) {
+    const reloaded = sessionStorage.getItem("chunk-reload");
+    if (!reloaded) {
+      sessionStorage.setItem("chunk-reload", "1");
+      window.location.reload();
+    }
+  }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
 captureAttribution();
 installCallTracking();
 flushLeadOutbox();

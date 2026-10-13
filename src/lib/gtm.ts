@@ -14,11 +14,16 @@ export function startGtm() {
   if (w.__gtm) return;
   w.__gtm = true;
   w.dataLayer = w.dataLayer || [];
+  // Push gtm.start ONCE — pushing once per container causes double session counting
+  // which creates the "sessions exceed impressions" UTM discrepancy in Google Ads.
+  w.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
   for (const id of GTM_IDS) {
-    w.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
     const s = document.createElement("script");
     s.async = true;
     s.src = `https://www.googletagmanager.com/gtm.js?id=${id}`;
+    // Suppress legacy Google API loader errors (apis.google.com/js/client.js?onload=_ga)
+    // that come from old GTM tags — they are benign but noisy in reporting tools.
+    s.onerror = () => { /* GTM script blocked by ad-blocker — non-fatal */ };
     document.head.appendChild(s);
   }
 }
@@ -30,3 +35,4 @@ export function gtmPageView(path: string) {
   w.dataLayer = w.dataLayer || [];
   w.dataLayer.push({ event: "virtual_page_view", page_path: path, page_location: window.location.href, page_title: document.title });
 }
+
