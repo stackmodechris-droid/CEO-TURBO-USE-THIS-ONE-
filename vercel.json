@@ -112,6 +112,11 @@
       "source": "/guides/nfc-business-card",
       "destination": "/how-to-get-more-google-reviews",
       "permanent": true
+    },
+    {
+      "source": "/guides/how-to-get-more-google-reviews",
+      "destination": "/how-to-get-more-google-reviews",
+      "permanent": true
     }
   ],
   "headers": [
