@@ -8,7 +8,7 @@ n="$1"; a="$2"; v="${3:-}"
 d=".build/$n${v:+-$v}"
 rm -rf "$d"; mkdir -p "$d/assets/audio"
 cp -r assets/fonts assets/img assets/gsap.min.js "$d/assets/"
-cp "assets/audio/$a.wav" "$d/assets/audio/"
+cp "assets/audio/$a.wav" "$d/assets/audio/"; cp assets/audio/vo*.wav "$d/assets/audio/" 2>/dev/null || true
 cp hyperframes.json meta.json "$d/"
 if [ "$v" = "4x5" ]; then
   sed -e 's/height: 1920px/height: 1350px/g' \

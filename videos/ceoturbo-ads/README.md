@@ -19,3 +19,8 @@ Music beds are generated (120 BPM) so cuts land on beats; renders are in `render
 | `ad5-book-calls.html` | Book the free 30-min Brand Boost call (real lead results, what happens on the call) | ceoturbo.com/brand-boost |
 
 Build a ratio: `./stage.sh ad4-cards-sellout ad4` (9:16) or `./stage.sh ad4-cards-sellout ad4 4x5`, then `npx hyperframes render --quality high --output ../../renders/<name>.mp4` inside `.build/<name>`.
+
+## Meme ad: "Greg" (24s, 9:16 + 4:5)
+
+`ad6-greg-meme.html` - POV skit with a deadpan narrator (local Kokoro voice `bm_george`), emoji cast, generated SFX. Customer loves the work, leaves without reviewing, grumpy Greg leaves a 1-star about parking, the card fixes it. Covers barbers, nail techs, plumbers and restaurants. CTA: ceoturbo.com/google-review-cards.
+Voice lines: `assets/audio/vo1-5.wav`; SFX/bed: `assets/audio/ad6.wav`.
