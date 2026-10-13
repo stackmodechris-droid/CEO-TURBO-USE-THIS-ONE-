@@ -30,3 +30,6 @@ Headlines: Free Visibility Check | Free 60-Second Score | See What Google & Chat
 Descriptions: Get your free visibility score in 60 seconds. See how you show up on Google, Maps, Bing and AI. | Free check, then an optional free call with the founder. No contracts, no pressure.
 Final URL: `https://www.ceoturbo.com/free-audit?utm_source=bing&utm_medium=cpc&utm_campaign=free_audit&utm_term={keyword}`
 Both ad groups share the one $10/day budget.
+
+## Ad groups (US-wide, no local/city ad groups)
+Google Business Profile · Website + SEO Package · More Customers · AI Search (GEO) · Free Visibility Check. Imported keywords/ads come from `docs/ads/google-ads-upload-v3.csv`. Delete any imported ad group named Local SEO and any keyword containing a city name or "near me".

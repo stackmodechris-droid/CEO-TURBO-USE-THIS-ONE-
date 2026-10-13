@@ -1,6 +1,6 @@
 # Google Ads keyword sheet (live in account 232-066-4335, all PAUSED)
 
-> **Superseded by the $30/day plan (targeted to the whole United States, not just Atlanta/LA):** the 4 campaigns below are consolidated into ONE $10/day Search campaign, `CEO Turbo | Booked Calls | Search`, built from `docs/ads/google-ads-upload-v3.csv` (removes Local, US Niche and Brand; Ads Not Converting stays paused). Keyword lists below remain the source for the ad groups.
+> **Superseded by the $30/day plan (targeted to the whole United States, not just Atlanta/LA):** the 4 campaigns below are consolidated into ONE $10/day Search campaign, `CEO Turbo | Booked Calls | Search`, built from `docs/ads/google-ads-upload-v3.csv` (removes Local, US Niche and Brand; no local/city ad group, US-wide, ad groups: Google Business Profile, Website + SEO, More Customers, AI Search, Free Visibility Check; Ads Not Converting stays paused). Keyword lists below remain the source for the ad groups.
 
 Every keyword runs as phrase AND exact match (no broad). Caps are starting max CPCs; confirm in Keyword Planner and trim after the first 3 days using the search terms report.
 
