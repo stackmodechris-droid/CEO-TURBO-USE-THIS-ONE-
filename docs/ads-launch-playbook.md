@@ -1,7 +1,7 @@
 # CEO Turbo ads launch playbook: booked calls on a small budget
 
 **Goal:** booked Brand Boost calls, then sell **Turbo Launch $1,697** + **Turbo Growth $597/mo** on the call. Review cards are the upsell.
-**Budget to start:** Microsoft $10/day · Google $15/day · Meta $10–15/day · Reddit $5–10/day. That's about $45/day, or roughly $1,350 a month.
+**Budget (current plan, hard cap $30/day):** Google booked calls $10 · Microsoft booked calls $10 · Microsoft Google-review-card sales $10. Meta and Reddit are paused for now. See `docs/ads-reporting.md`, `docs/ads/google-ads-upload-v3.csv`, `docs/ads/microsoft-booked-calls-campaign.md`, `docs/ads/microsoft-review-cards-campaign.md`. The older multi-platform budget and ad-group table below is superseded where it conflicts.
 **Math:** one Launch sale ($1,697) pays for more than a month of all four. Two clients on Growth cover the ad budget forever.
 
 CPC numbers below are my starting estimates, not quotes. Check them in Google Keyword Planner / Microsoft Keyword Planner before you set the caps.
