@@ -8,6 +8,7 @@ import { GUIDES, guideImage, guidePath } from "@/content/guides";
 import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS, ADS_NOT_CONVERTING_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { PRICING_FAQS, price } from "@/content/pricing";
+import { DEV_FAQS } from "@/content/app-marketing";
 import * as S from "./schema";
 
 export type PageMeta = {
@@ -285,7 +286,7 @@ function build(): PageMeta[] {
     { path: "/get-more-reviews", title: "How to Get More Google Reviews (One Tap) | CEO Turbo", description: `Why reviews decide who gets the call on Google, Maps and ChatGPT — and the NFC card that turns “I'll review you later” into a review. From ${fromPriceLabel}.`, ogImage: "/og/get-more-reviews.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
-    { path: "/app-marketing", title: "App Marketing for Developers — Get More Installs | CEO Turbo", description: "You built the app. We get it installed. Landing pages, ASO, Reddit & Meta ads, SEO and launch strategy for software developers and indie makers.", noindex: true, priority: 0.1, changefreq: "monthly", group: "Core", schema: [...base(), S.webPage("/app-marketing", "App marketing for developers", "Landing pages, ASO, Reddit ads, SEO and launch strategy for software developers.")] },
+    { path: "/app-marketing", title: "Marketing for Software Developers: More Installs | CEO Turbo", description: "Landing page, tracking, Reddit and Meta ads, SEO and a launch plan for indie devs and small teams. Free 30-minute growth call.", ogImage: "/og/app-marketing.jpg", priority: 0.7, changefreq: "monthly", group: "Core", schema: [...base(), S.webPage("/app-marketing", "Marketing for software developers", "Landing page, tracking, ads, SEO and launch plan for software developers."), S.devMarketing(), S.devVideo(), S.breadcrumbs([{ name: "Marketing for developers", path: "/app-marketing" }]), S.faqPage(DEV_FAQS, "/app-marketing")] },
     { path: "/promptshop", title: "Prompt Shop — Coming Soon | CEO Turbo", description: "AI prompts, scanners and templates from CEO Turbo — coming soon.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Company", schema: base() },
   );
 

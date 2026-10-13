@@ -7,14 +7,14 @@ const str = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[a-z]{2,}$/i;
 
 /** Validates and trims a lead. Returns { lead } or { error } (field name). */
-export function cleanLead(body) {
+export function cleanLead(body, { phoneOptional = false } = {}) {
   const name = str(body.name, 100);
   const email = str(body.email, 200).toLowerCase();
   const phone = str(body.phone, 30);
   const digits = phone.replace(/\D/g, "");
   if (name.length < 2) return { error: "name" };
   if (!EMAIL.test(email)) return { error: "email" };
-  if (digits.length < 10 || digits.length > 15) return { error: "phone" };
+  if (!(phoneOptional && !digits) && (digits.length < 10 || digits.length > 15)) return { error: "phone" };
   return {
     lead: {
       name,

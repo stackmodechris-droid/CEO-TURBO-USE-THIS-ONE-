@@ -5,13 +5,13 @@ import { parseHtml, blockedAiBots, scoreChecks, platformFor } from "../../api/_l
 import { cleanLead, isBot, scoreLead } from "../../api/_lib/leads.js";
 import { buildEvent, hashedUser, cleanAttribution, requestSignals, withSignals } from "../../api/_lib/meta-capi.js";
 import { buildTiktokEvent } from "../../api/_lib/tiktok-events.js";
-import { quizFields } from "../../api/lead.js";
+import { quizFields, devFields } from "../../api/lead.js";
 import { trackPayload } from "../../api/track.js";
 import { sameOrigin, isJson } from "../../api/_lib/http.js";
 import { deliveryResult, forwardLead } from "../../api/_lib/leads.js";
 import { vi, afterEach } from "vitest";
 import { validSignature, parseBooking } from "../../api/cal-webhook.js";
-import { validSignature as shopifySig, parseOrder } from "../../api/shopify-webhook.js";
+import { validSignature as shopifySig, parseOrder, buildPurchaseEvents } from "../../api/shopify-webhook.js";
 import { createHash, createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -146,6 +146,37 @@ describe("Shopify order webhook", () => {
   it("maps an order and its ad click ids to the sheet record", () => {
     const r = parseOrder({ id: 9, name: "#1001", email: "A@B.com", total_price: "49.00", currency: "USD", financial_status: "paid", line_items: [{ title: "Card", quantity: 2 }], note_attributes: [{ name: "gclid", value: "g1" }, { name: "Business name", value: "Joe" }] });
     expect(r).toMatchObject({ type: "shopify-order", orderId: "9", email: "a@b.com", quantity: 2, total: "49.00 USD", gclid: "g1", business: "Joe" });
+  });
+});
+
+describe("Shopify order → server-side Purchase", () => {
+  const order = { id: 77, email: "Buyer@X.com", total_price: "39.99", currency: "USD", processed_at: "2026-10-13T12:00:00Z", customer: { id: 5 }, shipping_address: { name: "Pat Lee", city: "Atlanta", phone: "(470) 555-0100" }, line_items: [{ sku: "CT-NFC-REVIEW-2", quantity: 1, price: "39.99" }], note_attributes: [{ name: "_fbp", value: "fb.1.1.2" }, { name: "_fbc", value: "fb.1.1.AbC" }, { name: "ttclid", value: "tt9" }, { name: "Landing", value: "/google-review-cards" }], client_details: { browser_ip: "1.2.3.4", user_agent: "UA" } };
+  it("builds a de-duplicable Meta Purchase with value, SKU and match data", () => {
+    const { meta } = buildPurchaseEvents(order);
+    expect(meta).toMatchObject({ event_name: "Purchase", event_id: "purchase_77", action_source: "website", event_source_url: "https://www.ceoturbo.com/google-review-cards" });
+    expect(meta.custom_data).toMatchObject({ value: 39.99, currency: "USD", content_ids: ["CT-NFC-REVIEW-2"], num_items: 1, order_id: "77" });
+    expect(meta.user_data.fbp).toBe("fb.1.1.2");
+    expect(meta.user_data.fbc).toBe("fb.1.1.AbC");
+    expect(meta.user_data.em[0]).toMatch(/^[a-f0-9]{64}$/);
+    expect(meta.user_data.client_ip_address).toBe("1.2.3.4");
+  });
+  it("builds the matching TikTok Purchase with the same event id", () => {
+    const { tiktok } = buildPurchaseEvents(order);
+    expect(tiktok).toMatchObject({ event: "Purchase", event_id: "purchase_77", properties: { value: 39.99, currency: "USD" } });
+    expect(tiktok.user.ttclid).toBe("tt9");
+  });
+});
+
+describe("Developer intake lead", () => {
+  it("turns the answers into one readable, tag-free sheet note", () => {
+    const d = devFields({ appUrl: " https://x.dev/app ", platform: "iOS", stage: "Launched, <b>no users</b>", budget: "$500-1k", blocker: "Nobody finds it", evil: "x" });
+    expect(d.note).toBe("App: https://x.dev/app | Platform: iOS | Stage: Launched,  b no users /b | Ad budget: $500-1k | Blocker: Nobody finds it");
+    expect(d).not.toHaveProperty("evil");
+  });
+  it("does not require a phone number for developers but still validates name and email", () => {
+    expect(cleanLead({ name: "Al Dev", email: "al@x.dev" }, { phoneOptional: true }).lead.email).toBe("al@x.dev");
+    expect(cleanLead({ name: "Al Dev", email: "al@x.dev" }).error).toBe("phone");
+    expect(cleanLead({ name: "A", email: "al@x.dev" }, { phoneOptional: true }).error).toBe("name");
   });
 });
 

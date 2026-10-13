@@ -6,6 +6,7 @@ import type { FAQ, Service } from "@/content/services";
 import type { Client } from "@/content/clients";
 import type { Guide } from "@/content/guides";
 import { guideImage, guidePath } from "@/content/guides";
+import { DEV_VIDEO } from "@/content/app-marketing";
 import { MONTHLY, PACKAGES, SETUP, WEBSITES, pricesFor, type PriceItem } from "@/content/pricing";
 
 const abs = (path: string) => (path.startsWith("http") ? path : `${SITE.url}${path}`);
@@ -282,6 +283,36 @@ export const itemList = (name: string, items: { name: string; path: string }[]):
   "@type": "ItemList",
   name,
   itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, url: abs(it.path) })),
+});
+
+/** The developer explainer clip on /app-marketing. */
+export const devVideo = (): JsonLd => ({
+  "@type": "VideoObject",
+  "@id": `${SITE.url}/app-marketing#video`,
+  name: DEV_VIDEO.title,
+  description: DEV_VIDEO.description,
+  thumbnailUrl: abs(DEV_VIDEO.poster),
+  contentUrl: abs(DEV_VIDEO.src),
+  uploadDate: DEV_VIDEO.uploadDate,
+  duration: DEV_VIDEO.duration,
+  width: DEV_VIDEO.width,
+  height: DEV_VIDEO.height,
+  inLanguage: "en",
+  publisher: { "@id": ORG_ID },
+});
+
+/** Marketing for software developers (/app-marketing): the packages from pricing.ts as the offers. */
+export const devMarketing = (): JsonLd => ({
+  "@type": "Service",
+  "@id": `${SITE.url}/app-marketing#service`,
+  name: "Marketing for software developers",
+  serviceType: "App and software marketing",
+  description: "Landing page, conversion tracking, Reddit, Meta, TikTok and Google ads, SEO and a launch plan for indie developers and small software teams. Starts with a free 30-minute growth call.",
+  url: abs("/app-marketing"),
+  provider: { "@id": ORG_ID },
+  audience: { "@type": "Audience", audienceType: "Software developers, indie hackers and small SaaS and app teams" },
+  areaServed: { "@type": "Country", name: "United States" },
+  offers: PACKAGES.map(priceOffer),
 });
 
 /** The Brand Boost call as a named, free service — helps "CEO Turbo Brand Boost" searches resolve to us. */

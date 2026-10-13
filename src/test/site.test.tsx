@@ -306,3 +306,27 @@ describe("Microsoft Clarity prep", () => {
     }
   });
 });
+
+describe("/app-marketing (developer landing page)", async () => {
+  const content = await import("@/content/app-marketing");
+  const page = PAGES.find((p) => p.path === "/app-marketing")!;
+  const text = JSON.stringify([content.DEV_PAINS, content.DEV_STEPS, content.DEV_SERVICES, content.DEV_WONT, content.DEV_FAQS, content.DEV_VIDEO]);
+
+  it("is indexable and carries Service, FAQ, Video and Breadcrumb structured data", () => {
+    expect(page.noindex).toBeFalsy();
+    const types = JSON.stringify(page.schema);
+    for (const t of ["Service", "FAQPage", "VideoObject", "BreadcrumbList"]) expect(types, t).toContain(`"@type":"${t}"`);
+  });
+
+  it("makes no claim we can't back up (invented counts, launches, guarantees)", () => {
+    for (const bad of ["47 downloads", "12 downloads", "20+ products", "guaranteed", "Product Hunt launches before", "First campaigns go live"]) expect(text, bad).not.toContain(bad);
+  });
+
+  it("ships every asset it references", () => {
+    for (const p of [content.DEV_VIDEO.src, content.DEV_VIDEO.poster, "/img/devs/more-installs.webp", "/img/devs/more-installs-560.webp", "/og/app-marketing.jpg"]) expect(existsSync(pub(p)), p).toBe(true);
+  });
+
+  it("quotes the real package prices instead of hard-coded ones", () => {
+    expect(text).not.toMatch(/\$997|\$300\/mo/);
+  });
+});

@@ -9,6 +9,9 @@ import { CallLink } from "./CallLink";
 import { REVIEWS_AD_PATH, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { cn } from "@/lib/utils";
 
+/** The developer landing page has its own form, so its header button scrolls there instead of opening the local-business quiz. */
+const DEV_PATH = "/app-marketing";
+
 type Item = { to: string; label: string; sub?: string };
 type Menu = { label: string; to: string; items: Item[]; wide?: boolean };
 
@@ -107,6 +110,10 @@ export function Header({ focus = false }: { focus?: boolean }) {
           {pathname === REVIEWS_AD_PATH ? (
             <a href="#buy" className="btn-ignite whitespace-nowrap !px-4 !py-2.5 !text-sm">
               Get cards<span className="hidden sm:inline"> · {fromPriceLabel}</span>
+            </a>
+          ) : pathname === DEV_PATH ? (
+            <a href="#intake" className="btn-ignite whitespace-nowrap !px-4 !py-2.5 !text-sm">
+              Free growth plan
             </a>
           ) : (
             <BookButton note={focus ? "Ad page header" : "Header"} className={cn("!px-4 !py-2.5 !text-sm", focus ? "inline-flex" : "hidden sm:inline-flex")}>

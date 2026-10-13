@@ -22,6 +22,13 @@ export function quizFields(body) {
   };
 }
 
+/** Developer intake (/app-marketing): answers kept as one readable note for the sheet's Note column (exported for tests). */
+export function devFields(body) {
+  const f = { appUrl: text(body.appUrl, 200), platform: text(body.platform, 40), stage: text(body.stage, 60), budget: text(body.budget, 40), blocker: text(body.blocker, 300) };
+  const note = [f.appUrl && `App: ${f.appUrl}`, f.platform && `Platform: ${f.platform}`, f.stage && `Stage: ${f.stage}`, f.budget && `Ad budget: ${f.budget}`, f.blocker && `Blocker: ${f.blocker}`].filter(Boolean).join(" | ");
+  return { ...f, note };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -39,10 +46,11 @@ export default async function handler(req, res) {
   }
   if (isBot(body)) return send(res, 400, { error: "invalid" });
 
-  const { lead, error } = cleanLead(body);
+  const type = text(body.type, 30) || "order-request";
+  const dev = type === "dev-intake" ? devFields(body) : null;
+  const { lead, error } = cleanLead(body, { phoneOptional: !!dev });
   if (error) return send(res, 400, { error });
 
-  const type = text(body.type, 30) || "order-request";
   const quiz = type === "brand-boost-quiz" ? quizFields(body) : null;
   const signals = requestSignals(req, res);
   const attr = withSignals(cleanAttribution(body.attribution), signals);
@@ -63,24 +71,26 @@ export default async function handler(req, res) {
       userAgent: req.headers["user-agent"],
       customData: {
         lead_source: type,
+        ...(dev ? { content_name: "Developer intake", content_category: [dev.platform, dev.stage].filter(Boolean).join(" · ") } : {}),
         ...(quiz ? { content_name: "Brand Boost quiz", content_category: [quiz.audience, quiz.stage].filter(Boolean).join(" · ") } : {}),
         ...(value ? { value, currency: "USD" } : {}),
       },
     }),
   ]);
   const tiktok = sendTiktokEvents([
-    buildTiktokEvent({ event: "Lead", eventId, url, user, attribution: attr, ip, userAgent: req.headers["user-agent"], properties: { content_name: quiz ? "Brand Boost quiz" : type, ...(value ? { value, currency: "USD" } : {}) } }),
+    buildTiktokEvent({ event: "Lead", eventId, url, user, attribution: attr, ip, userAgent: req.headers["user-agent"], properties: { content_name: quiz ? "Brand Boost quiz" : dev ? "Developer intake" : type, ...(value ? { value, currency: "USD" } : {}) } }),
   ]);
   const { stored } = await forwardLead({
     type,
     ...lead,
+    ...(dev ? { business: lead.business || dev.appUrl } : {}),
     ...(quiz ?? {}),
     ...(quiz ? scoreLead(quiz) : {}),
     product: text(body.product, 120),
     style: text(body.style, 40),
     pack: text(body.pack, 40),
     total: text(body.total, 20),
-    note: text(body.note, 500),
+    note: dev ? dev.note : text(body.note, 500),
     page: text(body.page, 120),
     eventId,
     ...attr,
