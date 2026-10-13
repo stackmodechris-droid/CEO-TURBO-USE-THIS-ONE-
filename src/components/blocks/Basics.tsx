@@ -20,7 +20,7 @@ export function SectionHeader({
   return (
     <div className={cn("max-w-3xl", center && "mx-auto text-center")}>
       {kicker && <p className="mb-3 text-sm font-medium text-turbo">{kicker}</p>}
-      <Tag className={Tag === "h1" ? "text-4xl font-bold leading-[1.02] sm:text-6xl" : "h-section"}>{title}</Tag>
+      <Tag className={Tag === "h1" ? "text-3xl font-bold leading-[1.02] sm:text-4xl md:text-6xl" : "h-section"}>{title}</Tag>
       {lede && <p className={cn("lede", center && "mx-auto")}>{lede}</p>}
     </div>
   );
@@ -74,8 +74,8 @@ export function FAQList({ faqs, title = "Frequently asked questions" }: { faqs: 
         </div>
         <div className="divide-y divide-border border-y border-border">
           {faqs.map((f) => (
-            <details key={f.q} className="group py-5 [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-left">
+            <details key={f.q} className="group py-4 [&_summary::-webkit-details-marker]:hidden">
+              <summary className="flex min-h-[44px] cursor-pointer list-none items-start justify-between gap-6 py-1 text-left">
                 <h3 className="font-body text-lg font-semibold tracking-normal">{f.q}</h3>
                 <span className="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/5 text-turbo transition-transform group-open:rotate-45" aria-hidden>
                   +

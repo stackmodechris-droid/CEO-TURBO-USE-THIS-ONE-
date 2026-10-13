@@ -49,7 +49,7 @@ function PaybackCalculator() {
             <legend className="text-sm font-medium text-chrome">Monthly plan</legend>
             <div className="mt-2 flex flex-wrap gap-2">
               {MONTHLY.filter((p) => p.id !== "ads-additional").map((p) => (
-                <button key={p.id} type="button" aria-pressed={planId === p.id} onClick={() => setPlanId(p.id)} className={cn("choice !px-3 !py-2 !text-xs", planId === p.id && "choice-on")}>
+                <button key={p.id} type="button" aria-pressed={planId === p.id} onClick={() => setPlanId(p.id)} className={cn("choice min-h-[44px] !px-3 !py-2 !text-xs", planId === p.id && "choice-on")}>
                   {p.name} · {usd(p.price)}
                 </button>
               ))}
@@ -58,7 +58,7 @@ function PaybackCalculator() {
         </div>
         <div className="grid content-center rounded-2xl bg-white/[0.03] p-6 text-center ring-1 ring-white/5" aria-live="polite">
           <p className="text-sm text-muted-foreground">{plan.name} pays for itself with</p>
-          <p className="mt-2 font-display text-6xl font-bold text-turbo-grad">{customers}</p>
+          <p className="mt-2 font-display text-5xl font-bold text-turbo-grad sm:text-6xl">{customers}</p>
           <p className="mt-1 text-sm font-semibold">{customers === 1 ? "extra customer a month" : "extra customers a month"}</p>
           <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
             Everything after that is profit. Just {Math.max(customers + 2, 4)} extra customers a month is about <span className="font-semibold text-foreground">{usd(yearly)}</span> a year in new revenue.

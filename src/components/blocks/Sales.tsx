@@ -35,7 +35,7 @@ export function PathPicker() {
         const Scene = SCENE_FOR[a.slug];
         const count = clientsIn(a.category).length;
         return (
-          <Link key={a.slug} to={`/${a.slug}`} className="panel group relative flex flex-col overflow-hidden p-6 transition-shadow hover:shadow-[0_0_0_1px_hsl(var(--turbo)/0.6),0_30px_60px_-30px_hsl(var(--turbo)/0.5)]">
+          <Link key={a.slug} to={`/${a.slug}`} className="panel group relative flex min-h-[200px] flex-col overflow-hidden p-6 transition-shadow hover:shadow-[0_0_0_1px_hsl(var(--turbo)/0.6),0_30px_60px_-30px_hsl(var(--turbo)/0.5)]">
             <Scene className="mb-4 h-auto w-full" />
             <p className="text-sm text-muted-foreground">{a.eyebrow}</p>
             <h3 className="mt-1 text-2xl font-bold leading-tight">{a.h1.split(" — ")[0]}</h3>
@@ -62,7 +62,7 @@ export function ServiceGrid({ slugs }: { slugs?: string[] }) {
         const Icon = SERVICE_ICON[s.icon];
         return (
           <li key={s.slug} className="bg-background">
-            <Link to={`/services/${s.slug}`} className="group flex h-full flex-col p-6 transition-colors hover:bg-white/[0.025]">
+            <Link to={`/services/${s.slug}`} className="group flex h-full min-h-[120px] flex-col p-6 transition-colors hover:bg-white/[0.025]">
               <Icon className="h-5 w-5 text-turbo" aria-hidden />
               <h3 className="mt-4 text-lg font-semibold tracking-tight">{s.name}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.outcome}</p>
@@ -157,7 +157,7 @@ export function Founder() {
         <p className="lede">
           I left a career in tech and finance to help people make more money. I've built 50+ websites, including every client site on this page, and I run the Brand Boost calls myself.
         </p>
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-3">
           <BookButton note="Founder section">Book a call with Christopher</BookButton>
           <Link to="/about" className="btn-chrome">
             My story
