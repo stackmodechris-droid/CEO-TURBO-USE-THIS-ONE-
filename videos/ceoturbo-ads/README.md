@@ -24,3 +24,8 @@ Build a ratio: `./stage.sh ad4-cards-sellout ad4` (9:16) or `./stage.sh ad4-card
 
 `ad6-greg-meme.html` - POV skit with a deadpan narrator (local Kokoro voice `bm_george`), emoji cast, generated SFX. Customer loves the work, leaves without reviewing, grumpy Greg leaves a 1-star about parking, the card fixes it. Covers barbers, nail techs, plumbers and restaurants. CTA: ceoturbo.com/google-review-cards.
 Voice lines: `assets/audio/vo1-5.wav`; SFX/bed: `assets/audio/ad6.wav`.
+
+## Meme ad: "The Line" (27s, 9:16 + 4:5)
+
+`ad7-the-line.html` - hand-inked two-window queue meme (procedural crowd of ~170 figures with a pen wobble filter, seeded so renders are identical). "YOU: 12 reviews" vs "THAT GUY: 400 reviews", the lone customer abandons you, the card slams in, the whole line stampedes over, and the other guy asks where you got the card. CTA: ceoturbo.com/google-review-cards. Narrator lines: `assets/audio/ln1-8.wav`; SFX/bed: `assets/audio/ad7.wav`.
+Gotcha: do not pass `svgOrigin` inside a tween on an element that already has one set - it re-anchors scale to the canvas corner.
