@@ -10,3 +10,12 @@ Three 9:16 (1080x1920) ads built with HyperFrames. Edit the HTML, run `./stage.s
 
 All numbers come from `src/content/results.ts` (real Meta dashboards, Jul-Aug 2026). Ad 1's review counter is labeled "Illustrative example".
 Music beds are generated (120 BPM) so cuts land on beats; renders are in `renders/`.
+
+## Conversion cuts (v2) - 1080x1920 and 1080x1350
+
+| File | Goal | CTA |
+| --- | --- | --- |
+| `ad4-cards-sellout.html` | Sell Google review cards (competitor face-off, one-tap demo, 3 packs, 5-day guarantee) | ceoturbo.com/google-review-cards |
+| `ad5-book-calls.html` | Book the free 30-min Brand Boost call (real lead results, what happens on the call) | ceoturbo.com/brand-boost |
+
+Build a ratio: `./stage.sh ad4-cards-sellout ad4` (9:16) or `./stage.sh ad4-cards-sellout ad4 4x5`, then `npx hyperframes render --quality high --output ../../renders/<name>.mp4` inside `.build/<name>`.
