@@ -9,6 +9,7 @@ Everything in the code is done. This is the account-side setup, in order. Each s
 | **Quiz lead** (main lead) | Brand Boost quiz: `/brand-boost`, `/book`, every "Book" button | `Lead` with value by budget: Pixel + CAPI, deduped by event id | `generate_lead` (lead_source = brand-boost-quiz, value) | `submit_lead_form` + revenue | `Lead`: Pixel + Events API |
 | **Booked call** | Cal.com (quiz calendar, modal or `/booked`) | `Schedule` with value: Pixel + CAPI, deduped by `book_<uid>` | `book_call` via the Google tag → Ads conversion | `book_appointment` | `Schedule`: Pixel + Events API |
 | **Free check lead** | `/free-audit`, homepage | `Lead`: Pixel + CAPI, deduped | `generate_lead` (lead_source = free_check) | `submit_lead_form` | `Lead` |
+| **Developer lead** | `/app-marketing` intake form | `Lead` (value by budget, `lead_source=reddit-dev-intake`): Pixel + CAPI | `generate_lead` | `submit_lead_form` | `Lead` (and Reddit `Lead`, `BookedCall` later) |
 | **Card purchase** | Shopify checkout | `Purchase` from the Facebook & Instagram app (Pixel + CAPI) | `purchase` from the Shopify custom pixel | `purchase` from the Shopify custom pixel | TikTok app on Shopify |
 | **Phone call click** | every `tel:` link ((470) 502-9543) | `Contact`: Pixel + CAPI (`/api/track`), deduped | `click_to_call` via the Google tag → Ads conversion *Phone call click* | `contact` | — |
 | Funnel steps | site | ViewContent, AddToCart, InitiateCheckout, BookingOpen, QuizStart | view_item, add_to_cart, begin_checkout, booking_open, quiz_start, quiz_step | view_item, add_to_cart, begin_checkout | ViewContent, AddToCart, InitiateCheckout |
@@ -32,6 +33,8 @@ Every lead and booking also lands in your **Google Sheet** with its ad click ids
 | `CAL_WEBHOOK_SECRET` | any long random string; use the same one in step 3 | Booked calls → Meta CAPI + Sheet |
 | `LEADS_WEBHOOK_URL`, `LEADS_WEBHOOK_SECRET` | `leads-google-sheet.md` | Leads in Google Sheets |
 | `SHOPIFY_WEBHOOK_SECRET` | Shopify → Settings → Notifications → Webhooks (signing secret) | Paid card orders → Google Sheet (`leads-google-sheet.md`) |
+| `SERVER_PURCHASE_EVENTS` *(only if Shopify's Facebook & Instagram app is NOT sending Purchase)* | set to `true` | `api/shopify-webhook.js` sends Purchase to Meta CAPI + TikTok Events API (event id `purchase_<orderId>`). Don't run both senders without checking Events Manager for double counts. Walkthrough: `meta-test-events-checklist.md` |
+| `VITE_REDDIT_PIXEL_ID` *(when you start Reddit ads)* | Reddit Ads → Events Manager → pixel id (`a2_…`) | Reddit Pixel: PageVisit, Lead, BookedCall, Purchase |
 | `META_TEST_EVENT_CODE` *(temporary)* | Events Manager → Test events | See server events live while testing; delete it after |
 | `VITE_TIKTOK_PIXEL_ID` *(when you start TikTok ads)* | TikTok Ads Manager → Tools → Events → Web events → your pixel → Pixel ID | TikTok Pixel on every page |
 | `TIKTOK_ACCESS_TOKEN` *(when you start TikTok ads)* | Same pixel → Settings → Events API → Generate access token | Server-side Lead + Schedule (counts ad-blocked/iOS users) |

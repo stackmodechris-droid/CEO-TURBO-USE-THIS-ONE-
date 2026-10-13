@@ -239,7 +239,7 @@ describe("leads Apps Script (docs/leads-apps-script.js)", () => {
 
   it("routes every lead type to its tab", () => {
     const tabFor = ctx.tabFor as (t: string) => string;
-    expect([tabFor("booking"), tabFor("brand-boost-quiz"), tabFor("audit-business"), tabFor("shopify-order"), tabFor("zzz")]).toEqual(["Booked Calls", "Call Quiz Leads", "Free Check Leads", "Card Orders", "Other Leads"]);
+    expect([tabFor("booking"), tabFor("brand-boost-quiz"), tabFor("audit-business"), tabFor("shopify-order"), tabFor("dev-intake"), tabFor("zzz")]).toEqual(["Booked Calls", "Call Quiz Leads", "Free Check Leads", "Card Orders", "Dev Intake Leads", "Other Leads"]);
   });
 
   it("has unique headers per tab and a Status dropdown for the call tabs", () => {

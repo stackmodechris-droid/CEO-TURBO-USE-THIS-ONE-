@@ -83,7 +83,7 @@ export default async function handler(req, res) {
   const { stored } = await forwardLead({
     type,
     ...lead,
-    ...(dev ? { business: lead.business || dev.appUrl } : {}),
+    ...(dev ? { business: lead.business || dev.appUrl, appUrl: dev.appUrl, platform: dev.platform, stage: dev.stage, budget: dev.budget, blocker: dev.blocker } : {}),
     ...(quiz ?? {}),
     ...(quiz ? scoreLead(quiz) : {}),
     product: text(body.product, 120),
