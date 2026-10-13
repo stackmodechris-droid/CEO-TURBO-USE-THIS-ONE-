@@ -31,7 +31,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
       <div className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[900px] -translate-x-1/2 glow-turbo opacity-60" aria-hidden />
       <div className="container-x relative">
         <div className="flex flex-col items-start justify-between gap-8 border-b border-border pb-14 lg:flex-row lg:items-end">
-          <p className="max-w-3xl font-display text-4xl font-bold leading-[0.95] tracking-tight sm:text-6xl">
+          <p className="max-w-3xl font-display text-3xl font-bold leading-[0.95] tracking-tight sm:text-4xl lg:text-6xl">
             <span className="text-chrome-grad">More customers.</span>
             <br />
             <span className="text-chrome-grad">More reviews.</span>

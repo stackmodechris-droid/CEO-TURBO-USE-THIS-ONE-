@@ -21,7 +21,7 @@ export function ProofStats() {
       {stats.map((s) => (
         <div key={s.label} className="bg-background/95 p-5 sm:p-6">
           <dt className="sr-only">{s.label}</dt>
-          <dd className="font-display text-3xl font-bold tracking-tight text-chrome-grad sm:text-4xl">
+          <dd className="font-display text-2xl font-bold tracking-tight text-chrome-grad sm:text-3xl md:text-4xl">
             <CountUp value={s.value} />
           </dd>
           <dd className="mt-1 text-sm text-muted-foreground">{s.label}</dd>
@@ -227,7 +227,7 @@ export function FeaturedResult() {
               { v: money(ad.spent), l: "ad spend" },
             ].map((x) => (
               <div key={x.l}>
-                <dd className="font-display text-3xl font-bold text-chrome-grad sm:text-4xl">{x.v}</dd>
+                <dd className="font-display text-2xl font-bold text-chrome-grad sm:text-3xl md:text-4xl">{x.v}</dd>
                 <dt className="mt-1 text-xs text-muted-foreground">{x.l}</dt>
               </div>
             ))}
@@ -341,7 +341,7 @@ export function StripeProof({ compact = false, title, lede }: { compact?: boolea
           <dl className="mt-7 grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 sm:gap-5">
             {stats.map((x, i) => (
               <div key={x.l} className={i === 0 ? "col-span-2 sm:col-span-1" : ""}>
-                <dd className={cn("font-display font-bold text-chrome-grad sm:text-5xl", i === 0 ? "text-5xl" : "text-[32px]")}>
+                <dd className={cn("font-display font-bold text-chrome-grad sm:text-5xl", i === 0 ? "text-4xl" : "text-[28px]")}>
                   <CountUp value={x.v} />
                 </dd>
                 <dt className="mt-1 text-xs font-medium text-foreground/90 sm:text-sm">{x.l}</dt>

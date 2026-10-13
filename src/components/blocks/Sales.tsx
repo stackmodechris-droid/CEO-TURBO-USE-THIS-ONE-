@@ -117,7 +117,7 @@ export function ReviewCardPromo({ headingLevel = "h2", title = "Turn “I'll lea
   ];
   return (
     <div className="grid items-center gap-12 lg:grid-cols-2">
-      <div className="relative mx-auto w-full max-w-[420px]">
+      <div className="relative mx-auto w-full max-w-[320px] sm:max-w-[420px]">
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-turbo/20 blur-3xl" aria-hidden />
         <ReviewCard3D tap className="w-full max-w-[340px]" />
       </div>
@@ -133,7 +133,7 @@ export function ReviewCardPromo({ headingLevel = "h2", title = "Turn “I'll lea
             </li>
           ))}
         </ul>
-        <div className="mt-8 flex flex-wrap items-center gap-4">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
           <Link to={SHOP_PATH} className="btn-ignite btn-shine">
             Shop review cards <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>

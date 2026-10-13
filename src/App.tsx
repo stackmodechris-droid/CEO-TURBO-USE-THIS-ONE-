@@ -21,6 +21,7 @@ const Book = lazy(() => import("./pages/Book"));
 const HowToGetMoreCustomers = lazy(() => import("./pages/HowToGetMoreCustomers"));
 const GetMoreReviews = lazy(() => import("./pages/GetMoreReviews"));
 const AdsNotConverting = lazy(() => import("./pages/AdsNotConverting"));
+const AppMarketing = lazy(() => import("./pages/AppMarketing"));
 const Booked = named(() => import("./pages/Book"), "Booked");
 const NotFound = lazy(() => import("./pages/NotFound"));
 const GuidesHub = named(() => import("./pages/Guides"), "GuidesHub");
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/how-to-get-more-customers" element={<HowToGetMoreCustomers />} />
           <Route path="/get-more-reviews" element={<GetMoreReviews />} />
           <Route path="/ads-not-converting" element={<AdsNotConverting />} />
+          <Route path="/app-marketing" element={<AppMarketing />} />
           <Route path="/booked" element={<Booked />} />
           <Route path="/google-review-cards" element={<ReviewCards />} />
           <Route path="/google-review-card-setup" element={<ReviewCardSetup />} />

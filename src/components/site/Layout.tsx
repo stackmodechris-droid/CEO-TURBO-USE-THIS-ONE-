@@ -17,7 +17,7 @@ import { startReddit, redditPageView } from "@/lib/reddit";
 import { startClarity } from "@/lib/clarity";
 
 /** Ad landing pages: no menu or footer links to leak clicks — one job, one button. */
-const FOCUS_PATHS = new Set(["/book", "/booked", "/how-to-get-more-customers", REVIEWS_AD_PATH]);
+const FOCUS_PATHS = new Set(["/book", "/booked", "/how-to-get-more-customers", "/app-marketing", REVIEWS_AD_PATH]);
 
 export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();

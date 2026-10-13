@@ -73,7 +73,7 @@ export default function Home() {
                 How to get more customers in 2026 — <span className="text-turbo-grad">step by step.</span>
               </h2>
               <p className="mt-3 text-[16px] leading-relaxed text-muted-foreground">Get found on Google, Bing, ChatGPT and Claude, get reviews, track every lead and run the right ads. Do it yourself, or we do the whole thing for you.</p>
-              <div className="mt-6 flex flex-wrap items-center gap-4">
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link to="/how-to-get-more-customers" className="btn-ignite btn-shine">
                   Start the free tutorial <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -113,7 +113,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <BookButton note="Home video section">Get my free Brand Boost call</BookButton>
               <Link to="/brand-boost" className="inline-flex min-h-[44px] items-center text-sm font-semibold text-turbo underline-offset-4 hover:underline">
                 What happens on the call?

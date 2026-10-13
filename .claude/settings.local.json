@@ -9,7 +9,13 @@
       "Bash(npm run *)",
       "Bash(cat)",
       "Read(//tmp/**)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "mcp__5336c1d9-4cbc-41a6-b37b-5969f6c1471d__graphql_mutation",
+      "mcp__calcom__updateEventType"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "calcom"
+  ],
+  "enableAllProjectMcpServers": true
 }

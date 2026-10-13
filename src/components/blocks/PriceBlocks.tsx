@@ -69,7 +69,7 @@ export function PackageCard({ p, source, featured = false }: { p: PriceItem; sou
       {p.popular && <span className="absolute -top-3 left-6 rounded-full bg-ignite px-3 py-1 text-xs font-bold text-background">Most popular</span>}
       <h3 className="text-xl font-bold leading-snug">{p.name}</h3>
       <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
-        <span className="font-display text-5xl font-bold tracking-tight text-chrome-grad">{usd(p.price)}</span>
+        <span className="font-display text-4xl font-bold tracking-tight text-chrome-grad sm:text-5xl">{usd(p.price)}</span>
         <span className="text-sm text-muted-foreground">one-time</span>
       </p>
       {value > p.price && (

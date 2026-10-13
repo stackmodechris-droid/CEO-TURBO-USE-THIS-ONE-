@@ -34,7 +34,7 @@ export default function AudiencePage({ slug }: { slug: Audience["slug"] }) {
           <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
             <div className="hero-rise">
               <p className="chip">{a.eyebrow}</p>
-              <h1 className="mt-5 text-4xl font-bold leading-[1] sm:text-6xl">{a.h1}</h1>
+              <h1 className="mt-5 text-3xl font-bold leading-[1.02] sm:text-4xl md:text-6xl">{a.h1}</h1>
               <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">{a.answer}</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <BookButton note={a.bookingNote} prefill={a.bookingNote}>{a.ctaLabel}</BookButton>

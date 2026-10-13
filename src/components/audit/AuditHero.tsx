@@ -18,9 +18,9 @@ export function AuditHero({ title, lede, eyebrow, footer, source, points }: { ti
           {!wide && (
             <div className="hero-rise relative z-10">
               <p className="chip">{eyebrow}</p>
-              <h1 className="mt-5 text-[40px] font-bold leading-[0.98] sm:text-6xl lg:text-[68px]">{title}</h1>
+              <h1 className="mt-5 text-[32px] font-bold leading-[1.02] sm:text-[40px] md:text-6xl lg:text-[68px]">{title}</h1>
               <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">{lede}</p>
-              <ul className="mt-6 hidden max-w-xl gap-2.5 sm:grid sm:grid-cols-2">
+              <ul className="mt-6 grid max-w-xl grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {points
                   ? points.map((p, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-[15px]">

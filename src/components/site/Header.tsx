@@ -154,7 +154,7 @@ export function Header({ focus = false }: { focus?: boolean }) {
               </summary>
               <div className="grid gap-1 pb-3">
                 {m.items.map((i) => (
-                  <Link key={i.to} to={i.to} className="rounded-xl bg-white/[0.03] px-3 py-3 text-sm font-medium">
+                  <Link key={i.to} to={i.to} className="rounded-xl bg-white/[0.03] px-3 py-3.5 text-sm font-medium">
                     {i.label}
                   </Link>
                 ))}
