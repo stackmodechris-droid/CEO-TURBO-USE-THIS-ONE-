@@ -19,3 +19,14 @@ Account 189366985 · UET 187280408. Goal: booked Brand Boost calls.
 
 ## Approval notes
 Same ad copy as Google (no unproven stats, no guarantees). If an ad is flagged, edit the headline named in the Policy column and resubmit.
+
+## Second ad group: Free visibility check (lead magnet)
+Landing page `/free-audit`, conversion = UET **Lead** (secondary goal; Booked call stays primary). Max CPC $1.75.
+
+Keywords (phrase + exact): free seo audit, free website audit, free google business profile audit, free local seo audit, free marketing audit small business, free ai search visibility check, is my business showing up on chatgpt, check my google business profile.
+Do NOT negative "free" in this campaign.
+
+Headlines: Free Visibility Check | Free 60-Second Score | See What Google & ChatGPT Show | No Credit Card Needed | Then a Free Call With the Founder
+Descriptions: Get your free visibility score in 60 seconds. See how you show up on Google, Maps, Bing and AI. | Free check, then an optional free call with the founder. No contracts, no pressure.
+Final URL: `https://www.ceoturbo.com/free-audit?utm_source=bing&utm_medium=cpc&utm_campaign=free_audit&utm_term={keyword}`
+Both ad groups share the one $10/day budget.
