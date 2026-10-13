@@ -1,40 +1,59 @@
-# Ads keyword sheet (Google + Microsoft)
+# Google Ads keyword sheet (live in account 232-066-4335, all PAUSED)
 
-Phrase + exact only. No broad match until 30+ conversions. Start CPC caps are estimates: confirm in Keyword Planner before turning on.
-Cut any keyword whose CPC is above about $5 or that has 20+ clicks and no lead (week-one rule in `ads-launch-playbook.md`).
+Every keyword runs as phrase AND exact match (no broad). Caps are starting max CPCs; confirm in Keyword Planner and trim after the first 3 days using the search terms report.
 
-## CT | Calls | Local ($ 8/day, start paused)
+## CEO Turbo | Calls | Local: $7.00/day, Atlanta, Georgia, United States; Los Angeles, California, United States
 
-### Google profile (cap $3.00) -> `/services/google-business-profile`
+### Google Business Profile (max CPC $3.00) -> `/services/google-business-profile`
 
-"google business profile optimization service", "google my business optimization", "gbp optimization service", "get my business on google maps", "google maps ranking service", "verify google business profile help"
+"google business profile optimization service", "google business profile management service", "google my business optimization service", "gbp optimization services", "google business profile setup service", "google business profile expert", "hire google business profile specialist", "google maps seo service", "local map pack ranking service", "google business profile agency"
 
-### Website + SEO package (cap $4.00) -> `/pricing`
+### Local SEO (max CPC $3.50) -> `/services/seo-aeo-geo`
 
-"small business website and seo package", "website design and seo for small business", "affordable website with seo", "website for contractors with seo", "local seo package"
+"local seo services small business", "local seo agency atlanta", "atlanta seo company", "local seo for contractors", "seo for small business atlanta", "affordable local seo", "local seo packages", "local seo company near me"
 
-### More customers (cap $2.50) -> `/how-to-get-more-customers`
+### Website + SEO package (max CPC $4.00) -> `/pricing`
 
-"how to get more customers for my business", "need more customers for my business", "how to get more leads for my business", "marketing help for small business"
+"small business website and seo package", "website design and seo for small business", "affordable website with seo", "website for contractors with seo", "web design and seo package", "small business website design atlanta", "website and marketing package small business"
 
-## CT | Calls | US Niche ($ 4/day, start paused)
+### More customers (max CPC $2.50) -> `/how-to-get-more-customers`
 
-### AI search (cap $2.50) -> `/services/seo-aeo-geo`
+"marketing help for small business", "how to get more customers for my business", "need more customers for my business", "small business marketing agency", "done for you marketing small business", "get more leads for my business", "lead generation for small business", "local marketing agency atlanta"
 
-"how to get my business on chatgpt", "get recommended by chatgpt", "ai seo service", "generative engine optimization service", "show up in ai search", "chatgpt seo agency"
+## CEO Turbo | Calls | US Niche: $2.00/day, United States
 
-### Store setup (cap $3.00) -> `/shopify`
+### AI search (max CPC $2.50) -> `/services/seo-aeo-geo`
 
-"google merchant center setup service", "shopify google shopping setup", "microsoft merchant center setup", "shopify facebook pixel setup", "shopify conversion tracking setup"
+"how to get my business on chatgpt", "get recommended by chatgpt", "ai seo service", "generative engine optimization service", "ai search optimization agency", "answer engine optimization services", "geo optimization service", "optimize my business for ai search"
 
-### Tracking help (cap $3.00) -> `/services/meta-ads`
+### Store setup (max CPC $3.00) -> `/shopify`
 
-"ga4 setup service", "meta conversions api setup", "google ads conversion tracking setup", "facebook pixel not working"
+"google merchant center setup service", "fix google merchant center disapproved products", "shopify google shopping setup", "shopify merchant center feed fix", "microsoft merchant center setup", "shopify facebook pixel setup", "shopify conversion tracking setup", "google shopping feed management service"
 
-### Artists (cap $2.00) -> `/artist`
+### Artists (max CPC $2.00) -> `/artist`
 
-"music marketing for artists", "spotify promotion for artists", "how to get more spotify listeners", "artist website design", "music promotion agency"
+"music marketing for artists", "spotify promotion for artists", "how to get more spotify listeners", "artist website design", "music promotion agency", "independent artist marketing services"
 
-## Shared negatives (campaign level, phrase)
+## CEO Turbo | Ads Not Converting: $2.00/day, United States
 
-jobs, job, career, careers, hiring, salary, intern, internship, resume, course, courses, certification, certificate, training, tutorial pdf, free template, template, templates, diy, how to become, what is, definition, meaning, examples, reddit, quora, youtube, login, sign in, customer service, phone number, support, wix, squarespace, godaddy, canva, chatgpt login, openai, stock, fiverr, upwork, freelancer job, university, college, school, pdf, book, books, software download, crack, apk
+### Ads not converting (max CPC $3.00) -> `/ads-not-converting`
+
+"why are my google ads not converting", "google ads not converting", "facebook ads not converting", "ads getting clicks but no sales", "ads getting clicks but no conversions", "stop wasting ad spend", "reduce wasted ad spend"
+
+### Tracking setup (max CPC $3.00) -> `/ads-not-converting`
+
+"conversion tracking not working", "ga4 not tracking conversions", "google tag manager setup service", "fix meta pixel", "meta conversions api setup", "microsoft clarity setup", "conversion tracking setup service", "fix google ads conversion tracking"
+
+### Ad audit (max CPC $3.00) -> `/ads-not-converting`
+
+"google ads audit service", "ppc audit service", "ppc audit for small business", "facebook ads audit", "google ads wasted spend", "ad account audit"
+
+## CEO Turbo | Brand: $1.00/day, United States
+
+### Brand (max CPC $1.00) -> `/`
+
+"ceo turbo", "ceoturbo", "ceo turbo marketing", "ceo turbo agency", "ceoturbo.com", "ceo turbo reviews"
+
+## Negative keywords (campaign level, phrase match, on every campaign)
+
+jobs, job, career, careers, hiring, salary, intern, internship, resume, course, courses, certification, certificate, training, tutorial pdf, free template, template, templates, diy, how to become, what is, definition, meaning, examples, reddit, quora, youtube, login, sign in, customer service, phone number, support number, wix, squarespace, godaddy, canva, chatgpt login, openai, stock, fiverr, upwork, freelancer job, university, college, school, pdf, book, books, software download, crack, apk, cheap, cheapest, jobs near me, unpaid, volunteer, wikipedia, lawsuit, scam, complaints
