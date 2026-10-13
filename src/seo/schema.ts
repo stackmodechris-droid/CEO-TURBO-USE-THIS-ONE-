@@ -305,7 +305,7 @@ export const video = (path: string): JsonLd => ({
   description: PITCH_VIDEO.description,
   thumbnailUrl: abs(PITCH_VIDEO.poster),
   contentUrl: abs(PITCH_VIDEO.src),
-  uploadDate: "2026-10-10",
+  uploadDate: "2026-10-10T00:00:00Z",
   duration: PITCH_VIDEO.duration,
   publisher: { "@id": ORG_ID },
 });

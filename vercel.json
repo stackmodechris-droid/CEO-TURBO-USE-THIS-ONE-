@@ -91,17 +91,17 @@
     {
       "source": "/shop",
       "destination": "/google-review-cards",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/setup",
       "destination": "/google-review-card-setup",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/audit",
       "destination": "/free-audit",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/nfc-business-card",
