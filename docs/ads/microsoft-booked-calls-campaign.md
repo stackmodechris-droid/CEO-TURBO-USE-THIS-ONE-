@@ -9,7 +9,7 @@ Account 189366985 · UET 187280408. Goal: booked Brand Boost calls.
 
 ## Settings
 - Budget **$10.00/day**. Search only: untick **Audience network** and Syndicated partners.
-- Location: Atlanta + Los Angeles, **People in** the location.
+- Location: **United States**, **People in** the location (booked calls are remote, so no city limit).
 - Bidding: **Manual CPC** with the ad-group caps from the CSV; switch to **Maximize conversions** after ~15 booked calls.
 - Conversion goal for this campaign: **Booked call** (primary). Lead as secondary. Remove Purchase, Phone click from the optimized set.
 - LinkedIn profile bid adjustments **+30%**: Job function = Entrepreneurship, Business Development, Marketing; Company size = 1–10, 11–50.

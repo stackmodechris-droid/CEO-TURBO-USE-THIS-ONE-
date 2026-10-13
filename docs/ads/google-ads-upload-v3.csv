@@ -2,7 +2,7 @@ Row Type,Action,Campaign status,Ad group status,Ad status,Campaign,Campaign type
 Campaign,Remove,,,,CEO Turbo | Calls | Local,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Campaign,Remove,,,,CEO Turbo | Calls | US Niche,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Campaign,Remove,,,,CEO Turbo | Brand,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Campaign,Add,Paused,,,CEO Turbo | Booked Calls | Search,Search,Google search,10.00,Daily,Manual CPC,en,"Atlanta, Georgia, United States; Los Angeles, California, United States",No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Campaign,Add,Paused,,,CEO Turbo | Booked Calls | Search,Search,Google search,10.00,Daily,Manual CPC,en,United States,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Negative keyword,Add,,,,CEO Turbo | Booked Calls | Search,,,,,,,,,,,,Phrase match,Campaign,jobs,,,,,,,,,,,,,,,,,,,,,,,
 Negative keyword,Add,,,,CEO Turbo | Booked Calls | Search,,,,,,,,,,,,Phrase match,Campaign,job,,,,,,,,,,,,,,,,,,,,,,,
 Negative keyword,Add,,,,CEO Turbo | Booked Calls | Search,,,,,,,,,,,,Phrase match,Campaign,career,,,,,,,,,,,,,,,,,,,,,,,
