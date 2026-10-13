@@ -30,3 +30,13 @@ export const BOOK_FAQS: FAQ[] = [
   { q: "Do you work with artists, not just businesses?", a: "Yes. For artists we focus on more listeners and fans: release pages, Spotify and YouTube growth campaigns, and owning your name on Google." },
   { q: "What should I have ready for the call?", a: "Just your website or social links and an idea of how many more customers or listeners you want. We do the digging." },
 ];
+
+export const ADS_NOT_CONVERTING_FAQS: FAQ[] = [
+  { q: "Why aren't my ads converting?", a: "Usually it's measurement, not the ad itself: conversions that aren't tracked or are counted twice, broken pixels or Conversions API events, every conversion treated as equal value, and junk search terms nobody excluded. The audit shows which ones apply to you." },
+  { q: "What is Conversion Rescue?", a: `A one-time audit and fix (${price("conversion-rescue")}) of GA4, Google Tag Manager, Microsoft Clarity, Meta Pixel and Conversions API, Google Ads and Microsoft conversions and Merchant Center. You get real conversion values, every event tested live, a written wasted-spend fix list and a 30-minute walkthrough.` },
+  { q: "What is Tracking Watch?", a: `A small monthly plan (${price("tracking-watch")}/mo): a monthly check of every tag and pixel, search-term negatives on one ad platform, conversion values tuned as your numbers change, and a plain-English waste report. Turbo Care, Growth and Scale already include it.` },
+  { q: "Is it included in your packages?", a: `Yes. Conversion Rescue is part of Turbo Start (${price("pkg-start")}), Turbo Launch (${price("pkg-launch")}) and Turbo Dominate (${price("pkg-dominate")}), so the tracking is done right from day one.` },
+  { q: "Do you run my ads too?", a: `Optional. Turbo Growth (${price("growth")}/mo) includes weekly ads management. Many clients start with Conversion Rescue, see where the money was going, and decide after.` },
+  { q: "Will you guarantee more sales?", a: "No honest agency can. What you get is a clear view of which ads, keywords and pages produce calls and sales, and ad platforms that learn from accurate data instead of guessing." },
+  { q: "What access do you need?", a: "An admin or partner invite on your ad accounts, GA4, Tag Manager and website, never your passwords. You own everything and can remove access whenever you like." },
+];

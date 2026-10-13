@@ -5,7 +5,7 @@ import { CLIENTS } from "@/content/clients";
 import { SERVICES } from "@/content/services";
 import { AUDIENCES } from "@/content/audiences";
 import { GUIDES, guideImage, guidePath } from "@/content/guides";
-import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS } from "@/content/faqs";
+import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS, ADS_NOT_CONVERTING_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { PRICING_FAQS, price } from "@/content/pricing";
 import * as S from "./schema";
@@ -267,6 +267,21 @@ function build(): PageMeta[] {
     },
     // Ad landing + post-booking pages: kept out of search so they don't compete with /brand-boost.
     // /get-more-reviews: review-card tutorial ad page; the guide + store already own those searches.
+    {
+      path: "/ads-not-converting",
+      title: "Ads Not Converting? Fix Tracking & Wasted Spend | CEO Turbo",
+      description: `Find why your ads aren't converting. We audit and fix GA4, Tag Manager, Clarity, Meta and Google tracking: ${price("conversion-rescue")} once, then ${price("tracking-watch")}/mo.`,
+      ogImage: "/og/how-to-get-more-customers.jpg",
+      priority: 0.9,
+      changefreq: "monthly",
+      group: "Core",
+      schema: [
+        ...base(),
+        S.webPage("/ads-not-converting", "Ads not converting? Fix the tracking, stop the wasted spend", "Conversion Rescue and Tracking Watch: audit and fix of GA4, Google Tag Manager, Microsoft Clarity, Meta Pixel and Conversions API, Google Ads and Microsoft conversions."),
+        S.breadcrumbs([{ name: "Ads not converting?", path: "/ads-not-converting" }]),
+        S.faqPage(ADS_NOT_CONVERTING_FAQS, "/ads-not-converting"),
+      ],
+    },
     { path: "/get-more-reviews", title: "How to Get More Google Reviews (One Tap) | CEO Turbo", description: `Why reviews decide who gets the call on Google, Maps and ChatGPT — and the NFC card that turns “I'll review you later” into a review. From ${fromPriceLabel}.`, ogImage: "/og/get-more-reviews.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },

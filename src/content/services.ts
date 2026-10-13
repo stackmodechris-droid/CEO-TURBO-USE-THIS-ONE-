@@ -1,4 +1,5 @@
 import type { Category } from "./clients";
+import { price } from "./pricing";
 
 export type FAQ = { q: string; a: string };
 
@@ -333,6 +334,42 @@ export const SERVICES: Service[] = [
     faqs: [
       { q: "What email flows should a Shopify store have first?", a: "Welcome series, abandoned cart, abandoned browse and post-purchase. Together they recover sales from visitors you already paid to get." },
       { q: "How often should I send promotional emails?", a: "Most small brands do well with one campaign a week plus automated flows. Send more around launches and holidays, and keep each email useful." },
+    ],
+  },
+  {
+    slug: "conversion-tracking",
+    name: "Conversion tracking & ad rescue",
+    short: "Fix my ads",
+    icon: "search",
+    metaTitle: "Ads Not Converting? Conversion Tracking & Ad Rescue",
+    metaDescription:
+      `Find out why your ads aren't converting: GA4, Tag Manager, Clarity, Meta and Google tracking audited and fixed. One-time fix ${price("conversion-rescue")}, then ${price("tracking-watch")}/mo.`,
+    h1: "Ads not converting? Fix the tracking first, then stop the wasted spend",
+    answer:
+      "If your ads get clicks but few calls or sales, the problem is usually measurement: missing or double-counted conversions, broken pixels, no values, junk search terms. CEO Turbo audits GA4, Google Tag Manager, Microsoft Clarity, Meta Pixel and Conversions API, Google Ads and Microsoft Ads, fixes every event, sets real conversion values and tests it live, so the platforms learn who actually buys.",
+    outcome: "Every dollar of ad spend measured, and the platforms learning from your real buyers.",
+    bestFor: ["Businesses spending on ads with clicks but few calls, bookings or sales", "Shopify stores whose purchases don't show up in Google, Meta or Microsoft", "Agencies and freelancers who want a specialist to fix their clients' tracking"],
+    includes: [
+      "Audit of GA4, Google Tag Manager, Microsoft Clarity and every ad pixel",
+      "Meta Pixel + Conversions API with de-duplicated events",
+      "Google Ads and Microsoft Ads conversions with real values",
+      "Calls, forms, bookings and purchases tracked and tested live",
+      "Merchant Center product feed and policy fixes for stores",
+      "A written wasted-spend fix list and a 30-minute walkthrough",
+    ],
+    process: [
+      { title: "Audit", body: "We check every tag, pixel, conversion, feed and search term, and list what is broken or wasting spend." },
+      { title: "Fix", body: "We repair and test every event, set conversion values for your business, and remove double counting." },
+      { title: "Watch", body: "Optional Tracking Watch keeps it healthy and trims wasted spend each month." },
+    ],
+    proof: { resultKeys: ["ryan-pool", "stackmode-repair", "mor-handy-carpet", "appliance-king", "bigzo"] },
+    audiences: ["local", "shopify", "artist", "brand"],
+    faqs: [
+      { q: "Why aren't my ads converting?", a: "The most common causes are conversions that aren't tracked or are counted twice, broken pixels or Conversions API events, no conversion values, campaigns optimizing for clicks instead of leads or sales, and search terms you never excluded. The audit finds which ones apply to you." },
+      { q: "What do you set up?", a: "GA4, Google Tag Manager, Microsoft Clarity, Meta Pixel and Conversions API, Google Ads and Microsoft Ads conversions, TikTok and Reddit pixels when you use them, and Merchant Center for stores. Every event is tested live before we call it done." },
+      { q: "How much does it cost?", a: "Conversion Rescue is a one-time fix, and Tracking Watch is a small monthly plan that keeps it healthy. Both prices are published on this page and on the pricing page." },
+      { q: "Do I need to give you my passwords?", a: "No. You invite us as an admin or partner on your ad accounts, analytics and tag manager, and you can remove access any time." },
+      { q: "Will you promise more sales?", a: "No honest agency can. What we can promise is that you will be able to see which ads, keywords and pages produce calls and sales, and that the ad platforms get accurate data to optimize with." },
     ],
   },
 ];

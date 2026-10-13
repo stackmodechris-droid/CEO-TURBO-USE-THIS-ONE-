@@ -228,7 +228,7 @@ export default function Home() {
             ))}
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">
-            Included in every package, or <Link to="/pricing" className="font-semibold text-turbo underline-offset-4 hover:underline">buy tracking setup on its own</Link>.
+            Included in every package, or <Link to="/ads-not-converting" className="font-semibold text-turbo underline-offset-4 hover:underline">fix your tracking on its own</Link>.
           </p>
         </div>
       </section>

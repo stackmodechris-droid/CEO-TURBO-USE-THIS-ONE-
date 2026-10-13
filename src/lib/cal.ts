@@ -129,7 +129,8 @@ function attributionMeta() {
   if (typeof window === "undefined") return {};
   const a = attribution();
   const keep = ["fbp", "fbc", "fbclid", "gclid", "msclkid", "ttclid", "ttp", "utm_source", "utm_campaign"] as const;
-  return Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!]));
+  // The visitor's browser string lets the server-side Schedule event match this browser (Meta scores ip/user agent).
+  return { ...Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!])), ...(navigator.userAgent ? { "metadata[ua]": navigator.userAgent.slice(0, 400) } : {}) };
 }
 
 /** Opens the Brand Boost booking modal; falls back to the Cal.com page if the embed can't load. */

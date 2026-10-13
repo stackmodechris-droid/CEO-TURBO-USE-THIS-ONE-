@@ -58,6 +58,7 @@ export function parseBooking(body) {
     whatTheyDo: pick("whatTheyDo", 120),
     stage: str(meta.stage, 60),
     visitorId: str(meta.visitorId, 60),
+    ua: str(meta.ua, 400),
     website: pick("website", 200),
     goal: str(meta.goalLabel, 100) || pick("goal", 100),
     budget: str(meta.budgetLabel, 60) || pick("budget", 60),
@@ -108,10 +109,11 @@ export default async function handler(req, res) {
         url,
         user,
         attribution: b.attribution,
+        userAgent: b.ua || undefined,
         customData: { content_name: b.title || "Brand Boost call", lead_source: b.source || "cal.com", ...worth },
       }),
     ]),
-    sendTiktokEvents([buildTiktokEvent({ event: "Schedule", eventId, eventTime: body.createdAt, url, user, attribution: b.attribution, properties: { content_name: b.title || "Brand Boost call", ...worth } })]),
+    sendTiktokEvents([buildTiktokEvent({ event: "Schedule", eventId, eventTime: body.createdAt, url, user, attribution: b.attribution, userAgent: b.ua || undefined, properties: { content_name: b.title || "Brand Boost call", ...worth } })]),
     forwardLead({ type: "booking", name: b.name, email: b.email, phone: b.phone, startTime: b.startTime, endTime: b.endTime, timeZone: b.timeZone, meetingLink: b.meetingLink, event: b.title, notes: b.notes, businessName: b.businessName, whatTheyDo: b.whatTheyDo, stage: b.stage, website: b.website, goal: b.goal, budget: b.budget, blockers: b.blockers, timeline: b.timeline, move: b.move, value: b.value, ...scoreLead(b), quizId: b.quizId, source: b.source, page: b.page, uid: b.uid, ...b.attribution }),
   ]);
   return send(res, 200, { ok: true, meta: !!capi.sent, sheet: !!sheet.stored });
