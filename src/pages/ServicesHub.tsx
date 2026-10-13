@@ -49,7 +49,7 @@ export default function ServicesHub() {
                 {SERVICES.map((s) => (
                   <tr key={s.slug} className="border-b border-border/60">
                     <th scope="row" className="py-3 pr-4 font-medium">
-                      <Link to={`/services/${s.slug}`} className="hover:text-turbo">
+                      <Link to={`/services/${s.slug}`} className="inline-block py-2 hover:text-turbo">
                         {s.name}
                       </Link>
                     </th>

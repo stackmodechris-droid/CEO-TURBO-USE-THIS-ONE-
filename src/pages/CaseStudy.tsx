@@ -83,7 +83,7 @@ export default function CaseStudy() {
                 <div className="col-span-2">
                   <dt className="text-muted-foreground">Live site</dt>
                   <dd className="mt-0.5">
-                    <a href={c.url} target="_blank" rel="noopener" className="font-medium text-turbo underline underline-offset-4">
+                    <a href={c.url} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center font-medium text-turbo underline underline-offset-4">
                       {domainOf(c.url)}
                     </a>
                   </dd>
@@ -150,7 +150,7 @@ export default function CaseStudy() {
                 More {CATEGORY_LABEL[c.category].toLowerCase()}
               </h2>
               {audience && (
-                <Link to={`/${audience.slug}`} className="text-sm font-semibold text-turbo">
+                <Link to={`/${audience.slug}`} className="inline-flex min-h-[44px] items-center text-sm font-semibold text-turbo">
                   How we help {audience.plural} ›
                 </Link>
               )}

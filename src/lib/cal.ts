@@ -65,12 +65,44 @@ const UI = {
 export const QUIZ_NS = "brandboostquiz";
 const inited = new Set<string>();
 
+/**
+ * The booking app lives on app.cal.com (where embed.js is served from). The embed only reveals the
+ * calendar iframe once it hears from this origin, so a cal.com origin here leaves a blank box.
+ */
+export const CAL_ORIGIN = "https://app.cal.com";
+
+/** Calendar iframe status per namespace, from Cal's linkReady / linkFailed embed events. */
+type LinkStatus = "ready" | "failed";
+const linkListeners = new Map<string, Set<(s: LinkStatus) => void>>();
+
+export function onLinkStatus(ns: string, fn: (s: LinkStatus) => void) {
+  const set = linkListeners.get(ns) ?? new Set();
+  linkListeners.set(ns, set);
+  set.add(fn);
+  return () => void set.delete(fn);
+}
+
+/** Resolves false if the booking page reports it failed (wrong link, event hidden); true once it shows times or after `ms`. */
+function waitForLink(ns: string, ms: number) {
+  return new Promise<boolean>((resolve) => {
+    const off = onLinkStatus(ns, (s) => done(s === "ready"));
+    const timer = setTimeout(() => done(true), ms);
+    function done(ok: boolean) {
+      clearTimeout(timer);
+      off();
+      resolve(ok);
+    }
+  });
+}
+
 function initNamespace(ns: string) {
   const Cal = window.Cal!;
   if (inited.has(ns)) return;
   inited.add(ns);
-  Cal("init", ns, { origin: "https://cal.com" });
+  Cal("init", ns, { origin: CAL_ORIGIN });
   Cal.ns[ns]("ui", { ...UI, hideEventTypeDetails: ns === QUIZ_NS });
+  for (const [action, status] of [["linkReady", "ready"], ["linkFailed", "failed"]] as const)
+    Cal.ns[ns]("on", { action, callback: () => linkListeners.get(ns)?.forEach((fn) => fn(status)) });
   // Real bookings (not just calendar opens) are the conversion the ad platforms should optimize for.
   Cal.ns[ns]("on", {
     action: "bookingSuccessfulV2",
@@ -82,6 +114,15 @@ function initNamespace(ns: string) {
   });
 }
 
+/** Forgets a failed embed load (blocked request, offline blip) so the next attempt starts clean instead of staying broken until a page refresh. */
+function resetCal() {
+  ready = null;
+  inited.clear();
+  document.querySelectorAll(`script[src="${EMBED_SRC}"]`).forEach((s) => s.remove());
+  delete (window as unknown as Record<string, unknown>).Cal;
+}
+
+/** Resolves true once the Cal.com embed is usable. A failed load is not cached: calling again retries. */
 export function loadCal(ns: string = BOOKING.namespace): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(false);
   if (!ready) {
@@ -89,14 +130,28 @@ export function loadCal(ns: string = BOOKING.namespace): Promise<boolean> {
       bootstrap();
       initNamespace(BOOKING.namespace);
       const script = document.querySelector<HTMLScriptElement>(`script[src="${EMBED_SRC}"]`);
-      if (!script) return resolve(false);
+      if (!script) {
+        resetCal();
+        return resolve(false);
+      }
       script.addEventListener("load", () => resolve(true), { once: true });
-      script.addEventListener("error", () => resolve(false), { once: true });
+      script.addEventListener(
+        "error",
+        () => {
+          resetCal();
+          resolve(false);
+        },
+        { once: true },
+      );
     });
   }
-  initNamespace(ns);
-  return ready;
+  const current = ready;
+  if (window.Cal) initNamespace(ns);
+  return current;
 }
+
+/** loadCal that gives up after `ms`, so a stalled network shows the fallback button instead of a spinner forever. */
+export const loadCalWithin = (ns: string, ms = 6000) => Promise.race([loadCal(ns), new Promise<boolean>((r) => setTimeout(() => r(false), ms))]);
 
 /**
  * source  → hidden booking metadata (which button/page drove the booking)
@@ -133,30 +188,40 @@ function attributionMeta() {
   return { ...Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!])), ...(navigator.userAgent ? { "metadata[ua]": navigator.userAgent.slice(0, 400) } : {}) };
 }
 
+/** The Cal.com booking page itself, prefilled — used when the embed can't show. */
+export function bookingPageUrl(prefill?: string, person?: Person, fields?: Prefill["fields"]) {
+  const q = new URLSearchParams(defined({ name: person?.name, email: person?.email, attendeePhoneNumber: person?.phone, notes: prefill, ...fields }) as Record<string, string>);
+  return `${BOOKING.url}${q.toString() ? `?${q}` : ""}`;
+}
+
 /** Opens the Brand Boost booking modal; falls back to the Cal.com page if the embed can't load. */
 export async function openBooking(source?: string, prefill?: string, person?: Person, extra: Omit<Prefill, "source" | "prefill" | "person"> = {}) {
   track("booking_open", { source });
   const ns = BOOKING.namespace;
-  const ok = await Promise.race([loadCal(ns), new Promise<boolean>((r) => setTimeout(() => r(false), 4000))]);
-  if (ok && window.Cal?.ns[ns]) {
-    window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
-  } else {
-    const q = new URLSearchParams(defined({ name: person?.name, email: person?.email, attendeePhoneNumber: person?.phone, notes: prefill, ...extra.fields }) as Record<string, string>);
-    window.open(`${BOOKING.url}${q.toString() ? `?${q}` : ""}`, "_blank", "noopener,noreferrer");
-  }
+  const ok = await loadCalWithin(ns, 4000);
+  const url = bookingPageUrl(prefill, person, extra.fields);
+  // After the wait above, phones often block a new tab; go there in this tab instead of doing nothing.
+  const fallback = () => {
+    if (!window.open(url, "_blank")) window.location.assign(url);
+  };
+  if (!ok || !window.Cal?.ns[ns]) return fallback();
+  const shown = waitForLink(ns, 15000);
+  window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
+  if (!(await shown)) fallback();
 }
 
-/** Inline booking calendar mounted into an element by id. */
+/** Inline booking calendar mounted into an element by id. Resolves false if the embed or the booking page fails. */
 export async function mountInlineBooking(elementId: string, source?: string, prefill?: string, opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {}) {
   const { ns = BOOKING.namespace, ...rest } = opts;
-  const ok = await loadCal(ns);
+  const ok = await loadCalWithin(ns);
   if (!ok || !window.Cal?.ns[ns]) return false;
+  const shown = waitForLink(ns, 10000);
   window.Cal.ns[ns]("inline", {
     elementOrSelector: `#${elementId}`,
     calLink: BOOKING.calLink,
     config: calConfig({ source, prefill, ...rest }),
   });
-  return true;
+  return shown;
 }
 
 /** Best-effort booker details from the Cal.com success payload (field names vary by version). */

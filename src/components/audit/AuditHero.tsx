@@ -55,7 +55,7 @@ export function AuditHero({ title, lede, eyebrow, footer, source, points }: { ti
               {/* Mobile anchor prompt */}
               <a
                 href="#audit"
-                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-turbo/10 px-3.5 py-1.5 text-xs font-semibold text-turbo ring-1 ring-turbo/25 hover:bg-turbo/20 lg:hidden"
+                className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 rounded-full bg-turbo/10 px-4 py-1.5 text-xs font-semibold text-turbo ring-1 ring-turbo/25 hover:bg-turbo/20 lg:hidden"
               >
                 <span>Enter your business below</span>
                 <ArrowDown className="h-3.5 w-3.5" aria-hidden />

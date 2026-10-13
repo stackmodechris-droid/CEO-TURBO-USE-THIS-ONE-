@@ -57,9 +57,9 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               <br />
               {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}
               <br />
-              <CallLink location="footer" icon className="mt-2 font-semibold text-foreground hover:text-turbo" />
+              <CallLink location="footer" icon className="mt-1 py-2 font-semibold text-foreground hover:text-turbo" />
               <br />
-              <a href={`mailto:${SITE.email}`} className="mt-1 inline-block font-semibold text-foreground hover:text-turbo">{SITE.email}</a>
+              <a href={`mailto:${SITE.email}`} className="inline-block py-2 font-semibold text-foreground hover:text-turbo">{SITE.email}</a>
             </address>
             <SocialLinks className="mt-5" />
           </div>
@@ -98,15 +98,15 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               Stackmode Academy
             </a>
           </p>
-          <ul className="flex flex-wrap gap-x-4 gap-y-2">
+          <ul className="flex flex-wrap gap-x-5">
             <li>
-              <Link to="/privacy-policy" className="hover:text-foreground">Privacy</Link>
+              <Link to="/privacy-policy" className="inline-block py-2.5 hover:text-foreground">Privacy</Link>
             </li>
             <li>
-              <Link to="/terms" className="hover:text-foreground">Terms</Link>
+              <Link to="/terms" className="inline-block py-2.5 hover:text-foreground">Terms</Link>
             </li>
             <li>
-              <Link to="/shipping-returns" className="hover:text-foreground">Shipping &amp; returns</Link>
+              <Link to="/shipping-returns" className="inline-block py-2.5 hover:text-foreground">Shipping &amp; returns</Link>
             </li>
           </ul>
         </div>
@@ -120,10 +120,10 @@ function FooterCol({ title, links }: { title: string; links: { to: string; label
   return (
     <div>
       <p className="text-sm font-semibold text-foreground">{title}</p>
-      <ul className="mt-4 space-y-2.5">
+      <ul className="mt-3 space-y-0.5">
         {links.map((l) => (
           <li key={l.to}>
-            <Link to={l.to} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            <Link to={l.to} className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
               {l.label}
             </Link>
           </li>

@@ -65,7 +65,7 @@ export default function AudiencePage({ slug }: { slug: Audience["slug"] }) {
       <section className="section border-t border-border" aria-labelledby="fix">
         <div className="container-x">
           <SectionHeader title={<span id="fix">What we fix, and what you get</span>} lede={`Here's exactly how CEO Turbo helps ${a.plural}. Each one links to the full service.`} />
-          <ol className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-border md:grid-cols-2 lg:grid-cols-3">
+          <ol className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-border md:grid-cols-2 lg:grid-cols-3 md:max-lg:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(3n+1)]:col-span-3 lg:[&>*:last-child:nth-child(3n+2)]:col-span-2">
             {a.outcomes.map((o) => (
               <li key={o.title} className="flex flex-col bg-background p-6">
                 <h3 className="text-xl font-semibold tracking-tight">{o.title}</h3>

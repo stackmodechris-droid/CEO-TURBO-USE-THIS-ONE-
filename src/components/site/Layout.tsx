@@ -33,7 +33,8 @@ export function Layout({ children }: { children: ReactNode }) {
       return;
     }
     applyHead(meta);
-    window.scrollTo(0, 0);
+    // `instant`: the page sets scroll-behavior: smooth, which would otherwise animate a slow scroll-up on every page change.
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     pixelPageView();
     tiktokPageView();
     redditPageView();

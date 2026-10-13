@@ -122,7 +122,7 @@ export function PriceTeaser({ source }: { source: string }) {
           <SectionHeader title={<span id="cost">What does it cost after the call?</span>} lede="The call is free. If you want our help, every service has a published price — setup once, monthly only for work that keeps paying off. No contracts." />
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <BookButton note={`${source} — pricing`}>Get my free plan</BookButton>
-            <Link to="/pricing" className="text-sm font-semibold text-turbo underline-offset-4 hover:underline">
+            <Link to="/pricing" className="inline-flex min-h-[44px] items-center text-sm font-semibold text-turbo underline-offset-4 hover:underline">
               See every price
             </Link>
           </div>

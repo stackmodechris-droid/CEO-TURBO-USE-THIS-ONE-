@@ -51,7 +51,7 @@ import {
 } from "@/content/quiz";
 import { BOOKING, SITE, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
-import { QUIZ_NS, mountInlineBooking, openBooking } from "@/lib/cal";
+import { QUIZ_NS, bookingPageUrl, mountInlineBooking, openBooking } from "@/lib/cal";
 import { attribution, e164, newEventId, setCallContext, track, visitorId } from "@/lib/track";
 import { sendLead } from "@/lib/lead-outbox";
 import { CallLink } from "@/components/site/CallLink";
@@ -637,14 +637,26 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
           <div className="absolute inset-0 grid place-items-center p-6 text-center">
             <div>
               <p className="text-sm text-muted-foreground">{cal === "failed" ? "The calendar didn't load." : "Loading open times…"}</p>
-              <button type="button" className="btn-ignite mt-4" onClick={() => void openBooking(booking.source, prefill, booking.person, { fields: booking.fields, meta: booking.meta })}>
-                Open the booking calendar
-              </button>
+              {cal === "failed" ? (
+                <a href={bookingPageUrl(prefill, booking.person, booking.fields)} target="_blank" rel="noopener" onClick={() => track("booking_open", { source: `${booking.source} — direct page` })} className="btn-ignite mt-4">
+                  Open the booking calendar
+                </a>
+              ) : (
+                <button type="button" className="btn-ignite mt-4" onClick={() => void openBooking(booking.source, prefill, booking.person, { fields: booking.fields, meta: booking.meta })}>
+                  Open the booking calendar
+                </button>
+              )}
             </div>
           </div>
         )}
         <div id={calId} className="relative h-full min-h-[520px] w-full overflow-auto" />
       </div>
+      <p className="mt-2 text-center text-xs text-muted-foreground">
+        Calendar not showing?{" "}
+        <a href={bookingPageUrl(prefill, booking.person, booking.fields)} target="_blank" rel="noopener" onClick={() => track("booking_open", { source: `${booking.source} — direct page` })} className="inline-flex min-h-[44px] items-center font-semibold text-turbo underline underline-offset-2">
+          Open the booking page
+        </a>
+      </p>
 
       {move.offer && (
         <div className="mt-5 grid gap-3 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5 sm:grid-cols-[1fr_auto] sm:items-center">

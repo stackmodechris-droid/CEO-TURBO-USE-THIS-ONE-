@@ -79,7 +79,7 @@ export function Header({ focus = false }: { focus?: boolean }) {
         Skip to content
       </a>
       <div className="container-x flex h-16 items-center justify-between gap-4">
-        <Logo />
+        <Logo onNavigate={() => setOpen(false)} />
 
         {!focus && (
           <nav aria-label="Main" className="hidden items-center gap-0.5 lg:flex">

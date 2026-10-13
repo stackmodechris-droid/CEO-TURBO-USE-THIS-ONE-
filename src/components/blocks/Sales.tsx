@@ -57,7 +57,7 @@ export function PathPicker() {
 export function ServiceGrid({ slugs }: { slugs?: string[] }) {
   const list = slugs ? slugs.map((s) => SERVICES.find((x) => x.slug === s)!).filter(Boolean) : SERVICES;
   return (
-    <ul className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(3n+1)]:col-span-3 lg:[&>*:last-child:nth-child(3n+2)]:col-span-2">
       {list.map((s) => {
         const Icon = SERVICE_ICON[s.icon];
         return (
@@ -137,7 +137,7 @@ export function ReviewCardPromo({ headingLevel = "h2", title = "Turn “I'll lea
           <Link to={SHOP_PATH} className="btn-ignite btn-shine">
             Shop review cards <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
-          <Link to={SETUP_PATH} className="text-sm font-semibold text-turbo underline-offset-4 hover:underline">
+          <Link to={SETUP_PATH} className="inline-flex min-h-[44px] items-center text-sm font-semibold text-turbo underline-offset-4 hover:underline">
             How setup works
           </Link>
         </div>

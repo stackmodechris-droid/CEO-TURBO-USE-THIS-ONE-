@@ -67,10 +67,10 @@ function GuideArticle({ g }: { g: Guide }) {
           <img src={guideImage(g).src} alt={guideImage(g).alt} width={1200} height={630} {...({ fetchpriority: "high" } as Record<string, string>)} decoding="async" className="mt-8 aspect-[1200/630] w-full rounded-2xl object-cover ring-1 ring-white/10" />
           <nav aria-label="In this guide" className="mt-8 rounded-2xl border border-border p-5">
             <p className="text-sm font-semibold">In this guide</p>
-            <ol className="mt-3 grid gap-1.5 text-sm text-muted-foreground sm:grid-cols-2">
+            <ol className="mt-2 grid text-sm text-muted-foreground sm:grid-cols-2">
               {g.sections.map((s) => (
                 <li key={s.h2}>
-                  <a href={`#${anchor(s.h2)}`} className="hover:text-turbo">
+                  <a href={`#${anchor(s.h2)}`} className="block py-2 hover:text-turbo">
                     {s.h2}
                   </a>
                 </li>

@@ -53,7 +53,7 @@ export function PriceBox({ items }: { items: PriceItem[] }) {
         ))}
       </ul>
       <p className="mt-4 text-xs text-muted-foreground">{PRICING_TERMS.contract}</p>
-      <Link to="/pricing" className="mt-3 inline-block text-sm font-semibold text-turbo underline-offset-4 hover:underline">
+      <Link to="/pricing" className="mt-1 inline-flex min-h-[44px] items-center text-sm font-semibold text-turbo underline-offset-4 hover:underline">
         See all prices <span aria-hidden>›</span>
       </Link>
     </div>
