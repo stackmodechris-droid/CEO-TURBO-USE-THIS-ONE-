@@ -29,12 +29,26 @@ export function hashedUser({ email, phone, name, city, externalId } = {}) {
   return out;
 }
 
+/**
+ * Last-resort _fbc when only a raw fbclid is known (e.g. a booking webhook with no cookie). Built by Meta's
+ * Parameter Builder so the fbclid is carried over untouched and the format matches what Meta expects.
+ */
+function fbcFromClickId(fbclid) {
+  try {
+    const builder = new ParamBuilder(["ceoturbo.com", "localhost"]);
+    builder.processRequest("www.ceoturbo.com", { fbclid }, {});
+    return builder.getFbc() || `fb.1.${Date.now()}.${fbclid}`;
+  } catch {
+    return `fb.1.${Date.now()}.${fbclid}`;
+  }
+}
+
 /** Builds one CAPI event (exported for tests). */
 export function buildEvent({ eventName, eventId, eventTime, url, user, attribution = {}, ip, userAgent, customData }) {
   const fbp = clean(attribution.fbp, 200);
   let fbc = clean(attribution.fbc, 300);
   const fbclid = clean(attribution.fbclid, 250);
-  if (!fbc && fbclid) fbc = `fb.1.${Date.now()}.${fbclid}`;
+  if (!fbc && fbclid) fbc = fbcFromClickId(fbclid);
   return {
     event_name: eventName,
     event_time: Math.floor((eventTime ? new Date(eventTime).getTime() : Date.now()) / 1000),
@@ -105,7 +119,11 @@ export function requestSignals(req, res) {
   }
 }
 
-/** Browser-posted attribution, with the Parameter Builder's fbp/fbc filling any gaps. */
+/**
+ * Browser-posted attribution merged with the Parameter Builder's values. The builder's fbc wins: it already
+ * reconciles the _fbc cookie with the fbclid on the page URL, whereas the browser may post a stale cookie
+ * from an older ad click before its own builder has refreshed it. Either way the fbclid is never edited.
+ */
 export function withSignals(attr, signals) {
-  return { ...attr, ...(attr.fbp ? {} : signals.fbp ? { fbp: signals.fbp } : {}), ...(attr.fbc ? {} : signals.fbc ? { fbc: signals.fbc } : {}) };
+  return { ...attr, ...(attr.fbp ? {} : signals.fbp ? { fbp: signals.fbp } : {}), ...(signals.fbc ? { fbc: signals.fbc } : {}) };
 }

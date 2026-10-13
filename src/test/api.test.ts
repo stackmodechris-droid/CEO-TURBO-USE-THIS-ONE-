@@ -32,7 +32,7 @@ describe("Meta Conversions API payload", () => {
   it("keeps the browser event id for de-duplication and passes fbp/fbc unhashed", () => {
     const e = buildEvent({ eventName: "Lead", eventId: "generate_lead_abc", url: "https://www.ceoturbo.com/free-audit", user: { email: "a@b.co" }, attribution: { fbp: "fb.1.1.2", fbclid: "XYZ" }, ip: "1.2.3.4", userAgent: "UA" });
     expect(e).toMatchObject({ event_name: "Lead", event_id: "generate_lead_abc", action_source: "website", user_data: { fbp: "fb.1.1.2", client_ip_address: "1.2.3.4", client_user_agent: "UA" } });
-    expect(e.user_data.fbc).toMatch(/^fb\.1\.\d+\.XYZ$/);
+    expect(e.user_data.fbc).toMatch(/^fb\.1\.\d+\.XYZ(\.[A-Za-z0-9_-]+)?$/);
     expect(JSON.stringify(e)).not.toContain("a@b.co");
   });
 
@@ -172,8 +172,29 @@ describe("Meta Parameter Builder (server)", () => {
     expect(String(headers["Set-Cookie"])).toContain("_fbc=");
   });
 
-  it("never overrides ids the browser already sent", () => {
+  it("keeps the browser's _fbp, and its _fbc only when the builder has none", () => {
     expect(withSignals({ fbp: "browser" }, { fbp: "server", fbc: "c", ip: "" })).toEqual({ fbp: "browser", fbc: "c" });
+    expect(withSignals({ fbp: "browser", fbc: "browser-fbc" }, { fbp: "", fbc: "", ip: "" })).toEqual({ fbp: "browser", fbc: "browser-fbc" });
+  });
+
+  it("sends the fbclid of the current ad click, never a stale _fbc cookie from an older click", () => {
+    const fbclid = "IwAR_New-ClickId_aBc123";
+    const stale = "fb.1.1700000000000.IwAR_Old-ClickId_xYz789.AQIBAQIA";
+    const req = { headers: { host: "www.ceoturbo.com", cookie: `_fbp=fb.1.1700000000000.1; _fbc=${stale}`, referer: `https://www.ceoturbo.com/free-audit?fbclid=${fbclid}` }, url: "/api/track", method: "POST", socket: { remoteAddress: "1.2.3.4" } };
+    const sig = requestSignals(req, { setHeader: () => {} });
+    const attr = withSignals(cleanAttribution({ fbp: "fb.1.1700000000000.1", fbc: stale, fbclid }), sig);
+    const fbc = buildEvent({ eventName: "PageView", url: "https://www.ceoturbo.com/free-audit", attribution: attr }).user_data.fbc as string;
+    expect(fbc.split(".")[3]).toBe(fbclid);
+    expect(fbc).not.toContain("Old-ClickId");
+  });
+
+  it("leaves a mixed-case fbclid byte-for-byte intact in fbc, including the fallback built from a bare fbclid", () => {
+    const fbclid = "IwY2xjawN_AbCdEfGh-ij0KLmN_oPqRsTuV";
+    const fallback = buildEvent({ eventName: "Schedule", attribution: { fbclid } }).user_data.fbc as string;
+    expect(fallback).toMatch(/^fb\.1\.\d+\./);
+    expect(fallback.split(".")[3]).toBe(fbclid);
+    const cookieFbc = `fb.1.1700000000000.${fbclid}.AQIBAQIA`;
+    expect((buildEvent({ eventName: "Lead", attribution: cleanAttribution({ fbc: cookieFbc }) }).user_data.fbc as string)).toBe(cookieFbc);
   });
 });
 
