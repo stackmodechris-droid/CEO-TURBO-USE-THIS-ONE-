@@ -18,7 +18,7 @@ export default function BookingModal({ open, setOpen, request, nonce }: { open: 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="audit-card max-h-[100dvh] max-w-3xl overflow-y-auto border-0 p-4 max-sm:h-[100dvh] max-sm:max-w-none max-sm:rounded-none sm:max-h-[94vh] sm:rounded-3xl sm:p-6">
+      <DialogContent className="audit-card max-h-[100dvh] max-w-3xl content-start overflow-y-auto border-0 p-4 max-sm:h-[100dvh] max-sm:max-w-none max-sm:rounded-none sm:max-h-[94vh] sm:rounded-3xl sm:p-6">
         <DialogTitle className="pr-8 font-display text-xl font-bold sm:text-2xl">{booked ? "You're booked!" : "Pick a time for your free call"}</DialogTitle>
         <DialogDescription className="-mt-2 text-sm text-muted-foreground">
           {booked ? "Check your email for the calendar invite." : `Free · ${BOOKING.length} · ${SITE.founder.name} walks through your website, Google profile, reviews and ads with you, live.`}
