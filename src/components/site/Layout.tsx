@@ -6,6 +6,7 @@ import { MobileActionBar } from "./MobileActionBar";
 import { FloatingBookButton } from "./FloatingBookButton";
 import { QuizModalHost } from "@/components/quiz/QuizModalHost";
 import { BookingModalHost } from "@/components/booking/BookingModalHost";
+import { FreeCheckPopup } from "@/components/site/FreeCheckPopup";
 import { startSpotlight } from "@/lib/spotlight";
 import { pageFor, NOT_FOUND_META } from "@/seo/pages";
 import { applyHead } from "@/seo/head";
@@ -50,6 +51,7 @@ export function Layout({ children }: { children: ReactNode }) {
       startReddit();
       startClarity();
       startSpotlight();
+      void loadCal();
     };
     if (ric) ric(start, { timeout: 2500 });
     else setTimeout(start, 1500);
@@ -77,6 +79,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <FloatingBookButton />
       <QuizModalHost />
       <BookingModalHost />
+      <FreeCheckPopup />
     </>
   );
 }
