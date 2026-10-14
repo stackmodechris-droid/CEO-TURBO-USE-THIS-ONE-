@@ -51,6 +51,13 @@ const norm = (s) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 const words = (s) => norm(s).split(" ").filter((w) => w.length >= 4);
+/** What to look for: the 4+ letter words, or the whole phrase when it is short (“spa”, “gym”, “DJ”). */
+const terms = (s) => {
+  const w = words(s);
+  return w.length ? w : norm(s) ? [norm(s)] : [];
+};
+/** Longer words match inside others (“plumb” in “plumbing”); short ones only as whole words (“spa” not in “space”). */
+const hasTerm = (normText, t) => (t.length >= 4 ? normText.includes(t) : ` ${normText} `.includes(` ${t} `));
 
 export function platformFor(host) {
   const h = host.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
@@ -299,7 +306,7 @@ export async function runAudit(input) {
     add("seo", "title", 2, !tl ? "fail" : tl >= 15 && tl <= 65 ? "pass" : "warn", !tl ? "Missing page title" : tl > 65 ? "Page title gets cut off in Google" : tl < 15 ? "Page title is too short" : "Good page title length", tl ? `“${h.title.slice(0, 90)}${tl > 90 ? "…" : ""}” (${tl} characters)` : "Your homepage has no <title>, so Google writes one for you.", "Write a 50–60 character title: what you do + where + your name.");
 
     const tWords = norm(h.title);
-    const mentions = [...words(what), ...words(city)].some((w) => tWords.includes(w));
+    const mentions = [...terms(what), ...terms(city)].some((w) => hasTerm(tWords, w));
     if (what || city) add("seo", "title-local", 2, mentions ? "pass" : "warn", mentions ? "Title says what you do or where" : "Title doesn't say what you do or where", mentions ? "Searchers and Google can match your title to their search." : `Your title doesn't mention “${what || city}”. People search for the service and the city, not just your name.`, `Example: “${what ? what[0].toUpperCase() + what.slice(1) : "Service"}${city ? ` in ${city}` : ""} | ${name}”.`);
 
     const dl = h.description.length;
@@ -347,7 +354,7 @@ export async function runAudit(input) {
 
     const intro = norm(h.text.slice(0, 900));
     if (what) {
-      const ok = words(what).some((w) => intro.includes(w));
+      const ok = terms(what).some((w) => hasTerm(intro, w));
       add("aeo", "answer-first", 2, ok ? "pass" : "warn", ok ? "Says what you do up front" : "Doesn't say what you do up front", ok ? `The top of your page mentions “${what}”.` : `The top of your homepage never says “${what}”. AI summaries pull from the first lines.`, `Open with one plain sentence: “${name} is a ${what}${city ? ` in ${city}` : ""} that…”.`);
     }
 
@@ -355,7 +362,7 @@ export async function runAudit(input) {
       const phone = h.anchors.some((a) => a.toLowerCase().startsWith("tel:")) || /\(?\b\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b/.test(h.text);
       add("aeo", "phone", 2, phone ? "pass" : "fail", phone ? "Phone number on the page" : "No phone number on the page", phone ? "Customers and assistants can call you directly." : "Assistants can't recommend a business they can't connect to a phone number.", "Put a tap-to-call phone number in the header and footer, matching your Google profile exactly.");
       if (city) {
-        const ok = words(city).some((w) => norm(h.text).includes(w)) || norm(h.text).includes(norm(city));
+        const ok = terms(city).some((w) => hasTerm(norm(h.text), w)) || norm(h.text).includes(norm(city));
         add("aeo", "location", 2, ok ? "pass" : "fail", ok ? `Mentions ${city}` : `Never mentions ${city}`, ok ? "Your location is on the page." : `Google and AI can't tell you serve ${city} — so you're left out of “near me” answers.`, `Name ${city} and the neighborhoods you serve on your homepage and service pages.`);
       }
     }
