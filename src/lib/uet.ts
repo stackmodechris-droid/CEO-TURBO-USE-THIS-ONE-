@@ -43,6 +43,7 @@ const ACTIONS: Record<string, string> = {
   add_to_cart: "add_to_cart",
   begin_checkout: "begin_checkout",
   view_item: "view_item",
+  customize_product: "customize_product",
   click_to_call: "contact",
 };
 

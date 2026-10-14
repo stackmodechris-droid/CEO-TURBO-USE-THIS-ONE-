@@ -306,3 +306,16 @@ describe("Microsoft Clarity prep", () => {
     }
   });
 });
+
+describe("custom company shirt pricing", () => {
+  it("prices sizes, back print and team tiers the way Shopify is set up", async () => {
+    const { SHIRT, shirtTotal, shirtUnitPrice, shirtTier } = await import("@/config/site");
+    expect(shirtUnitPrice("short", "M", false)).toBe(SHIRT.styles[0].price);
+    expect(shirtUnitPrice("long", "3XL", true)).toBe(+(SHIRT.styles[1].price + SHIRT.plusSizeUpcharge + SHIRT.backPrintPrice).toFixed(2));
+    expect([shirtTier(1).off, shirtTier(11).off, shirtTier(12).off, shirtTier(24).off, shirtTier(200).off]).toEqual([0, 0, 0.1, 0.15, 0.15]);
+    const t = shirtTotal("short", false, { M: 10, "2XL": 2 });
+    expect(t.qty).toBe(12);
+    expect(t.subtotal).toBe(+(SHIRT.styles[0].price * 12 + SHIRT.plusSizeUpcharge * 2).toFixed(2));
+    expect(t.total).toBe(+(t.subtotal - +(t.subtotal * 0.1).toFixed(2)).toFixed(2));
+  });
+});

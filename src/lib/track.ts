@@ -27,6 +27,7 @@ const META: Record<string, { name: string; custom?: boolean }> = {
   view_item: { name: "ViewContent" },
   add_to_cart: { name: "AddToCart" },
   begin_checkout: { name: "InitiateCheckout" },
+  customize_product: { name: "CustomizeProduct" },
   generate_lead: { name: "Lead" },
   book_call: { name: "Schedule" },
   click_to_call: { name: "Contact" },
@@ -281,7 +282,7 @@ export function attribution(): Attribution {
 }
 
 /** Events the server also sends to the Conversions API (same event_id, so Meta de-duplicates). */
-const SERVER_COPY = new Set(["page_view", "view_item", "add_to_cart", "begin_checkout", "click_to_call"]);
+const SERVER_COPY = new Set(["page_view", "view_item", "customize_product", "add_to_cart", "begin_checkout", "click_to_call"]);
 
 /** Server-side copy of a browser event (api/track.js). Fire-and-forget; never throws. */
 export function serverTrack(event: string, eventId: string, data: { value?: number; currency?: string; contentName?: string; contentIds?: string[]; numItems?: number; user?: UserData } = {}) {

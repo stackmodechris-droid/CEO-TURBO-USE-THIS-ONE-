@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/blocks/Basics";
 import { Link } from "react-router-dom";
-import { SITE, REVIEW_CARD } from "@/config/site";
+import { SITE, REVIEW_CARD, SHIRT } from "@/config/site";
 
 function LegalShell({ title, path, updated, children }: { title: string; path: string; updated: string; children: ReactNode }) {
   return (
@@ -127,7 +127,7 @@ export function Terms() {
 export function ShippingReturns() {
   const s = REVIEW_CARD.shipping;
   return (
-    <LegalShell title="Shipping & Returns" path="/shipping-returns" updated="October 12, 2026">
+    <LegalShell title="Shipping & Returns" path="/shipping-returns" updated="October 14, 2026">
       <section>
         <h2>Shipping</h2>
         <p>
@@ -147,6 +147,12 @@ export function ShippingReturns() {
           <li><strong>Exchanges:</strong> not accepted. If you want a different pack, return your order and place a new one.</li>
           <li><strong>Refunds:</strong> issued to your original payment method, within 30 days of us receiving the return.</li>
         </ul>
+      </section>
+      <section>
+        <h2>Custom company t-shirts</h2>
+        <p>
+          Custom shirts are printed to order with your logo: {SHIRT.shipping.production.toLowerCase()}, then {SHIRT.shipping.delivery.toLowerCase()}, with free US shipping. {SHIRT.guarantee} Because each shirt is made for you, we can't accept returns or exchanges for a size you chose, a change of mind or a logo file you supplied — check the size chart and the live preview before ordering.
+        </p>
       </section>
       <section>
         <h2>Cards that don't work</h2>

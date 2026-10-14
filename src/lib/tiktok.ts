@@ -24,6 +24,7 @@ const EVENTS: Record<string, string> = {
   view_item: "ViewContent",
   add_to_cart: "AddToCart",
   begin_checkout: "InitiateCheckout",
+  customize_product: "CustomizeProduct",
   generate_lead: "Lead",
   book_call: "Schedule",
 };

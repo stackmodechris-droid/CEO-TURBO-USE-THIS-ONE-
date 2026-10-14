@@ -1,11 +1,11 @@
 // POST /api/track — server-side (Conversions API) copies of browser events, sent with the same event_id
 // as the Pixel so Meta de-duplicates them: PageView, ViewContent / AddToCart / InitiateCheckout (review
-// card shop) and Contact (tap-to-call). Raises Meta's "events covered by Conversions API" rate. Leads, bookings and purchases have their own server paths (api/lead.js, api/audit.js,
+// card and shirt shops), CustomizeProduct (shirt designer) and Contact (tap-to-call). Raises Meta's "events covered by Conversions API" rate. Leads, bookings and purchases have their own server paths (api/lead.js, api/audit.js,
 // api/cal-webhook.js, Shopify's Facebook & Instagram app).
 import { readJson, send, clientIp, rateLimited, sameOrigin, isJson } from "./_lib/http.js";
 import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
 
-const EVENTS = { page_view: "PageView", view_item: "ViewContent", add_to_cart: "AddToCart", begin_checkout: "InitiateCheckout", click_to_call: "Contact" };
+const EVENTS = { page_view: "PageView", view_item: "ViewContent", add_to_cart: "AddToCart", begin_checkout: "InitiateCheckout", customize_product: "CustomizeProduct", click_to_call: "Contact" };
 const text = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f<>]/g, " ").trim().slice(0, max) : "");
 
 /** Validated CAPI custom_data for an allowed event, or null (exported for tests). */
