@@ -56,12 +56,15 @@ function bootstrap() {
   w.Cal = cal;
 }
 
-/** Matches the inline embed code from the Cal.com dashboard (Embed → Inline). */
+/**
+ * Matches the inline embed code from the Cal.com dashboard (Embed → Inline): blue #0093ff on the picked
+ * day/time, and the meeting-info panel hidden — visitors already know why they clicked "Book a call".
+ */
 const UI = {
   theme: "dark",
   layout: "month_view",
-  hideEventTypeDetails: false,
-  cssVarsPerTheme: { light: { "cal-brand": "#000000" }, dark: { "cal-brand": "#00abff" } },
+  hideEventTypeDetails: true,
+  cssVarsPerTheme: { dark: { "cal-brand": "#0093ff" } },
 };
 
 /** Namespaces: the site-wide booking calendar, and the quiz's own (kept apart so their load events don't mix). */

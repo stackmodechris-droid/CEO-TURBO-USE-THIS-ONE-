@@ -137,7 +137,7 @@ describe("Cal.com embed loader", () => {
     void loadCal("brandboostquiz");
     for (const ns of ["ceoturbo-brandboost", "brandboostquiz"]) {
       const ui = queue(ns).find((a) => a[0] === "ui")?.[1] as Record<string, unknown>;
-      expect(ui).toMatchObject({ theme: "dark", layout: "month_view", hideEventTypeDetails: false, cssVarsPerTheme: { light: { "cal-brand": "#000000" }, dark: { "cal-brand": "#00abff" } } });
+      expect(ui).toMatchObject({ theme: "dark", layout: "month_view", hideEventTypeDetails: true, cssVarsPerTheme: { dark: { "cal-brand": "#0093ff" } } });
     }
   });
 
