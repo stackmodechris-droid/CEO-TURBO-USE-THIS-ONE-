@@ -225,21 +225,52 @@ export function trackBooked(via: string, uid?: string, user?: UserData) {
 
 const ATTR_KEY = "ct_attr";
 const ATTR_PARAMS = ["gclid", "gbraid", "wbraid", "fbclid", "msclkid", "ttclid", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
-export type Attribution = Partial<Record<(typeof ATTR_PARAMS)[number] | "landing" | "fbp" | "fbc" | "ttp", string>>;
+export type Attribution = Partial<Record<(typeof ATTR_PARAMS)[number] | "landing" | "fbp" | "fbc" | "fbi" | "ttp", string>>;
 
+const decode = (v = "") => {
+  try {
+    return decodeURIComponent(v);
+  } catch {
+    return v;
+  }
+};
 const cookie = (name: string) => (typeof document === "undefined" ? undefined : document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))?.[1]);
 
 /**
+ * The visitor's own IP, IPv6 first, for the Parameter Builder's _fbi cookie. The site is served over IPv4,
+ * so the server only ever sees an IPv4 address, while Meta's Pixel reaches Facebook over IPv6 for most
+ * phones — and Meta flags the mismatch. Asking an IPv6-only endpoint gets the same address the Pixel sends;
+ * IPv4-only visitors fall back to the dual-stack one. A stored IPv6 is reused, so this runs once a day at most.
+ */
+const IP_LOOKUPS = ["https://api6.ipify.org", "https://api64.ipify.org"];
+async function visitorIp() {
+  const stored = decode(cookie("_fbi")).replace(/\.[A-Za-z0-9_-]{2,8}$/, "");
+  if (stored.includes(":")) return stored;
+  for (const url of IP_LOOKUPS) {
+    try {
+      const ip = (await (await fetch(url, { signal: AbortSignal.timeout(1500), credentials: "omit", cache: "no-store" })).text()).trim();
+      if (/^[0-9a-f:.]{3,45}$/i.test(ip)) return ip;
+    } catch {
+      /* no IPv6 route (or blocked): try the next */
+    }
+  }
+  return stored;
+}
+
+/** Resolves once _fbp/_fbc/_fbi are written, so server-side copies of events carry them (never rejects). */
+let metaParamsDone: Promise<unknown> = Promise.resolve();
+
+/**
  * Meta's Conversions API Parameter Builder (meta-capi-param-builder-clientjs) writes _fbp and, after an
- * ad click, _fbc in the exact format Meta scores highest (with its version appendix). It's loaded as a
- * separate chunk right after the page starts, so it never weighs on first paint. If it can't load,
- * _fbc is still set by hand so the click is not lost.
+ * ad click, _fbc in the exact format Meta scores highest (with its version appendix), plus _fbi with the
+ * visitor's IPv6 address. It's loaded as a separate chunk right after the page starts, so it never weighs
+ * on first paint. If it can't load, _fbc is still set by hand (fbclid untouched) so the click is not lost.
  */
 function buildMetaParams(fbclid?: string) {
-  import("meta-capi-param-builder-clientjs")
+  metaParamsDone = import("meta-capi-param-builder-clientjs")
     .then((m) => {
-      const b = ((m as { default?: unknown }).default ?? m) as { processAndCollectAllParams: (url: string | null) => Promise<unknown> };
-      return b.processAndCollectAllParams(window.location.href);
+      const b = ((m as { default?: unknown }).default ?? m) as { processAndCollectAllParams: (url: string | null, getIpFn?: () => Promise<string>) => Promise<unknown> };
+      return b.processAndCollectAllParams(window.location.href, visitorIp);
     })
     .catch(() => {
       // Same domain scope as the builder's own cookie, so a later successful run overwrites this one instead of sitting beside it.
@@ -247,6 +278,9 @@ function buildMetaParams(fbclid?: string) {
       if (fbclid && !cookie("_fbc")) document.cookie = `_fbc=fb.1.${Date.now()}.${fbclid}; max-age=${90 * 86400}; path=/; SameSite=Lax; Secure${domain}`;
     });
 }
+
+/** Waits (at most `ms`) for the Parameter Builder, so the first PageView's server copy has the IPv6 and _fbc. */
+const metaParamsReady = (ms = 2500) => Promise.race([metaParamsDone, new Promise((r) => setTimeout(r, ms))]);
 
 /** Call once per page load: stores any new click ids and builds Meta's _fbp/_fbc before the pixel loads. */
 export function captureAttribution() {
@@ -256,7 +290,8 @@ export function captureAttribution() {
   const fresh: Attribution = {};
   for (const k of ATTR_PARAMS) {
     const v = q.get(k);
-    if (v) fresh[k] = v.slice(0, 300);
+    // Click ids are kept whole (Meta rejects a cut-short fbclid); only absurd lengths are dropped.
+    if (v && v.length <= 1000) fresh[k] = k.endsWith("clid") || k.endsWith("braid") ? v : v.slice(0, 300);
   }
   buildMetaParams(fresh.fbclid);
   if (!Object.keys(fresh).length) return;
@@ -279,8 +314,9 @@ export function attribution(): Attribution {
   // Sent exactly as stored: _fbc is case-sensitive and Meta wants it unmodified.
   const fbp = cookie("_fbp");
   const fbc = cookie("_fbc");
+  const fbi = cookie("_fbi");
   const ttp = cookie("_ttp");
-  return { ...stored, ...(fbp ? { fbp } : {}), ...(fbc ? { fbc } : {}), ...(ttp ? { ttp } : {}) };
+  return { ...stored, ...(fbp ? { fbp } : {}), ...(fbc ? { fbc } : {}), ...(fbi ? { fbi: decode(fbi) } : {}), ...(ttp ? { ttp } : {}) };
 }
 
 /** Events the server also sends to the Conversions API (same event_id, so Meta de-duplicates). */
@@ -289,16 +325,19 @@ const SERVER_COPY = new Set(["page_view", "view_item", "customize_product", "add
 /** Server-side copy of a browser event (api/track.js). Fire-and-forget; never throws. */
 export function serverTrack(event: string, eventId: string, data: { value?: number; currency?: string; contentName?: string; contentIds?: string[]; numItems?: number; user?: UserData } = {}) {
   if (typeof window === "undefined" || !SERVER_COPY.has(event)) return;
-  try {
-    void fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      keepalive: true,
-      body: JSON.stringify({ event, eventId, page: window.location.pathname + window.location.search, visitorId: visitorId(), attribution: attribution(), ...data }),
-    }).catch(() => {});
-  } catch {
-    /* ignore */
-  }
+  const page = window.location.pathname + window.location.search;
+  void metaParamsReady().then(() => {
+    try {
+      void fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify({ event, eventId, page, visitorId: visitorId(), attribution: attribution(), ...data }),
+      }).catch(() => {});
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 /**
