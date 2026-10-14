@@ -133,6 +133,35 @@ describe("Cal.com embed loader", () => {
     }
   });
 
+  it("uses the dashboard's inline embed look: blue brand in dark mode, event details shown", () => {
+    void loadCal("brandboostquiz");
+    for (const ns of ["ceoturbo-brandboost", "brandboostquiz"]) {
+      const ui = queue(ns).find((a) => a[0] === "ui")?.[1] as Record<string, unknown>;
+      expect(ui).toMatchObject({ theme: "dark", layout: "month_view", hideEventTypeDetails: false, cssVarsPerTheme: { light: { "cal-brand": "#000000" }, dark: { "cal-brand": "#00abff" } } });
+    }
+  });
+
+  it("opens the on-page inline calendar dialog instead of Cal's pop-up or the booking page", async () => {
+    const assign = vi.fn();
+    const loc = window.location;
+    Object.defineProperty(window, "location", { configurable: true, value: { ...loc, assign } });
+    const seen: unknown[] = [];
+    const listen = (e: Event) => seen.push((e as CustomEvent).detail);
+    window.addEventListener("ct:booking", listen);
+    window.__ctBookingModal = true;
+    try {
+      const { openBooking } = await import("@/lib/cal");
+      await openBooking("audit", "hi", { email: "a@b.co" });
+      expect(seen).toEqual([{ source: "audit", prefill: "hi", person: { email: "a@b.co" } }]);
+      expect(embeds()).toHaveLength(0);
+      expect(assign).not.toHaveBeenCalled();
+    } finally {
+      window.__ctBookingModal = false;
+      window.removeEventListener("ct:booking", listen);
+      Object.defineProperty(window, "location", { configurable: true, value: loc });
+    }
+  });
+
   it("shares one script between callers once it is loading", async () => {
     const a = loadCal();
     const b = loadCal("brandboostquiz");

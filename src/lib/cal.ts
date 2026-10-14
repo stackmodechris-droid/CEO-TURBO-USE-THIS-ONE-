@@ -1,5 +1,5 @@
 // Cal.com embed loader. The script loads on idle (or on first click) so it never
-// competes with the page's first paint, and every booking opens as an on-page modal.
+// competes with the page's first paint, and every booking shows as an inline calendar on the page.
 import { BOOKING } from "@/config/site";
 import { attribution, track, trackBooked } from "@/lib/track";
 
@@ -14,6 +14,7 @@ type CalFn = ((...args: unknown[]) => void) & {
 declare global {
   interface Window {
     Cal?: CalFn;
+    __ctBookingModal?: boolean;
   }
 }
 
@@ -55,13 +56,15 @@ function bootstrap() {
   w.Cal = cal;
 }
 
+/** Matches the inline embed code from the Cal.com dashboard (Embed → Inline). */
 const UI = {
   theme: "dark",
   layout: "month_view",
-  cssVarsPerTheme: { dark: { "cal-brand": "#ff6b1a" }, light: { "cal-brand": "#ff6b1a" } },
+  hideEventTypeDetails: false,
+  cssVarsPerTheme: { light: { "cal-brand": "#000000" }, dark: { "cal-brand": "#00abff" } },
 };
 
-/** Namespaces: the site-wide modal/inline calendar, and the quiz's calendar (no repeated event details). */
+/** Namespaces: the site-wide booking calendar, and the quiz's own (kept apart so their load events don't mix). */
 export const QUIZ_NS = "brandboostquiz";
 const inited = new Set<string>();
 
@@ -104,7 +107,7 @@ function initNamespace(ns: string) {
   if (inited.has(ns)) return;
   inited.add(ns);
   Cal("init", ns, { origin: CAL_ORIGIN });
-  Cal.ns[ns]("ui", { ...UI, hideEventTypeDetails: ns === QUIZ_NS });
+  Cal.ns[ns]("ui", UI);
   for (const [action, status] of [["linkReady", "ready"], ["linkFailed", "failed"]] as const)
     Cal.ns[ns]("on", { action, callback: () => linkListeners.get(ns)?.forEach((fn) => fn(status)) });
   // Real bookings (not just calendar opens) are the conversion the ad platforms should optimize for.
@@ -210,9 +213,18 @@ function goToBookingPage(url: string, source?: string) {
   window.location.assign(url);
 }
 
-/** Opens the Brand Boost booking modal; goes to the Cal.com page if the embed can't load or the calendar fails. */
+export type BookingRequest = Prefill;
+
+/**
+ * Shows the Brand Boost calendar inline in an on-page dialog (src/components/booking/BookingModal.tsx).
+ * Without that dialog mounted, falls back to Cal.com's modal, then to the booking page if the calendar fails.
+ */
 export async function openBooking(source?: string, prefill?: string, person?: Person, extra: Omit<Prefill, "source" | "prefill" | "person"> = {}) {
   track("booking_open", { source });
+  if (window.__ctBookingModal) {
+    window.dispatchEvent(new CustomEvent<BookingRequest>("ct:booking", { detail: { source, prefill, person, ...extra } }));
+    return;
+  }
   const ns = BOOKING.namespace;
   const url = bookingPageUrl(prefill, person, extra.fields, { source, meta: extra.meta });
   const ok = await loadCalWithin(ns);

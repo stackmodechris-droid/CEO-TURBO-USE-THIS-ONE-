@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileActionBar } from "./MobileActionBar";
 import { QuizModalHost } from "@/components/quiz/QuizModalHost";
+import { BookingModalHost } from "@/components/booking/BookingModalHost";
 import { startSpotlight } from "@/lib/spotlight";
 import { pageFor, NOT_FOUND_META } from "@/seo/pages";
 import { REVIEWS_AD_PATH } from "@/content/review-cards";
@@ -78,6 +79,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <Footer focus={focus} />
       <MobileActionBar focus={focus} />
       <QuizModalHost />
+      <BookingModalHost />
     </>
   );
 }

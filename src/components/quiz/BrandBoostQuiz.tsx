@@ -51,7 +51,8 @@ import {
 } from "@/content/quiz";
 import { BOOKING, SITE, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
-import { QUIZ_NS, bookingPageUrl, mountInlineBooking, onLinkStatus, openBooking } from "@/lib/cal";
+import { QUIZ_NS, openBooking } from "@/lib/cal";
+import { InlineBooking } from "@/components/booking/InlineBooking";
 import { attribution, e164, newEventId, setCallContext, track, visitorId } from "@/lib/track";
 import { sendLead } from "@/lib/lead-outbox";
 import { CallLink } from "@/components/site/CallLink";
@@ -560,8 +561,6 @@ function Field({ id, label, error, children }: { id: string; label: string; erro
 function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { answers: Answers; quizId: string; source: string; prefill?: string; booked: boolean; uid: string; onRestart: () => void }) {
   const move = moneyMove(answers);
   const first = answers.name.trim().split(/\s+/)[0] || "Here";
-  const calId = `quiz-cal-${uid}`;
-  const [cal, setCal] = useState<"loading" | "ready" | "failed">("loading");
   const value = leadValue(answers.budget) * CALL_MULTIPLIER;
 
   const booking = {
@@ -590,22 +589,6 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
       leadValue: value,
     },
   };
-
-  const pageUrl = bookingPageUrl(prefill, booking.person, booking.fields, { source: `${booking.source} — direct page`, meta: booking.meta });
-  const directClick = () => track("booking_open", { source: `${booking.source} — direct page` });
-
-  useEffect(() => {
-    if (booked) return;
-    let live = true;
-    // Cal.com shows its own loader inside the box; only a real failure (script blocked, booking page error) swaps in the button.
-    const off = onLinkStatus(QUIZ_NS, (s) => live && setCal(s));
-    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((r) => live && r !== "timeout" && setCal((c) => (c === "ready" ? "ready" : r)));
-    return () => {
-      live = false;
-      off();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [booked, calId]);
 
   if (booked)
     return (
@@ -644,26 +627,7 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
         </p>
       </div>
 
-      {/* Only reserve height while loading: Cal.com sizes its iframe to the calendar, so a fixed min-height left an empty block under it. */}
-      <div className={cn("relative mt-4 overflow-hidden rounded-2xl ring-1 ring-white/5", cal === "ready" ? "bg-transparent" : "min-h-[520px] bg-black/20")}>
-        {cal === "failed" && (
-          <div className="absolute inset-0 z-10 grid place-items-center p-6 text-center">
-            <div>
-              <p className="text-sm text-muted-foreground">Tap below to pick your time on our booking page.</p>
-              <a href={pageUrl} onClick={directClick} className="btn-ignite mt-4">
-                Pick my call time <ArrowRight className="h-4 w-4" aria-hidden />
-              </a>
-            </div>
-          </div>
-        )}
-        <div id={calId} className={cn("relative w-full", cal !== "ready" && "min-h-[520px]")} />
-      </div>
-      <p className="mt-2 text-center text-xs text-muted-foreground">
-        Calendar not showing?{" "}
-        <a href={pageUrl} onClick={directClick} className="inline-flex min-h-[44px] items-center font-semibold text-turbo underline underline-offset-2">
-          Open the booking page
-        </a>
-      </p>
+      <InlineBooking ns={QUIZ_NS} source={booking.source} prefill={prefill} person={booking.person} fields={booking.fields} meta={booking.meta} className="mt-4" />
 
       {move.offer && (
         <div className="mt-5 grid gap-3 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5 sm:grid-cols-[1fr_auto] sm:items-center">
