@@ -632,7 +632,8 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
         </p>
       </div>
 
-      <div className="relative mt-4 min-h-[520px] overflow-hidden rounded-2xl bg-black/20 ring-1 ring-white/5">
+      {/* Only reserve height while loading: Cal.com sizes its iframe to the calendar, so a fixed min-height left an empty block under it. */}
+      <div className={cn("relative mt-4 overflow-hidden rounded-2xl ring-1 ring-white/5", cal === "ready" ? "bg-transparent" : "min-h-[520px] bg-black/20")}>
         {cal !== "ready" && (
           <div className="absolute inset-0 grid place-items-center p-6 text-center">
             <div>
@@ -649,7 +650,7 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
             </div>
           </div>
         )}
-        <div id={calId} className="relative h-full min-h-[520px] w-full overflow-auto" />
+        <div id={calId} className={cn("relative w-full", cal !== "ready" && "min-h-[520px]")} />
       </div>
       <p className="mt-2 text-center text-xs text-muted-foreground">
         Calendar not showing?{" "}
