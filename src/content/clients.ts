@@ -343,7 +343,7 @@ export const CLIENTS: Client[] = [
   {
     slug: "yari-beats",
     name: "YARI",
-    url: "https://yaribeats.com",
+    url: "https://yariwtf.com",
     category: "artist",
     industry: "Music producer",
     location: "Atlanta, Georgia",

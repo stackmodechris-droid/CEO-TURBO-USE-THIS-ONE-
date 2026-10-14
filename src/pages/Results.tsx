@@ -43,14 +43,14 @@ export default function Results() {
             Every lead campaign, cheapest first
           </h2>
           <div className="mt-8 overflow-x-auto">
-            <table className="w-full min-w-[620px] text-left text-sm">
+            <table className="w-full text-left text-sm">
               <caption className="sr-only">Meta lead-form campaign results</caption>
               <thead>
                 <tr className="border-b border-border text-muted-foreground">
                   <th className="py-3 pr-4 font-medium">Client &amp; campaign</th>
-                  <th className="px-4 py-3 font-medium">Leads</th>
-                  <th className="px-4 py-3 font-medium">Cost per lead</th>
-                  <th className="px-4 py-3 font-medium">Spend</th>
+                  <th className="px-2 py-3 sm:px-4 font-medium">Leads</th>
+                  <th className="px-2 py-3 sm:px-4 font-medium">Cost per lead</th>
+                  <th className="px-2 py-3 sm:px-4 font-medium">Spend</th>
                 </tr>
               </thead>
               <tbody>
@@ -66,16 +66,16 @@ export default function Results() {
                       )}
                       <span className="block text-xs font-normal text-muted-foreground">{r.campaign}</span>
                     </th>
-                    <td className="px-4 py-3">{r.count}</td>
-                    <td className="px-4 py-3 font-semibold text-turbo">{money(r.costPer)}</td>
-                    <td className="px-4 py-3">{money(r.spent)}</td>
+                    <td className="px-2 py-3 sm:px-4">{r.count}</td>
+                    <td className="px-2 py-3 sm:px-4 font-semibold text-turbo">{money(r.costPer)}</td>
+                    <td className="px-2 py-3 sm:px-4">{money(r.spent)}</td>
                   </tr>
                 ))}
                 <tr>
                   <th scope="row" className="py-3 pr-4 font-semibold">Total</th>
-                  <td className="px-4 py-3 font-semibold">{AD_TOTALS.leads}</td>
-                  <td className="px-4 py-3 font-semibold text-turbo">{money(AD_TOTALS.avgCpl)} avg</td>
-                  <td className="px-4 py-3 font-semibold">{money(AD_TOTALS.leadSpend)}</td>
+                  <td className="px-2 py-3 sm:px-4 font-semibold">{AD_TOTALS.leads}</td>
+                  <td className="px-2 py-3 sm:px-4 font-semibold text-turbo">{money(AD_TOTALS.avgCpl)} avg</td>
+                  <td className="px-2 py-3 sm:px-4 font-semibold">{money(AD_TOTALS.leadSpend)}</td>
                 </tr>
               </tbody>
             </table>

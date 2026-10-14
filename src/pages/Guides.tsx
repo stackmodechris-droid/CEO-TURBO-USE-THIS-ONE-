@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { CompareTable } from "@/components/blocks/CompareTable";
 import { GUIDES, guideBySlug, guideImage, guidePath, type Guide } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
 import { SITE } from "@/config/site";
@@ -100,36 +101,7 @@ function GuideArticle({ g }: { g: Guide }) {
                 </ul>
               )}
               {s.table && (
-                <div className="mt-6 overflow-x-auto rounded-2xl border border-border">
-                  <table className="w-full min-w-[560px] text-left text-sm">
-                    <thead className="bg-white/[0.03]">
-                      <tr>
-                        {s.table.head.map((h, i) => (
-                          <th key={i} className="px-4 py-3 font-semibold">
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {s.table.rows.map((row) => (
-                        <tr key={row[0]} className="border-t border-border">
-                          {row.map((cell, i) =>
-                            i === 0 ? (
-                              <th key={i} scope="row" className="px-4 py-3 font-medium">
-                                {cell}
-                              </th>
-                            ) : (
-                              <td key={i} className="px-4 py-3 text-muted-foreground">
-                                {cell}
-                              </td>
-                            ),
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <CompareTable className="mt-6" head={s.table.head} rows={s.table.rows} />
               )}
             </section>
           ))}

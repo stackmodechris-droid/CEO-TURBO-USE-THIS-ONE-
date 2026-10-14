@@ -326,7 +326,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             <span className="absolute left-4 top-4 rounded-full bg-black/75 px-3 py-1 text-xs font-semibold text-white">Live preview</span>
             <div className="absolute right-3 top-3 flex rounded-full bg-black/75 p-1 text-xs font-semibold text-white" role="group" aria-label="Shirt side">
               {(["front", "back"] as const).map((s) => (
-                <button key={s} type="button" onClick={() => setSide(s)} aria-pressed={side === s} className={cn("min-h-[36px] rounded-full px-3.5 capitalize", side === s ? "bg-white text-black" : "text-white/80")}>
+                <button key={s} type="button" onClick={() => setSide(s)} aria-pressed={side === s} className={cn("min-h-[40px] rounded-full px-4 capitalize", side === s ? "bg-white text-black" : "text-white/80")}>
                   {s}
                 </button>
               ))}
@@ -457,7 +457,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Font">
               <span className="text-xs text-muted-foreground">Font</span>
               {FONTS.map((f) => (
-                <button key={f.id} type="button" onClick={() => (setFont(f.id), markCustomized())} aria-pressed={font === f.id} className={cn("min-h-[32px] rounded-full px-3 text-sm ring-1", font === f.id ? "bg-white text-black ring-white" : "ring-white/15 hover:ring-white/40")} style={{ fontFamily: f.family, fontWeight: f.weight }}>
+                <button key={f.id} type="button" onClick={() => (setFont(f.id), markCustomized())} aria-pressed={font === f.id} className={cn("min-h-[44px] rounded-full px-3.5 text-sm ring-1", font === f.id ? "bg-white text-black ring-white" : "ring-white/15 hover:ring-white/40")} style={{ fontFamily: f.family, fontWeight: f.weight }}>
                   {f.name}
                 </button>
               ))}
@@ -465,7 +465,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Print color">
               <span className="text-xs text-muted-foreground">Print color</span>
               {INKS.map((i) => (
-                <button key={i.id} type="button" onClick={() => setInkId(i.id)} aria-pressed={inkId === i.id} className={cn("min-h-[32px] rounded-full px-3 text-xs font-semibold ring-1", inkId === i.id ? "bg-white text-black ring-white" : "ring-white/15 hover:ring-white/40")}>
+                <button key={i.id} type="button" onClick={() => setInkId(i.id)} aria-pressed={inkId === i.id} className={cn("min-h-[44px] rounded-full px-3.5 text-xs font-semibold ring-1", inkId === i.id ? "bg-white text-black ring-white" : "ring-white/15 hover:ring-white/40")}>
                   {i.hex && <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full align-middle ring-1 ring-black/20" style={{ background: i.hex }} />}
                   {i.name}
                 </button>
@@ -558,17 +558,17 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
           {/* 6. Sizes */}
           <fieldset className="mt-6">
             <legend className={H2}>6 · Sizes &amp; quantity</legend>
-            <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
               {P.sizes.map((s) => (
                 <div key={s} className="rounded-2xl bg-white/[0.03] p-2 text-center ring-1 ring-white/5">
                   <p className="text-sm font-semibold">{s}</p>
-                  <p className="text-[10px] text-muted-foreground">{money2(shirtUnitPrice(style, s, back, P))}</p>
+                  <p className="text-xs text-muted-foreground">{money2(shirtUnitPrice(style, s, back, P))}</p>
                   <div className="mt-1.5 flex items-center justify-between">
-                    <button type="button" aria-label={`One less ${s}`} onClick={() => setQty(s, (sizes[s] || 0) - 1)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10">
+                    <button type="button" aria-label={`One less ${s}`} onClick={() => setQty(s, (sizes[s] || 0) - 1)} className="grid h-11 w-11 place-items-center rounded-full hover:bg-white/10 active:bg-white/15">
                       <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <input aria-label={`Quantity ${s}`} inputMode="numeric" value={sizes[s] || 0} onChange={(e) => setQty(s, Number(e.target.value.replace(/\D/g, "")) || 0)} className="w-8 bg-transparent text-center text-sm font-bold tabular-nums outline-none" />
-                    <button type="button" aria-label={`One more ${s}`} onClick={() => setQty(s, (sizes[s] || 0) + 1)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10">
+                    <input aria-label={`Quantity ${s}`} inputMode="numeric" value={sizes[s] || 0} onChange={(e) => setQty(s, Number(e.target.value.replace(/\D/g, "")) || 0)} className="w-10 bg-transparent text-center font-bold tabular-nums outline-none" />
+                    <button type="button" aria-label={`One more ${s}`} onClick={() => setQty(s, (sizes[s] || 0) + 1)} className="grid h-11 w-11 place-items-center rounded-full hover:bg-white/10 active:bg-white/15">
                       <Plus className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -637,10 +637,13 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
                 <ShieldCheck className="h-4 w-4 text-turbo" aria-hidden /> Free reprint if it's misprinted or damaged
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-turbo" aria-hidden /> Questions or a deadline? Call or text{" "}
-                <a href={SITE.phone.href} className="font-semibold text-foreground underline-offset-2 hover:underline">
-                  {SITE.phone.display}
-                </a>
+                <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                <span>
+                  Questions or a deadline? Call or text{" "}
+                  <a href={SITE.phone.href} className="-my-3 inline-block whitespace-nowrap py-3 font-semibold text-foreground underline underline-offset-2">
+                    {SITE.phone.display}
+                  </a>
+                </span>
               </li>
             </ul>
           </div>

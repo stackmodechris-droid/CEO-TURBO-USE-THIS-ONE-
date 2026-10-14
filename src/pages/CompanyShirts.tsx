@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CompareTable } from "@/components/blocks/CompareTable";
 import { ShirtMaker } from "@/components/shirts/ShirtMaker";
 import { Breadcrumbs, FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { SHIRT_COMPARE, SHIRT_FAQS, SHIRT_SIZE_CHART, SHIRT_STEPS, SHIRT_USES, SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
@@ -56,30 +57,7 @@ export default function CompanyShirts() {
       <section className="section border-t border-border" aria-labelledby="compare">
         <div className="container-x">
           <SectionHeader title={<span id="compare">CEO Turbo vs. a bulk printer vs. a local shop</span>} lede="Bulk screen printing wins on 200 identical shirts. For a team of 1 to 50 with mixed sizes and a full-color logo, this is faster and there's nothing to set up." />
-          <div className="mt-10 overflow-x-auto rounded-2xl border border-border">
-            <table className="w-full min-w-[620px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-border bg-white/[0.02] text-muted-foreground">
-                  <th className="px-5 py-4 font-medium" />
-                  <th className="px-5 py-4 font-semibold text-foreground">CEO Turbo</th>
-                  <th className="px-5 py-4 font-medium">Bulk screen printer</th>
-                  <th className="px-5 py-4 font-medium">Local print shop</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SHIRT_COMPARE.map(([k, a, b, c]) => (
-                  <tr key={k} className="border-b border-border/60 last:border-0">
-                    <th scope="row" className="px-5 py-4 font-medium">
-                      {k}
-                    </th>
-                    <td className="px-5 py-4 font-semibold text-turbo">{a}</td>
-                    <td className="px-5 py-4 text-muted-foreground">{b}</td>
-                    <td className="px-5 py-4 text-muted-foreground">{c}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CompareTable className="mt-10" head={["", "CEO Turbo", "Bulk screen printer", "Local print shop"]} rows={SHIRT_COMPARE.map((r) => [...r])} highlight={1} />
         </div>
       </section>
 

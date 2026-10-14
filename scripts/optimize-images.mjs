@@ -7,28 +7,8 @@ import path from "node:path";
 const SRC = path.resolve("../ceoturbo-main/Images");
 const OUT = path.resolve("public/img");
 
-const work = {
-  "1stikk-mobile": "1stikkmobile.png",
-  "7uvhavin": "7uvhavin.png",
-  "ares-tire-and-auto": "Arestireandauto.png",
-  "mor-handy": "MorHandy.png",
-  "appliance-king": "apllianceking.png",
-  "bam-sprinklers": "bamsprinklers.png",
-  "beyond-labels-gifts": "beyondlabelsgifts.png",
-  bigzo: "bigzo.png",
-  cleardump: "clear dump.png",
-  "focusmode-shop": "focusmodeshop.png",
-  "joscar-turf": "joscarturf.png",
-  "kingstone-landscaping": "kingstonelandscaping.png",
-  "layne-fitness": "laynefitness.png",
-  "mehdi-cohen": "mehdicohen.png",
-  "oj-junk-removal": "ojjunkremoval.png",
-  "phoenix-freedom-firearms": "phoenixfreedomfirearms.png",
-  "ryan-pool": "ryanpoolsr.png",
-  "swole-jd": "swolejd.png",
-  "true-legacy": "truelegacyworld.png",
-  "yari-beats": "yaribeats.png",
-};
+// Client website screenshots (public/img/work) come from scripts/capture-site-shots.mjs, which captures
+// the full page width. The old crop-to-16:10 step here cut the sides off wide screenshots, so it was removed.
 
 const ads = {
   "beyond-labels-necklace": "1080X1080 Ad Love.jpg",
@@ -72,13 +52,6 @@ async function run() {
     await mkdir(path.join(OUT, dir), { recursive: true });
   }
 
-  for (const [slug, file] of Object.entries(work)) {
-    const src = path.join(SRC, "Website Previews Use These", file);
-    // 16:10 crop anchored to the top so every browser frame shows the hero.
-    await sharp(src).resize(1600, 1000, { fit: "cover", position: "top" }).webp({ quality: 78 }).toFile(path.join(OUT, "work", `${slug}.webp`));
-    await sharp(src).resize(960, 600, { fit: "cover", position: "top" }).webp({ quality: 74 }).toFile(path.join(OUT, "work", `${slug}-960.webp`));
-    await sharp(src).resize(640, 400, { fit: "cover", position: "top" }).webp({ quality: 72 }).toFile(path.join(OUT, "work", `${slug}-640.webp`));
-  }
 
   for (const [slug, file] of Object.entries(ads)) {
     const src = path.join(SRC, "Ads I Designed", file);

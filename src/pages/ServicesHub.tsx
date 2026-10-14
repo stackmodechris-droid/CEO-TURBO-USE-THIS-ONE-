@@ -32,7 +32,8 @@ export default function ServicesHub() {
           <div className="mt-10">
             <PathPicker />
           </div>
-          <div className="mt-14 overflow-x-auto">
+          {/* A checkmark matrix can't fit a phone; the picker above covers the same choice there. */}
+          <div className="mt-14 hidden overflow-x-auto sm:block">
             <table className="w-full min-w-[640px] text-left text-sm">
               <caption className="sr-only">Which services fit which type of business</caption>
               <thead>
@@ -49,7 +50,7 @@ export default function ServicesHub() {
                 {SERVICES.map((s) => (
                   <tr key={s.slug} className="border-b border-border/60">
                     <th scope="row" className="py-3 pr-4 font-medium">
-                      <Link to={`/services/${s.slug}`} className="inline-block py-2 hover:text-turbo">
+                      <Link to={`/services/${s.slug}`} className="inline-block py-3 hover:text-turbo sm:py-2">
                         {s.name}
                       </Link>
                     </th>

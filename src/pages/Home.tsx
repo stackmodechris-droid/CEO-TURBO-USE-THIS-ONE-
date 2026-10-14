@@ -66,8 +66,8 @@ export default function Home() {
 
       <section className="pb-16" aria-labelledby="tutorial">
         <div className="container-x">
-          <div className="cta-glow grid items-center gap-8 rounded-3xl p-6 sm:p-10 lg:grid-cols-[1.1fr_0.9fr]">
-            <div>
+          <div className="cta-glow grid grid-cols-1 items-center gap-8 rounded-3xl p-6 sm:p-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="min-w-0">
               <p className="text-sm font-semibold text-ignite">Free tutorial · 8 steps</p>
               <h2 id="tutorial" className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">
                 How to get more customers in 2026 — <span className="text-turbo-grad">step by step.</span>
@@ -77,12 +77,12 @@ export default function Home() {
                 <Link to="/how-to-get-more-customers" className="btn-ignite btn-shine">
                   Start the free tutorial <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link to="/pricing" className="text-sm font-semibold text-turbo underline-offset-4 hover:underline">
+                <Link to="/pricing" className="inline-flex min-h-[44px] items-center justify-center text-sm font-semibold text-turbo underline-offset-4 hover:underline sm:justify-start">
                   Or see the done-for-you packages
                 </Link>
               </div>
             </div>
-            <ul className="grid gap-2.5">
+            <ul className="grid min-w-0 grid-cols-1 gap-2.5">
               {PACKAGES.map((p) => (
                 <li key={p.id} className={cn("flex items-center justify-between gap-4 rounded-2xl px-5 py-4 ring-1", p.popular ? "bg-turbo/[0.08] ring-turbo/50" : "bg-white/[0.03] ring-white/10")}>
                   <span className="min-w-0">

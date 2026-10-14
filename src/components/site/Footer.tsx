@@ -59,9 +59,9 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               <br />
               {SITE.address.addressLocality}, {SITE.address.addressRegion} {SITE.address.postalCode}
               <br />
-              <CallLink location="footer" icon className="mt-1 py-2 font-semibold text-foreground hover:text-turbo" />
+              <CallLink location="footer" icon className="mt-1 min-h-[44px] py-2 font-semibold text-foreground hover:text-turbo" />
               <br />
-              <a href={`mailto:${SITE.email}`} className="inline-block py-2 font-semibold text-foreground hover:text-turbo">{SITE.email}</a>
+              <a href={`mailto:${SITE.email}`} className="inline-block py-3 font-semibold text-foreground hover:text-turbo">{SITE.email}</a>
             </address>
             <SocialLinks className="mt-5" />
           </div>
@@ -129,7 +129,7 @@ function FooterCol({ title, links }: { title: string; links: { to: string; label
       <ul className="mt-3 space-y-0.5">
         {links.map((l) => (
           <li key={l.to}>
-            <Link to={l.to} className="block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
+            <Link to={l.to} className="block py-3 text-sm text-muted-foreground transition-colors hover:text-foreground sm:py-1.5">
               {l.label}
             </Link>
           </li>

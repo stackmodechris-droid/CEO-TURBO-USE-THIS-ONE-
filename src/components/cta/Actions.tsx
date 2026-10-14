@@ -11,7 +11,8 @@ type Variant = "ignite" | "chrome" | "link";
 const variantClass: Record<Variant, string> = {
   ignite: "btn-ignite",
   chrome: "btn-chrome",
-  link: "inline-flex items-center gap-1.5 font-semibold text-turbo underline-offset-4 hover:underline",
+  // Padded hit area (py/-my) makes the link a full-size tap target on phones without changing the line it sits in.
+  link: "-my-3 inline-flex items-center gap-1.5 py-3 font-semibold text-turbo underline decoration-turbo/40 underline-offset-4 hover:decoration-turbo",
 };
 
 /**

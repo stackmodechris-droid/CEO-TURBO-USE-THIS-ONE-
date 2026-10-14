@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CompareTable } from "@/components/blocks/CompareTable";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, MapPin, Smartphone, Star, X } from "lucide-react";
 import { BuyBox } from "@/components/shop/BuyBox";
@@ -83,30 +84,7 @@ export default function ReviewCards() {
       <section className="section border-t border-border" aria-labelledby="compare">
         <div className="container-x">
           <SectionHeader title={<span id="compare">Tap card vs. just asking</span>} lede="Most customers mean it when they say they'll leave a review. The card closes the gap between meaning it and doing it." />
-          <div className="mt-10 overflow-x-auto rounded-2xl border border-border">
-            <table className="w-full min-w-[620px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-border bg-white/[0.02] text-muted-foreground">
-                  <th className="px-5 py-4 font-medium" />
-                  <th className="px-5 py-4 font-semibold text-foreground">Review tap card</th>
-                  <th className="px-5 py-4 font-medium">“Please review us”</th>
-                  <th className="px-5 py-4 font-medium">Paper QR sign</th>
-                </tr>
-              </thead>
-              <tbody>
-                {COMPARE.map(([k, a, b, c]) => (
-                  <tr key={k} className="border-b border-border/60 last:border-0">
-                    <th scope="row" className="px-5 py-4 font-medium">
-                      {k}
-                    </th>
-                    <td className="px-5 py-4 font-semibold text-turbo">{a}</td>
-                    <td className="px-5 py-4 text-muted-foreground">{b}</td>
-                    <td className="px-5 py-4 text-muted-foreground">{c}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CompareTable className="mt-10" head={["", "Review tap card", "“Please review us”", "Paper QR sign"]} rows={COMPARE.map((r) => [...r])} highlight={1} />
         </div>
       </section>
 

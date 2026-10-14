@@ -11,6 +11,10 @@
   html {
     scroll-behavior: smooth;
   }
+  /* Grid items may shrink below their content's width, so one long line can't push a column off a phone screen */
+  .grid > * {
+    min-width: 0;
+  }
   /* Minimum 44px tap targets on all interactive elements */
   button, [role="button"], summary {
     min-height: 44px;
