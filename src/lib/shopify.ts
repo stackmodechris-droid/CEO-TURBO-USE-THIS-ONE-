@@ -2,7 +2,7 @@
 // Talks to the Storefront API with the public token (what the Buy Button SDK does under the hood,
 // without its 100 KB script or its UI). Purchase conversions are tracked on Shopify's side —
 // see docs/tracking-setup.md.
-import { SHOPIFY, type ReviewPack } from "@/config/site";
+import { SHIRT, SHOPIFY, type ReviewPack } from "@/config/site";
 import { attribution } from "@/lib/track";
 
 type Variant = { id: string; availableForSale: boolean; price: { amount: string }; selectedOptions: { name: string; value: string }[] };
@@ -21,25 +21,27 @@ async function gql<T>(query: string, variables: Record<string, unknown>): Promis
   return json.data;
 }
 
-let variantsReq: Promise<Variant[]> | null = null;
+const variantsReq = new Map<string, Promise<Variant[]>>();
 
-/** The product's variants, fetched once (the buy box prefetches this on idle). */
-export function loadVariants() {
-  if (!variantsReq) {
-    variantsReq = gql<{ product: { variants: { nodes: Variant[] } } | null }>(
-      `query Variants($id: ID!) { product(id: $id) { variants(first: 50) { nodes { id availableForSale price { amount } selectedOptions { name value } } } } }`,
-      { id: `gid://shopify/Product/${SHOPIFY.productId}` },
+/** A product's variants, fetched once per product (the buy boxes prefetch this on idle). */
+export function loadVariants(productId: string = SHOPIFY.productId) {
+  let req = variantsReq.get(productId);
+  if (!req) {
+    req = gql<{ product: { variants: { nodes: Variant[] } } | null }>(
+      `query Variants($id: ID!) { product(id: $id) { variants(first: 250) { nodes { id availableForSale price { amount } selectedOptions { name value } } } } }`,
+      { id: `gid://shopify/Product/${productId}` },
     )
       .then((d) => {
         if (!d.product) throw new Error("Product not published to the Buy Button / Headless channel");
         return d.product.variants.nodes;
       })
       .catch((e) => {
-        variantsReq = null;
+        variantsReq.delete(productId);
         throw e;
       });
+    variantsReq.set(productId, req);
   }
-  return variantsReq;
+  return req;
 }
 
 const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -55,18 +57,11 @@ export function findVariant(variants: Variant[], pack: ReviewPack) {
 
 const numericId = (gid: string) => gid.split("/").pop()!;
 
-/**
- * Creates a Shopify cart for the chosen card and returns the checkout URL.
- * Ad click ids and UTMs ride along as cart attributes (visible on the order) and the UTMs
- * are added to the checkout URL so Shopify's own reports attribute the sale.
- */
-export async function createCheckout(pack: ReviewPack, business: string) {
-  const found = findVariant(await loadVariants(), pack);
-  if (!found) throw new Error(`No Shopify variant for ${pack.label}`);
+/** The ad click ids, UTMs and landing page that ride along on every cart (visible on the order). */
+function attributionAttributes(extra: Record<string, string | undefined>) {
   const a = attribution();
-  const attributes = Object.entries({
-    "Business name": business.trim(),
-    Pack: pack.label,
+  return Object.entries({
+    ...extra,
     Landing: a.landing,
     gclid: a.gclid,
     gbraid: a.gbraid,
@@ -83,8 +78,15 @@ export async function createCheckout(pack: ReviewPack, business: string) {
   })
     .filter(([, v]) => v)
     .map(([key, value]) => ({ key, value: String(value).slice(0, 250) }));
+}
 
-  const lines = [{ merchandiseId: found.variant.id, quantity: found.quantity }];
+type CartLine = { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] };
+
+/**
+ * Creates a Shopify cart and returns its checkout URL. UTMs and ad click ids are added to the
+ * checkout URL so Shopify's own reports and the checkout pixels attribute the sale.
+ */
+async function cartCheckout(lines: CartLine[], attributes: { key: string; value: string }[]) {
   let url: string;
   try {
     const d = await gql<{ cartCreate: { cart: { checkoutUrl: string } | null; userErrors: { message: string }[] } }>(
@@ -93,10 +95,13 @@ export async function createCheckout(pack: ReviewPack, business: string) {
     );
     if (!d.cartCreate.cart) throw new Error(d.cartCreate.userErrors[0]?.message || "cartCreate failed");
     url = d.cartCreate.cart.checkoutUrl;
-  } catch {
-    // Cart permalink: works even if the cart mutation is blocked.
-    url = `https://${SHOPIFY.domain}/cart/${numericId(found.variant.id)}:${found.quantity}`;
+  } catch (e) {
+    // Cart permalink: works even if the cart mutation is blocked, but drops line properties —
+    // only used when no line carries any (a custom shirt without its design id can't be printed).
+    if (lines.some((l) => l.attributes?.length)) throw e;
+    url = `https://${SHOPIFY.domain}/cart/${lines.map((l) => `${numericId(l.merchandiseId)}:${l.quantity}`).join(",")}`;
   }
+  const a = attribution();
   const u = new URL(url);
   // Checkout runs on Shopify's domain, where our cookies don't exist. Passing the ad click ids in the URL
   // lets the Facebook & Instagram app (fbclid → _fbc), Google (gclid) and Microsoft (msclkid) pixels on
@@ -106,5 +111,38 @@ export async function createCheckout(pack: ReviewPack, business: string) {
     u.searchParams.set("utm_source", "ceoturbo.com");
     u.searchParams.set("utm_medium", "website");
   }
-  return { url: u.toString(), variantId: numericId(found.variant.id), price: Number(found.variant.price.amount) * found.quantity, available: found.variant.availableForSale };
+  return u.toString();
+}
+
+/** Creates a Shopify cart for the chosen review card pack and returns the checkout URL. */
+export async function createCheckout(pack: ReviewPack, business: string) {
+  const found = findVariant(await loadVariants(), pack);
+  if (!found) throw new Error(`No Shopify variant for ${pack.label}`);
+  const url = await cartCheckout([{ merchandiseId: found.variant.id, quantity: found.quantity }], attributionAttributes({ "Business name": business.trim(), Pack: pack.label }));
+  return { url, variantId: numericId(found.variant.id), price: Number(found.variant.price.amount) * found.quantity, available: found.variant.availableForSale };
+}
+
+/** The variant whose options match every given option value (Style, Color, Size). */
+export function findOptionVariant(variants: Variant[], options: Record<string, string>) {
+  return variants.find((v) => Object.entries(options).every(([name, value]) => v.selectedOptions.some((o) => norm(o.name) === norm(name) && norm(o.value) === norm(value)))) ?? null;
+}
+
+export type ShirtLine = { options: Record<string, string>; quantity: number };
+
+/**
+ * Custom shirt checkout: one cart line per size, each tagged with the design id and print file link
+ * (line item properties show on the order and in the order webhook, so every order maps to its PNG).
+ */
+export async function createShirtCheckout(lines: ShirtLine[], properties: Record<string, string>, business: string) {
+  if (!SHIRT.productId) throw new Error("Shirt product id not set");
+  const variants = await loadVariants(SHIRT.productId);
+  const props = Object.entries(properties)
+    .filter(([, v]) => v)
+    .map(([key, value]) => ({ key, value: value.slice(0, 250) }));
+  const cartLines = lines.map((l) => {
+    const v = findOptionVariant(variants, l.options);
+    if (!v) throw new Error(`No Shopify variant for ${Object.values(l.options).join(" / ")}`);
+    return { merchandiseId: v.id, quantity: l.quantity, attributes: props };
+  });
+  return cartCheckout(cartLines, attributionAttributes({ "Business name": business.trim(), "Design ID": properties["Design ID"] }));
 }

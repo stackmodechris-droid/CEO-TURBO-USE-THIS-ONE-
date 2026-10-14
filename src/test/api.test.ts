@@ -12,6 +12,7 @@ import { deliveryResult, forwardLead } from "../../api/_lib/leads.js";
 import { vi, afterEach } from "vitest";
 import { validSignature, parseBooking } from "../../api/cal-webhook.js";
 import { validSignature as shopifySig, parseOrder } from "../../api/shopify-webhook.js";
+import { cleanDesign, dataUrl } from "../../api/shirt-design.js";
 import { createHash, createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -199,6 +200,25 @@ describe("Booked-call priority score", () => {
   });
 });
 
+describe("custom shirt orders", () => {
+  const png = `data:image/png;base64,${"A".repeat(400)}`;
+  it("accepts a design with a real PNG and drops anything else", () => {
+    const { design, files } = cleanDesign({ designId: "CT-ABCD2345", frontPng: png, style: "Short sleeve", color: "Black", sizes: { M: 2, L: "3", XXL: 9, S: -1 }, total: 139.95, text: "<b>Acme</b>" });
+    expect(design).toMatchObject({ designId: "CT-ABCD2345", sizes: "M×2, L×3", quantity: 5, total: "139.95", backPrint: "No", text: "b Acme /b" });
+    expect(files.front.length).toBe(400);
+    expect(cleanDesign({ designId: "x", frontPng: png }).error).toBe("designId");
+    expect(cleanDesign({ designId: "CT-ABCD2345", frontPng: "data:image/svg+xml;base64,AAAA" }).error).toBe("frontPng");
+    expect(cleanDesign({ designId: "CT-ABCD2345", frontPng: png, backPng: "javascript:alert(1)" }).error).toBe("backPng");
+    expect(dataUrl(`data:image/png;base64,${"A".repeat(200)}"><script>`, "image/png")).toBe("");
+  });
+  it("maps a paid shirt order to its design, sizes and print file", () => {
+    const props = [{ name: "Design ID", value: "CT-ABCD2345" }, { name: "Print file", value: "https://drive.google.com/file/d/x/view" }, { name: "Placement", value: "Center front" }];
+    const r = parseOrder({ id: 7, name: "#1002", email: "x@y.com", total_price: "251.91", currency: "USD", line_items: [{ title: "Custom Company T-Shirt", variant_title: "Short sleeve – Front / Black / M", quantity: 4, properties: props }, { title: "Custom Company T-Shirt", variant_title: "Short sleeve – Front / Black / L", quantity: 5, properties: props }], note_attributes: [{ name: "gclid", value: "g2" }] });
+    expect(r).toMatchObject({ type: "shirt-order", designId: "CT-ABCD2345", placement: "Center front", quantity: 9, gclid: "g2", sizes: "Short sleeve – Front / Black / M × 4; Short sleeve – Front / Black / L × 5" });
+    expect(r.printFile).toContain("drive.google.com");
+  });
+});
+
 describe("leads Apps Script (docs/leads-apps-script.js)", () => {
   const ctx: Record<string, unknown> = {};
   vm.createContext(ctx);
@@ -208,7 +228,7 @@ describe("leads Apps Script (docs/leads-apps-script.js)", () => {
 
   it("routes every lead type to its tab", () => {
     const tabFor = ctx.tabFor as (t: string) => string;
-    expect([tabFor("booking"), tabFor("brand-boost-quiz"), tabFor("audit-business"), tabFor("shopify-order"), tabFor("zzz")]).toEqual(["Booked Calls", "Call Quiz Leads", "Free Check Leads", "Card Orders", "Other Leads"]);
+    expect([tabFor("booking"), tabFor("brand-boost-quiz"), tabFor("audit-business"), tabFor("shopify-order"), tabFor("shirt-design"), tabFor("shirt-order"), tabFor("zzz")]).toEqual(["Booked Calls", "Call Quiz Leads", "Free Check Leads", "Card Orders", "Shirt Designs", "Shirt Orders", "Other Leads"]);
   });
 
   it("has unique headers per tab and a Status dropdown for the call tabs", () => {
@@ -223,6 +243,15 @@ describe("leads Apps Script (docs/leads-apps-script.js)", () => {
     const sent = Object.keys(parseBooking({ payload: { uid: "u" } })).concat(["type", "event", "priority", "score", "receivedAt", "meetingLink", "endTime", "landing", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "msclkid", "fbclid", "ttclid"]);
     const known = new Set([...sent, "startTime", "name", "email", "phone"]);
     for (const [header, field] of Object.entries(TABS["Booked Calls"])) if (field) expect(known.has(field), `${header} ← ${field}`).toBe(true);
+  });
+
+  it("fills the shirt tabs from fields the site actually sends", () => {
+    const design = cleanDesign({ designId: "CT-ABCD2345", frontPng: `data:image/png;base64,${"A".repeat(400)}` }).design!;
+    const order = parseOrder({ id: 1, line_items: [{ title: "Custom Company T-Shirt", properties: [{ name: "Design ID", value: "CT-ABCD2345" }] }] });
+    const added = ["type", "receivedAt", "landing", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "msclkid", "fbclid", "ttclid"];
+    const fromScript = ["preview", "frontUrl", "backUrl", "mockupUrl", "orderNumber"];
+    for (const [tab, sent] of [["Shirt Designs", [...Object.keys(design), ...added, ...fromScript]], ["Shirt Orders", [...Object.keys(order), ...added]]] as const)
+      for (const [header, field] of Object.entries(TABS[tab])) if (field) expect(sent, `${tab}: ${header} ← ${field}`).toContain(field);
   });
 
   it("builds a dashboard that only references real columns", () => {

@@ -87,7 +87,13 @@ type Saved = { answers: Answers; step: QuizStep; quizId: string; startedAt: numb
 function load(): Saved | null {
   try {
     const s = JSON.parse(localStorage.getItem(STORE) || "null") as Saved | null;
-    return s && s.answers && s.step ? { ...s, answers: { ...EMPTY_ANSWERS, ...s.answers } } : null;
+    if (!s || !s.answers || !s.step) return null;
+    // Answers saved by an older quiz (or edited by hand) would crash the goal/blocker lookups: start fresh instead.
+    const { audience, stage } = s.answers;
+    if (audience && !STAGES[audience]) return null;
+    if (stage && !STAGES[audience ?? "local"].some((x) => x.id === stage)) return null;
+    if (s.step !== "result" && !QUIZ_STEPS.includes(s.step)) return null;
+    return { ...s, answers: { ...EMPTY_ANSWERS, ...s.answers } };
   } catch {
     return null;
   }
@@ -638,7 +644,8 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
         </p>
       </div>
 
-      <div className="relative mt-4 min-h-[520px] overflow-hidden rounded-2xl bg-black/20 ring-1 ring-white/5">
+      {/* Only reserve height while loading: Cal.com sizes its iframe to the calendar, so a fixed min-height left an empty block under it. */}
+      <div className={cn("relative mt-4 overflow-hidden rounded-2xl ring-1 ring-white/5", cal === "ready" ? "bg-transparent" : "min-h-[520px] bg-black/20")}>
         {cal !== "ready" && (
           <div className="absolute inset-0 z-10 grid place-items-center p-6 text-center">
             <div>
@@ -649,7 +656,7 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
             </div>
           </div>
         )}
-        <div id={calId} className="relative h-full min-h-[520px] w-full overflow-auto" />
+        <div id={calId} className={cn("relative w-full", cal !== "ready" && "min-h-[520px]")} />
       </div>
       <p className="mt-2 text-center text-xs text-muted-foreground">
         Calendar not showing?{" "}

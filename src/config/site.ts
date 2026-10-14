@@ -153,3 +153,82 @@ export const NFC_APP = {
   ios: "https://apps.apple.com/us/app/nfc-tools/id1252962749",
   android: "https://play.google.com/store/apps/details?id=com.wakdev.wdnfc",
 } as const;
+
+/**
+ * Custom company T-shirts, printed (full-color DTF transfers, heat-pressed) and shipped by CEO Turbo
+ * from Atlanta — docs/company-shirts.md has the in-house workflow. Checkout is the same headless Shopify
+ * flow as the review cards. Shopify allows 3 options, so the product has Style (sleeves + print sides,
+ * see `shirtStyleOption`), Color and Size; every variant price matches `shirtUnitPrice` below
+ * (docs/company-shirts.md).
+ * Team pricing (12+ / 24+) is a Shopify automatic discount, applied at checkout.
+ */
+export type ShirtStyle = "short" | "long";
+export type ShirtColor = { id: string; name: string; hex: string; dark: boolean };
+export type ShirtSize = "S" | "M" | "L" | "XL" | "2XL" | "3XL";
+
+export const SHIRT = {
+  name: "Custom Company T-Shirt",
+  sku: "CT-TEE",
+  currency: "USD",
+  /** Shopify product "Custom Company T-Shirts With Your Logo" (handle custom-company-t-shirts). */
+  productId: "15418511327467",
+  styles: [
+    { id: "short" as const, label: "Short sleeve", shopifyOption: "Short sleeve", price: 27.99, blank: "Gildan 64000 Softstyle (or equal) — 100% ring-spun cotton" },
+    { id: "long" as const, label: "Long sleeve", shopifyOption: "Long sleeve", price: 34.99, blank: "Gildan 64400 Softstyle long sleeve (or equal) — 100% ring-spun cotton" },
+  ],
+  colors: [
+    { id: "black", name: "Black", hex: "#141518", dark: true },
+    { id: "white", name: "White", hex: "#f7f7f5", dark: false },
+    { id: "navy", name: "Navy", hex: "#1f2a44", dark: true },
+    { id: "heather", name: "Sport Grey", hex: "#a9acb1", dark: false },
+  ] as ShirtColor[],
+  sizes: ["S", "M", "L", "XL", "2XL", "3XL"] as ShirtSize[],
+  /** Bigger blanks cost more to print. */
+  plusSizeUpcharge: 3,
+  plusSizes: ["2XL", "3XL"] as ShirtSize[],
+  /** A second print on the back (website, phone, "STAFF"…). */
+  backPrintPrice: 8,
+  /** Shown on the page and set as a Shopify automatic discount (docs/company-shirts.md). */
+  tiers: [
+    { min: 1, off: 0, label: "1–11 shirts", note: "No minimum — order 1" },
+    { min: 12, off: 0.1, label: "12–23 shirts", note: "Save 10% — a small team" },
+    { min: 24, off: 0.15, label: "24+ shirts", note: "Save 15% — the whole crew" },
+  ],
+  shipping: {
+    label: "Free US shipping",
+    /** Printed to order, then shipped. */
+    /** Pressed and packed in-house in Atlanta. */
+    production: "Pressed and shipped from Atlanta in 2–3 business days",
+    delivery: "Arrives 2–5 business days after it ships (USPS)",
+    minDays: 4,
+    maxDays: 8,
+  },
+  returnDays: 30,
+  guarantee: "Misprint, wrong size from us or damaged in shipping? Tell us within 30 days of delivery with a photo and we reprint it free.",
+} as const;
+
+/** Price of one shirt before any team discount. */
+export function shirtUnitPrice(style: ShirtStyle, size: ShirtSize, back: boolean) {
+  const s = SHIRT.styles.find((x) => x.id === style)!;
+  const plus = SHIRT.plusSizes.includes(size) ? SHIRT.plusSizeUpcharge : 0;
+  return +(s.price + plus + (back ? SHIRT.backPrintPrice : 0)).toFixed(2);
+}
+
+/** The team-pricing tier for a total shirt count. */
+export const shirtTier = (qty: number) => [...SHIRT.tiers].reverse().find((t) => qty >= t.min) ?? SHIRT.tiers[0];
+
+/** Order total: sum of unit prices, less the tier discount (what Shopify charges at checkout). */
+export function shirtTotal(style: ShirtStyle, back: boolean, sizes: Partial<Record<ShirtSize, number>>) {
+  const qty = Object.values(sizes).reduce((n, q) => n + (q || 0), 0);
+  const subtotal = +Object.entries(sizes).reduce((n, [size, q]) => n + shirtUnitPrice(style, size as ShirtSize, back) * (q || 0), 0).toFixed(2);
+  const tier = shirtTier(qty);
+  const discount = +(subtotal * tier.off).toFixed(2);
+  return { qty, subtotal, discount, total: +(subtotal - discount).toFixed(2), tier };
+}
+
+/** The Shopify "Style" option value: sleeves and print sides, e.g. "Short sleeve – Front + back". */
+export const shirtStyleOption = (style: ShirtStyle, back: boolean) => `${SHIRT.styles.find((s) => s.id === style)!.shopifyOption} – ${back ? "Front + back" : "Front"}`;
+
+/** SKU per style/print, shared by Shopify, JSON-LD and ad events (CT-TEE-SS, CT-TEE-LS-FB …). */
+export const shirtSku = (style: ShirtStyle, back: boolean) => `${SHIRT.sku}-${style === "short" ? "SS" : "LS"}${back ? "-FB" : ""}`;
+export const shirtFromPrice = Math.min(...SHIRT.styles.map((s) => s.price));

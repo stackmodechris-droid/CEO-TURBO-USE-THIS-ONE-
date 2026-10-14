@@ -137,10 +137,67 @@ const TABS = {
     ATTR,
     { "Form page": "page", "Order ID": "orderId", "Event ID": "eventId" }
   ),
+  // Custom company shirts (/custom-company-t-shirts). Every finished design lands here with its print-ready
+  // PNG saved to Google Drive; when it's paid, Status flips to "Paid" and the order number is filled in.
+  "Shirt Designs": Object.assign(
+    {
+      Received: "receivedAt",
+      "Design ID": "designId",
+      Preview: "preview",
+      Status: "",
+      "Order #": "orderNumber",
+      Style: "style",
+      Color: "color",
+      Placement: "placement",
+      "Back print": "backPrint",
+      Sizes: "sizes",
+      Quantity: "quantity",
+      "Total $": "total",
+      "Front text": "text",
+      "Small line": "subtext",
+      "Back text": "backText",
+      "Front print file": "frontUrl",
+      "Back print file": "backUrl",
+      Mockup: "mockupUrl",
+      "Print DPI": "dpi",
+      "Logo file": "logoName",
+      Company: "business",
+    },
+    ATTR,
+    { "Form page": "page" }
+  ),
+  // Paid shirt orders = the press queue: add each "New" row's print file to your next DTF gang sheet
+  // (× the quantity), press, pack, ship — moving Status along and pasting the tracking number.
+  "Shirt Orders": Object.assign(
+    {
+      Received: "receivedAt",
+      "Order #": "orderNumber",
+      Status: "",
+      "Gang sheet / transfer order #": "",
+      Tracking: "",
+      Name: "name",
+      Email: "email",
+      Phone: "phone",
+      Company: "business",
+      "Sizes (style / color / size / print × qty)": "sizes",
+      Quantity: "quantity",
+      Total: "total",
+      "Design ID": "designId",
+      "Print file": "printFile",
+      Placement: "placement",
+      "Front text": "frontText",
+      "Back text": "backText",
+      "Ship to": "shipTo",
+      Payment: "paymentStatus",
+      Note: "note",
+    },
+    ATTR,
+    { "Order ID": "orderId" }
+  ),
   "Other Leads": Object.assign({ Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Company: "business", Type: "type", Note: "note" }, ATTR, { "Form page": "page" }),
 };
 
-const TYPE_LABEL = { "audit-business": "Business", "audit-artist": "Artist", "order-request": "Order request", "shopify-order": "Paid order", "brand-boost-quiz": "Call quiz" };
+const TYPE_LABEL = { "audit-business": "Business", "audit-artist": "Artist", "order-request": "Order request", "shopify-order": "Paid order", "shirt-order": "Shirt order", "brand-boost-quiz": "Call quiz" };
 
 // Status dropdowns + colors for the two call tabs: [value, background, text]
 const STATUS = {
@@ -152,6 +209,19 @@ const STATUS = {
     ["Rescheduled", "#fff2b3", "#6b5200"],
     ["Won", "#a8e6a8", "#0f4d0f"],
     ["Lost", "#e3e3e3", "#555555"],
+  ],
+  "Shirt Orders": [
+    ["New", "#ffd8b3", "#7a3b00"],
+    ["Transfers ordered", "#fff2b3", "#6b5200"],
+    ["Pressed & packed", "#cce0ff", "#1a3a6b"],
+    ["Shipped", "#d4edda", "#1e5631"],
+    ["Delivered", "#a8e6a8", "#0f4d0f"],
+    ["Issue", "#f8c9c9", "#7a1212"],
+  ],
+  "Shirt Designs": [
+    ["Designed", "#e8eef7", "#44546a"],
+    ["Paid", "#ffd8b3", "#7a3b00"],
+    ["Shipped", "#d4edda", "#1e5631"],
   ],
   "Call Quiz Leads": [
     ["New", "#cce0ff", "#1a3a6b"],
@@ -167,7 +237,73 @@ function tabFor(type) {
   if (type === "brand-boost-quiz") return "Call Quiz Leads";
   if (String(type).indexOf("audit") === 0) return "Free Check Leads";
   if (type === "order-request" || type === "shopify-order") return "Card Orders";
+  if (type === "shirt-design") return "Shirt Designs";
+  if (type === "shirt-order") return "Shirt Orders";
   return "Other Leads";
+}
+
+/* ───────────────────────── custom shirts: print files in Drive ───────────────────────── */
+
+const DESIGN_FOLDER = "CEO Turbo Shirt Designs";
+
+function designFolder_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty("DESIGN_FOLDER_ID");
+  if (id) {
+    try {
+      return DriveApp.getFolderById(id);
+    } catch (e) {}
+  }
+  const found = DriveApp.getFoldersByName(DESIGN_FOLDER);
+  const folder = found.hasNext() ? found.next() : DriveApp.createFolder(DESIGN_FOLDER);
+  props.setProperty("DESIGN_FOLDER_ID", folder.getId());
+  return folder;
+}
+
+/** Saves one base64 file and returns its link (anyone with the link can view, so the print partner can fetch it). */
+function saveFile_(folder, b64, type, name) {
+  if (!b64) return "";
+  const file = folder.createFile(Utilities.newBlob(Utilities.base64Decode(b64), type, name));
+  try {
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  } catch (e) {
+    // Some Google Workspace accounts block link sharing; the file is still in your Drive.
+  }
+  return file.getUrl();
+}
+
+/** Stores the design's files in Drive and puts their links (and a preview) on the record. */
+function saveDesignFiles_(data) {
+  const folder = designFolder_();
+  const id = String(data.designId || "design");
+  data.frontUrl = saveFile_(folder, data.frontPng, "image/png", id + "-front.png");
+  data.backUrl = saveFile_(folder, data.backPng, "image/png", id + "-back.png");
+  data.mockupUrl = saveFile_(folder, data.mockupJpg, "image/jpeg", id + "-mockup.jpg");
+  const fileId = (data.mockupUrl || data.frontUrl).match(/[-\w]{25,}/);
+  if (fileId) data.preview = '=IMAGE("https://drive.google.com/thumbnail?id=' + fileId[0] + '&sz=w400")';
+  delete data.frontPng;
+  delete data.backPng;
+  delete data.mockupJpg;
+}
+
+/** A paid shirt order: mark its design row Paid with the order number. */
+function markDesignPaid_(book, data) {
+  const sheet = book.getSheetByName("Shirt Designs");
+  if (!sheet || sheet.getLastRow() < 2 || !data.designId) return;
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const col = function (h) {
+    return headers.indexOf(h) + 1;
+  };
+  if (col("Design ID") < 1) return;
+  const ids = sheet.getRange(2, col("Design ID"), sheet.getLastRow() - 1, 1).getValues();
+  for (let i = ids.length - 1; i >= 0; i--) {
+    if (String(ids[i][0]) !== String(data.designId)) continue;
+    if (col("Status") > 0) sheet.getRange(i + 2, col("Status")).setValue("Paid");
+    if (col("Order #") > 0) sheet.getRange(i + 2, col("Order #")).setValue(data.orderNumber || "");
+    // The order row gets the print file even when the cart couldn't carry the link.
+    if (!data.printFile && col("Front print file") > 0) data.printFile = sheet.getRange(i + 2, col("Front print file")).getValue();
+    return;
+  }
 }
 
 /** When someone books, mark their quiz row as booked (matched by Quiz ID, else by email). */
@@ -251,6 +387,8 @@ function doPost(e) {
     const dedupe =
       name === "Booked Calls" ? ["Booking ID", data.uid]
       : name === "Card Orders" && data.type === "shopify-order" ? ["Order ID", data.orderId]
+      : name === "Shirt Orders" ? ["Order ID", data.orderId]
+      : name === "Shirt Designs" ? ["Design ID", data.designId]
       : data.eventId ? ["Event ID", data.eventId]
       : null;
     if (dedupe && dedupe[1]) {
@@ -262,8 +400,10 @@ function doPost(e) {
     }
 
     if (name === "Call Quiz Leads") data.booked = "No";
+    if (name === "Shirt Designs") saveDesignFiles_(data);
+    if (name === "Shirt Orders") markDesignPaid_(book, data);
     const row = headers.map(function (h) {
-      if (h === "Status") return "New";
+      if (h === "Status") return name === "Shirt Designs" ? "Designed" : "New";
       const field = map[h];
       return field ? display(field, data[field]) : "";
     });
@@ -271,8 +411,12 @@ function doPost(e) {
     if (next > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), 500);
     sheet.getRange(next, 1, 1, row.length).setValues([row]);
     if (name === "Booked Calls") markQuizBooked(book, data);
+    if (name === "Shirt Designs") sheet.setRowHeight(next, 110);
     // Optional: email yourself every lead
     // MailApp.sendEmail("you@example.com", "New lead: " + data.name, JSON.stringify(data, null, 2));
+    // A new paid shirt order: email yourself so it goes to the printer the same day.
+    // if (name === "Shirt Orders") MailApp.sendEmail("you@example.com", "Shirt order " + data.orderNumber + " — add to the next gang sheet", data.sizes + "\n" + data.printFile);
+    if (name === "Shirt Designs") return ContentService.createTextOutput(JSON.stringify({ ok: true, front: data.frontUrl, back: data.backUrl, mockup: data.mockupUrl }));
     return ContentService.createTextOutput("ok");
   } finally {
     lock.releaseLock();

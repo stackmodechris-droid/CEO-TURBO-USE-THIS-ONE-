@@ -1,6 +1,7 @@
 // POST /api/shopify-webhook — Shopify → "Order payment" webhook.
-// Adds every paid review-card order (with the ad click ids and UTMs the site attached to the cart)
-// to the leads Google Sheet, "Card Orders" tab. Meta's Purchase comes from the Facebook & Instagram
+// Adds every paid order (with the ad click ids and UTMs the site attached to the cart) to the leads
+// Google Sheet: review cards on the "Card Orders" tab, custom shirts on "Shirt Orders" with their
+// Design ID, sizes and print file link (the Apps Script marks the design row Paid). Meta's Purchase comes from the Facebook & Instagram
 // app, so this endpoint deliberately does NOT send anything to Meta (it would double count).
 // Setup: Shopify admin → Settings → Notifications → Webhooks → Create webhook:
 //   Event "Order payment", format JSON, URL https://www.ceoturbo.com/api/shopify-webhook,
@@ -43,9 +44,25 @@ export function parseOrder(o) {
   const items = (Array.isArray(o.line_items) ? o.line_items : []).map((li) => `${li.quantity || 1} x ${str(li.title, 80)}${li.variant_title ? ` (${str(li.variant_title, 60)})` : ""}`);
   const qty = (Array.isArray(o.line_items) ? o.line_items : []).reduce((n, li) => n + (Number(li.quantity) || 0), 0);
   const name = str(ship.name || bill.name || [cust.first_name, cust.last_name].filter(Boolean).join(" "), 100);
+  // Custom shirts: every cart line carries the design's properties (Design ID, Print file…), see src/lib/shopify.ts.
+  const lines = Array.isArray(o.line_items) ? o.line_items : [];
+  const props = (li) => Object.fromEntries((Array.isArray(li?.properties) ? li.properties : []).map((p) => [str(p?.name, 60), str(p?.value, 300)]));
+  const shirtLines = lines.filter((li) => props(li)["Design ID"] || /company t-shirt/i.test(String(li?.title || "")));
+  const design = shirtLines.length ? props(shirtLines[0]) : {};
   const shipTo = [ship.address1, ship.city, ship.province_code, ship.zip, ship.country_code].map((x) => str(x, 80)).filter(Boolean).join(", ");
   return {
-    type: "shopify-order",
+    type: shirtLines.length ? "shirt-order" : "shopify-order",
+    ...(shirtLines.length
+      ? {
+          designId: design["Design ID"] || notes["Design ID"] || "",
+          printFile: design["Print file"] || "",
+          placement: design.Placement || "",
+          frontText: design["Front text"] || "",
+          backText: design["Back text"] || "",
+          // "Short sleeve – Front / Black / L × 3; …" — what to submit to the print partner.
+          sizes: shirtLines.map((li) => `${str(li.variant_title, 80) || str(li.title, 80)} × ${Number(li.quantity) || 1}`).join("; "),
+        }
+      : {}),
     orderId: str(o.id, 40),
     orderNumber: str(o.name || o.order_number, 20),
     name,

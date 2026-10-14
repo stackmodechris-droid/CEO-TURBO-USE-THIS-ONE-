@@ -20,6 +20,9 @@
     },
     "api/track.js": {
       "maxDuration": 10
+    },
+    "api/shirt-design.js": {
+      "maxDuration": 40
     }
   },
   "redirects": [

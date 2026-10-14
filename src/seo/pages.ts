@@ -7,6 +7,7 @@ import { AUDIENCES } from "@/content/audiences";
 import { GUIDES, guideImage, guidePath } from "@/content/guides";
 import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS, ADS_NOT_CONVERTING_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
+import { SHIRT_FAQS, SHIRTS_PATH } from "@/content/company-shirts";
 import { PRICING_FAQS, price } from "@/content/pricing";
 import * as S from "./schema";
 
@@ -104,6 +105,17 @@ function build(): PageMeta[] {
     changefreq: "weekly",
     group: "Core",
     schema: [...base(), S.webPage(SHOP_PATH, "Google review cards", "NFC Google review cards", "ItemPage"), S.reviewCardProduct(), S.breadcrumbs([{ name: "Google review cards", path: SHOP_PATH }]), S.faqPage(SHOP_FAQS, SHOP_PATH)],
+  });
+
+  pages.push({
+    path: SHIRTS_PATH,
+    title: "Custom Company T-Shirts With Your Logo, No Minimum | CEO Turbo",
+    description: "Design company shirts with your logo in 2 minutes. Short & long sleeve, no minimum, from $27.99 with free US shipping. 15% off 24+ for your team.",
+    ogImage: "/og/company-shirts.jpg",
+    priority: 0.9,
+    changefreq: "weekly",
+    group: "Core",
+    schema: [...base(), S.webPage(SHIRTS_PATH, "Custom company t-shirts", "Company t-shirts with your logo, designed online", "ItemPage"), S.shirtProduct(), S.breadcrumbs([{ name: "Custom company t-shirts", path: SHIRTS_PATH }]), S.faqPage(SHIRT_FAQS, SHIRTS_PATH)],
   });
 
   pages.push({

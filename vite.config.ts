@@ -12,7 +12,7 @@ type Handler = (req: IncomingMessage, res: ServerResponse) => Promise<void>;
 function localApi(): Plugin {
   const mount = (middlewares: Connect.Server, load: (file: string) => Promise<{ default: Handler }>) => {
     middlewares.use(async (req, res, next) => {
-      const route = req.url?.match(/^\/api\/(audit|lead|cal-webhook|track)(?:\?|$)/)?.[1];
+      const route = req.url?.match(/^\/api\/(audit|lead|cal-webhook|track|shirt-design)(?:\?|$)/)?.[1];
       if (!route) return next();
       try {
         const mod = await load(path.resolve(__dirname, `api/${route}.js`));

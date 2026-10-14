@@ -1,6 +1,7 @@
 // JSON-LD builders. Every node references the shared Organization/Person/WebSite
 // by @id so search engines and AI systems see one consistent entity graph.
-import { SITE, BOOKING, REVIEW_CARD, PITCH_VIDEO, packPath, packSku } from "@/config/site";
+import { SITE, BOOKING, REVIEW_CARD, PITCH_VIDEO, SHIRT, packPath, packSku, shirtSku } from "@/config/site";
+import { SHIRTS_PATH } from "@/content/company-shirts";
 import { SHOP_PATH } from "@/content/review-cards";
 import type { FAQ, Service } from "@/content/services";
 import type { Client } from "@/content/clients";
@@ -232,6 +233,63 @@ export const reviewCardProduct = (): JsonLd => ({
     brand: { "@type": "Brand", name: SITE.name },
     offers: cardOffer(p),
   })),
+});
+
+const SHIRT_DESCRIPTION =
+  "Custom company t-shirts with your logo, designed online with a live preview. Short and long sleeve, 100% ring-spun cotton, Black, White, Navy or Sport Grey, unisex S–3XL. Full-color DTF transfer, heat-pressed in Atlanta, up to 12 × 16 in on the front (or a 4 × 4 in left-chest logo) plus an optional back print. No minimum order, 10% off 12+ and 15% off 24+, free US shipping.";
+
+/** Custom shirt product group: one variant per sleeve style × print (prices from SHIRT, sizes S–3XL). */
+export const shirtProduct = (): JsonLd => ({
+  "@type": "ProductGroup",
+  "@id": `${abs(SHIRTS_PATH)}#product`,
+  name: SHIRT.name,
+  productGroupID: SHIRT.sku,
+  description: SHIRT_DESCRIPTION,
+  image: ["shirt-black-front.jpg", "shirt-long-navy.jpg", "shirt-back.jpg", "shirt-colors.jpg"].map((f) => abs(`/img/shirts/${f}`)),
+  brand: { "@type": "Brand", name: SITE.name },
+  category: "Apparel & Accessories > Clothing > Shirts & Tops",
+  material: "Cotton",
+  url: abs(SHIRTS_PATH),
+  variesBy: ["https://schema.org/color", "https://schema.org/size", "https://schema.org/pattern"],
+  hasVariant: SHIRT.styles.flatMap((s) =>
+    [false, true].map((back) => ({
+      "@type": "Product",
+      sku: shirtSku(s.id, back),
+      name: `${SHIRT.name} – ${s.label}${back ? " – Front + back print" : ""}`,
+      description: SHIRT_DESCRIPTION,
+      image: abs(s.id === "long" ? "/img/shirts/shirt-long-navy.jpg" : "/img/shirts/shirt-black-front.jpg"),
+      color: SHIRT.colors.map((c) => c.name).join(", "),
+      size: SHIRT.sizes.join(", "),
+      offers: {
+        "@type": "Offer",
+        url: abs(`${SHIRTS_PATH}?style=${s.id}`),
+        price: (s.price + (back ? SHIRT.backPrintPrice : 0)).toFixed(2),
+        priceCurrency: SHIRT.currency,
+        availability: "https://schema.org/InStock",
+        itemCondition: "https://schema.org/NewCondition",
+        seller: { "@id": ORG_ID },
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingRate: { "@type": "MonetaryAmount", value: 0, currency: SHIRT.currency },
+          shippingDestination: { "@type": "DefinedRegion", addressCountry: "US" },
+          deliveryTime: {
+            "@type": "ShippingDeliveryTime",
+            handlingTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 3, unitCode: "DAY" },
+            transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
+          },
+        },
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "US",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: SHIRT.returnDays,
+          returnMethod: "https://schema.org/ReturnByMail",
+          returnFees: "https://schema.org/FreeReturn",
+          refundType: "https://schema.org/FullRefund",
+        },
+      },
+    })),
+  ),
 });
 
 export const auditTool = (): JsonLd => ({
