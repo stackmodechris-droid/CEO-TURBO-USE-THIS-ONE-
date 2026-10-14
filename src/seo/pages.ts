@@ -3,7 +3,7 @@
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CLIENTS } from "@/content/clients";
 import { SERVICES } from "@/content/services";
-import { AUDIENCES } from "@/content/audiences";
+import { AUDIENCES, PRODUCERS, VISUAL_ARTISTS } from "@/content/audiences";
 import { GUIDES, guideImage, guidePath } from "@/content/guides";
 import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS, ADS_NOT_CONVERTING_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
@@ -47,13 +47,13 @@ function build(): PageMeta[] {
     schema: [...base(), S.webPage("/", "CEO Turbo", SITE.description), S.brandBoost(), S.video("/"), S.auditTool(), S.faqPage(HOME_FAQS, "/")],
   });
 
-  for (const a of AUDIENCES) {
+  for (const a of [...AUDIENCES, PRODUCERS, VISUAL_ARTISTS]) {
     const path = `/${a.slug}`;
     pages.push({
       path,
       title: suffix(a.metaTitle),
       description: a.metaDescription,
-      ogImage: `/og/${a.slug}.jpg`,
+      ogImage: `/og/${a.slug === "producers" || a.slug === "visual-artists" ? "artist" : a.slug}.jpg`,
       priority: 0.9,
       changefreq: "monthly",
       group: "Audiences",

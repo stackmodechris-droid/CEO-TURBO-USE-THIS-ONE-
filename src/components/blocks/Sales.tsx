@@ -10,6 +10,7 @@ import { BookButton } from "@/components/cta/Actions";
 import { SCENES } from "@/components/visuals/Scenes";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
+import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
 import { BrandBoostQuiz } from "@/components/quiz/BrandBoostQuiz";
 import { track } from "@/lib/track";
 
@@ -54,7 +55,8 @@ export function PathPicker() {
   );
 }
 
-export function ServiceGrid({ slugs }: { slugs?: string[] }) {
+/** `cards={false}` hides the review-card tile (it makes no sense on artist and producer pages). */
+export function ServiceGrid({ slugs, cards = true }: { slugs?: string[]; cards?: boolean }) {
   const list = slugs ? slugs.map((s) => SERVICES.find((x) => x.slug === s)!).filter(Boolean) : SERVICES;
   return (
     <ul className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(3n+1)]:col-span-3 lg:[&>*:last-child:nth-child(3n+2)]:col-span-2">
@@ -73,6 +75,7 @@ export function ServiceGrid({ slugs }: { slugs?: string[] }) {
           </li>
         );
       })}
+      {cards && (
       <li className="bg-background">
         <Link to={SHOP_PATH} className="group flex h-full flex-col p-6 transition-colors hover:bg-white/[0.025]">
           <span className="text-sm font-semibold text-ignite">From {fromPriceLabel}</span>
@@ -83,6 +86,19 @@ export function ServiceGrid({ slugs }: { slugs?: string[] }) {
           </span>
         </Link>
       </li>
+      )}
+      {!slugs && (
+        <li className="bg-background">
+          <Link to={SHIRTS_PATH} className="group flex h-full flex-col p-6 transition-colors hover:bg-white/[0.025]">
+            <span className="text-sm font-semibold text-ignite">From {shirtFromLabel} · no minimum</span>
+            <h3 className="mt-3 text-lg font-semibold tracking-tight">Custom company t-shirts</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Upload your logo, preview it on the shirt, and we press and ship it from Atlanta.</p>
+            <span className="mt-auto pt-5 text-sm font-medium text-foreground/70 group-hover:text-turbo">
+              Design your shirt <span aria-hidden>›</span>
+            </span>
+          </Link>
+        </li>
+      )}
     </ul>
   );
 }

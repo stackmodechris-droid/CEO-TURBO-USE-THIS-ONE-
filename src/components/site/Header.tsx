@@ -20,7 +20,9 @@ const MENUS: Menu[] = [
     to: "/local-business",
     items: [
       { to: "/local-business", label: "Local businesses", sub: "More calls, more 5-star reviews" },
-      { to: "/artist", label: "Artists & producers", sub: "More listeners, fans and bookings" },
+      { to: "/artist", label: "Artists", sub: "More listeners, shows, features and merch" },
+      { to: "/producers", label: "Producers & beatmakers", sub: "Sell more beats, custom tracks and sessions" },
+      { to: "/visual-artists", label: "Painters & visual artists", sub: "Sell originals, prints and commissions" },
       { to: "/shopify", label: "Shopify & online stores", sub: "More traffic that actually buys" },
       { to: "/atlanta", label: "Atlanta businesses", sub: "Local, founder-led growth" },
       { to: "/app-marketing", label: "Software & app developers", sub: "More users & installs, zero fluff" },
@@ -30,7 +32,7 @@ const MENUS: Menu[] = [
     label: "Services",
     to: "/services",
     wide: true,
-    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
+    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}` }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
   },
   {
     label: "Results",
