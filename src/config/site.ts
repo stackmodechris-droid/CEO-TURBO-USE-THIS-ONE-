@@ -70,7 +70,7 @@ export const SITE = {
 export const BOOKING = {
   calLink: "stackmodechris/ceoturbo-brandboost",
   url: "https://cal.com/stackmodechris/ceoturbo-brandboost",
-  namespace: "brandboost",
+  namespace: "ceoturbo-brandboost",
   name: "Brand Boost call",
   length: "30 min",
 } as const;

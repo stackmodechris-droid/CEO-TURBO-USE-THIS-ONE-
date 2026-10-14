@@ -597,9 +597,9 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
   useEffect(() => {
     if (booked) return;
     let live = true;
-    // A calendar that never confirms it loaded keeps the booking button up; a late "ready" still swaps it in.
-    const off = onLinkStatus(QUIZ_NS, (s) => live && s === "ready" && setCal("ready"));
-    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((r) => live && setCal((c) => (c === "ready" || r === "ready" ? "ready" : "failed")));
+    // Cal.com shows its own loader inside the box; only a real failure (script blocked, booking page error) swaps in the button.
+    const off = onLinkStatus(QUIZ_NS, (s) => live && setCal(s));
+    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((r) => live && r !== "timeout" && setCal((c) => (c === "ready" ? "ready" : r)));
     return () => {
       live = false;
       off();
@@ -646,10 +646,10 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
 
       {/* Only reserve height while loading: Cal.com sizes its iframe to the calendar, so a fixed min-height left an empty block under it. */}
       <div className={cn("relative mt-4 overflow-hidden rounded-2xl ring-1 ring-white/5", cal === "ready" ? "bg-transparent" : "min-h-[520px] bg-black/20")}>
-        {cal !== "ready" && (
+        {cal === "failed" && (
           <div className="absolute inset-0 z-10 grid place-items-center p-6 text-center">
             <div>
-              <p className="text-sm text-muted-foreground">{cal === "failed" ? "Tap below to pick your time on our booking page." : "Loading open times…"}</p>
+              <p className="text-sm text-muted-foreground">Tap below to pick your time on our booking page.</p>
               <a href={pageUrl} onClick={directClick} className="btn-ignite mt-4">
                 Pick my call time <ArrowRight className="h-4 w-4" aria-hidden />
               </a>
