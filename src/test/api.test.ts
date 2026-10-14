@@ -199,6 +199,32 @@ describe("Meta Parameter Builder (server)", () => {
   });
 });
 
+describe("Meta IPv6 and untouched click ids", () => {
+  const v6 = "2a03:2880:f12f:83:face:b00c:0:25de";
+
+  it("prefers the browser's IPv6 from _fbi over the IPv4 the server sees", () => {
+    const req = { headers: { host: "www.ceoturbo.com", cookie: `_fbp=fb.1.1700000000000.1; _fbi=${v6}.AQYBAQIA`, referer: "https://www.ceoturbo.com/", "x-forwarded-for": "8.8.8.8" }, url: "/api/track", method: "POST", socket: { remoteAddress: "8.8.8.8" } };
+    const sig = requestSignals(req, { setHeader: () => {} });
+    expect(sig.ip.startsWith(v6)).toBe(true);
+    const e = buildEvent({ eventName: "PageView", attribution: {}, ip: sig.ip });
+    expect(String(e.user_data.client_ip_address).startsWith(v6)).toBe(true);
+  });
+
+  it("uses the stored IPv6 when a webhook has no request IP, and ignores junk", () => {
+    expect(buildEvent({ eventName: "Schedule", attribution: cleanAttribution({ fbi: `${v6}.AQYBAQIA` }) }).user_data.client_ip_address).toBe(`${v6}.AQYBAQIA`);
+    expect(cleanAttribution({ fbi: "not-an-ip" })).toEqual({});
+    expect(cleanAttribution({ fbi: "<script>" })).toEqual({});
+  });
+
+  it("never truncates a long fbclid or fbc", () => {
+    const fbclid = "IwZXh0bgNhZW0BMABhZGlkAasT" + "AbCdEfGhIj_-".repeat(30);
+    const fbc = `fb.1.1700000000000.${fbclid}.AQYBAQIA`;
+    expect(fbc.length).toBeGreaterThan(300);
+    expect(buildEvent({ eventName: "Lead", attribution: cleanAttribution({ fbc }) }).user_data.fbc).toBe(fbc);
+    expect((buildEvent({ eventName: "Lead", attribution: cleanAttribution({ fbclid }) }).user_data.fbc as string).split(".")[3]).toBe(fbclid);
+  });
+});
+
 describe("TikTok Events API payload", () => {
   it("hashes email/phone (E.164) and passes click ids unhashed with the shared event id", () => {
     const e = buildTiktokEvent({ event: "Lead", eventId: "generate_lead_x", url: "https://www.ceoturbo.com/brand-boost", user: { email: " A@B.co ", phone: "(404) 555-0123" }, attribution: { ttclid: "TT", ttp: "P" }, ip: "1.2.3.4" });

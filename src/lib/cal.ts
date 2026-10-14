@@ -188,9 +188,10 @@ const calConfig = ({ source, prefill, person, fields, meta }: Prefill = {}) => (
 function attributionMeta() {
   if (typeof window === "undefined") return {};
   const a = attribution();
-  const keep = ["fbp", "fbc", "fbclid", "gclid", "msclkid", "ttclid", "ttp", "utm_source", "utm_campaign"] as const;
+  const keep = ["fbp", "fbc", "fbclid", "fbi", "gclid", "msclkid", "ttclid", "ttp", "utm_source", "utm_campaign"] as const;
+  // Cal.com caps metadata values at 500 characters, so a longer id is left out rather than cut short.
   // The visitor's browser string lets the server-side Schedule event match this browser (Meta scores ip/user agent).
-  return { ...Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!])), ...(navigator.userAgent ? { "metadata[ua]": navigator.userAgent.slice(0, 400) } : {}) };
+  return { ...Object.fromEntries(keep.filter((k) => a[k] && a[k]!.length <= 500).map((k) => [`metadata[${k}]`, a[k]!])), ...(navigator.userAgent ? { "metadata[ua]": navigator.userAgent.slice(0, 400) } : {}) };
 }
 
 /**
