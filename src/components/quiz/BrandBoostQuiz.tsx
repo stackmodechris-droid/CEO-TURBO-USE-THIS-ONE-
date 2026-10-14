@@ -87,7 +87,13 @@ type Saved = { answers: Answers; step: QuizStep; quizId: string; startedAt: numb
 function load(): Saved | null {
   try {
     const s = JSON.parse(localStorage.getItem(STORE) || "null") as Saved | null;
-    return s && s.answers && s.step ? { ...s, answers: { ...EMPTY_ANSWERS, ...s.answers } } : null;
+    if (!s || !s.answers || !s.step) return null;
+    // Answers saved by an older quiz (or edited by hand) would crash the goal/blocker lookups: start fresh instead.
+    const { audience, stage } = s.answers;
+    if (audience && !STAGES[audience]) return null;
+    if (stage && !STAGES[audience ?? "local"].some((x) => x.id === stage)) return null;
+    if (s.step !== "result" && !QUIZ_STEPS.includes(s.step)) return null;
+    return { ...s, answers: { ...EMPTY_ANSWERS, ...s.answers } };
   } catch {
     return null;
   }
