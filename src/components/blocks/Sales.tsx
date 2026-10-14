@@ -216,9 +216,9 @@ export function BookingSection({
             </ul>
             <p className="mt-8 text-sm text-muted-foreground">
               Prefer to skip ahead?{" "}
-              <a href={BOOKING.url} target="_blank" rel="noopener" className="text-turbo underline underline-offset-4">
-                Book on Cal.com
-              </a>
+              <BookButton note={`${note ?? "Booking section"} — skip quiz`} prefill={prefill} variant="link">
+                Pick a time now
+              </BookButton>
             </p>
           </div>
           <BrandBoostQuiz source={note ?? "Booking section"} prefill={prefill} primary={primary} />

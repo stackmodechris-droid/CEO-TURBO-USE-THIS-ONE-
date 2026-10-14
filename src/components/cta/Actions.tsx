@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { BOOKING, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
 import { openBooking } from "@/lib/cal";
-import { openQuiz } from "@/lib/quiz-open";
 import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
@@ -16,8 +15,8 @@ const variantClass: Record<Variant, string> = {
 };
 
 /**
- * Opens the Brand Boost quiz (lead capture → prefilled calendar): scrolls to the page's hero quiz or opens
- * it in a dialog. Falls back to the Cal.com modal. Real href so it works without JS and is crawlable.
+ * Opens the Brand Boost calendar (Cal.com inline embed) in an on-page dialog, tracked as booking_open and,
+ * once booked, book_call. Real href so it still works without JS and is crawlable.
  */
 export function BookButton({
   children = "Book a free Brand Boost call",
@@ -37,7 +36,7 @@ export function BookButton({
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return;
     e.preventDefault();
-    if (!openQuiz({ source: note, prefill })) void openBooking(note, prefill);
+    void openBooking(note, prefill);
   };
   return (
     <a href={BOOKING.url} onClick={onClick} className={cn(variantClass[variant], className)} rel="noopener">

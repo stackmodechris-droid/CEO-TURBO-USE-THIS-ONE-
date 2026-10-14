@@ -3,11 +3,11 @@ import { useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileActionBar } from "./MobileActionBar";
+import { FloatingBookButton } from "./FloatingBookButton";
 import { QuizModalHost } from "@/components/quiz/QuizModalHost";
 import { BookingModalHost } from "@/components/booking/BookingModalHost";
 import { startSpotlight } from "@/lib/spotlight";
 import { pageFor, NOT_FOUND_META } from "@/seo/pages";
-import { REVIEWS_AD_PATH } from "@/content/review-cards";
 import { applyHead } from "@/seo/head";
 import { loadCal } from "@/lib/cal";
 import { startPixel, pixelPageView } from "@/lib/pixel";
@@ -17,13 +17,9 @@ import { startTiktok, tiktokPageView } from "@/lib/tiktok";
 import { startReddit, redditPageView } from "@/lib/reddit";
 import { startClarity } from "@/lib/clarity";
 
-/** Ad landing pages: no menu or footer links to leak clicks — one job, one button. */
-const FOCUS_PATHS = new Set(["/book", "/booked", "/how-to-get-more-customers", "/app-marketing", REVIEWS_AD_PATH]);
-
 export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const first = useRef(true);
-  const focus = FOCUS_PATHS.has(pathname.replace(/\/$/, ""));
 
   // Head tags are prerendered; only update them on client-side navigation.
   useEffect(() => {
@@ -71,13 +67,14 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <Header focus={focus} />
+      <Header />
       {/* overflow-x-clip: edge-sliding animations (the review-card phone) never make phones scroll sideways; clip keeps sticky working. */}
       <main id="main" className="overflow-x-clip">
         {children}
       </main>
-      <Footer focus={focus} />
-      <MobileActionBar focus={focus} />
+      <Footer />
+      <MobileActionBar />
+      <FloatingBookButton />
       <QuizModalHost />
       <BookingModalHost />
     </>
