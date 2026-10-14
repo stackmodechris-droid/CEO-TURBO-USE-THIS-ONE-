@@ -16,7 +16,8 @@ export function openQuiz(detail: QuizOpen = {}): boolean {
   const hero = document.querySelector<HTMLElement>('[data-quiz-inline="primary"]');
   if (hero) {
     track("booking_open", { source: detail.source, via: "quiz-scroll" });
-    hero.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Quiz already done: go straight to the booking calendar, not back to the top of the plan.
+    (hero.querySelector<HTMLElement>("[data-quiz-cal]") ?? hero).scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => hero.querySelector<HTMLElement>("[data-quiz-focus]")?.focus({ preventScroll: true }), 450);
     return true;
   }

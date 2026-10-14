@@ -82,15 +82,19 @@ export function onLinkStatus(ns: string, fn: (s: LinkStatus) => void) {
   return () => void set.delete(fn);
 }
 
-/** Resolves false if the booking page reports it failed (wrong link, event hidden); true once it shows times or after `ms`. */
+/**
+ * "ready" once the calendar shows times, "failed" if the booking page reports an error (wrong link,
+ * event hidden), "timeout" if it never says either — the blank-box case, which must not count as working.
+ */
+type LinkResult = LinkStatus | "timeout";
 function waitForLink(ns: string, ms: number) {
-  return new Promise<boolean>((resolve) => {
-    const off = onLinkStatus(ns, (s) => done(s === "ready"));
-    const timer = setTimeout(() => done(true), ms);
-    function done(ok: boolean) {
+  return new Promise<LinkResult>((resolve) => {
+    const off = onLinkStatus(ns, (s) => done(s));
+    const timer = setTimeout(() => done("timeout"), ms);
+    function done(r: LinkResult) {
       clearTimeout(timer);
       off();
-      resolve(ok);
+      resolve(r);
     }
   });
 }
@@ -188,34 +192,67 @@ function attributionMeta() {
   return { ...Object.fromEntries(keep.filter((k) => a[k]).map((k) => [`metadata[${k}]`, a[k]!])), ...(navigator.userAgent ? { "metadata[ua]": navigator.userAgent.slice(0, 400) } : {}) };
 }
 
-/** The Cal.com booking page itself, prefilled — used when the embed can't show. */
-export function bookingPageUrl(prefill?: string, person?: Person, fields?: Prefill["fields"]) {
-  const q = new URLSearchParams(defined({ name: person?.name, email: person?.email, attendeePhoneNumber: person?.phone, notes: prefill, ...fields }) as Record<string, string>);
+/**
+ * The Cal.com booking page itself, prefilled — used when the embed can't show. It carries the same
+ * metadata as the embed, so api/cal-webhook.js still sends the server-side "Schedule" with the ad click ids.
+ */
+export function bookingPageUrl(prefill?: string, person?: Person, fields?: Prefill["fields"], extra: Pick<Prefill, "source" | "meta"> = {}) {
+  const { layout: _layout, theme: _theme, ...params } = calConfig({ prefill, person, fields, ...extra });
+  const q = new URLSearchParams(defined(params) as Record<string, string>);
   return `${BOOKING.url}${q.toString() ? `?${q}` : ""}`;
 }
 
-/** Opens the Brand Boost booking modal; falls back to the Cal.com page if the embed can't load. */
+/** Leaves for the booking page in this tab (new tabs get blocked after an await, and in-app browsers handle them badly). */
+function goToBookingPage(url: string, source?: string) {
+  track("booking_open", { source: `${source ?? "site"} — direct page` });
+  window.location.assign(url);
+}
+
+/** A bar over the Cal.com modal for when the calendar is slow or blank, so the visitor always has a way to book. */
+function showRescueBar(url: string, source?: string) {
+  if (document.getElementById("ct-cal-rescue")) return;
+  const bar = document.createElement("a");
+  bar.id = "ct-cal-rescue";
+  bar.href = url;
+  bar.textContent = "Calendar not loading? Tap here to book your call →";
+  bar.setAttribute("style", "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483647;max-width:calc(100% - 32px);padding:14px 20px;border-radius:9999px;background:#ff6b1a;color:#fff;font:600 15px/1.3 system-ui,sans-serif;text-align:center;text-decoration:none;box-shadow:0 8px 30px rgba(0,0,0,.45)");
+  bar.addEventListener("click", () => track("booking_open", { source: `${source ?? "site"} — rescue bar` }));
+  document.body.appendChild(bar);
+  const off = onLinkStatus(BOOKING.namespace, (s) => {
+    if (s === "ready") remove();
+  });
+  window.addEventListener("ct:booked", remove, { once: true });
+  function remove() {
+    off();
+    bar.remove();
+  }
+}
+
+/** Opens the Brand Boost booking modal; goes to the Cal.com page if the embed can't load or the calendar fails. */
 export async function openBooking(source?: string, prefill?: string, person?: Person, extra: Omit<Prefill, "source" | "prefill" | "person"> = {}) {
   track("booking_open", { source });
   const ns = BOOKING.namespace;
+  const url = bookingPageUrl(prefill, person, extra.fields, { source, meta: extra.meta });
   const ok = await loadCalWithin(ns, 4000);
-  const url = bookingPageUrl(prefill, person, extra.fields);
-  // After the wait above, phones often block a new tab; go there in this tab instead of doing nothing.
-  const fallback = () => {
-    if (!window.open(url, "_blank")) window.location.assign(url);
-  };
-  if (!ok || !window.Cal?.ns[ns]) return fallback();
-  const shown = waitForLink(ns, 15000);
+  if (!ok || !window.Cal?.ns[ns]) return goToBookingPage(url, source);
+  const shown = waitForLink(ns, 8000);
   window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
-  if (!(await shown)) fallback();
+  const result = await shown;
+  if (result === "failed") goToBookingPage(url, source);
+  // Never yank a calendar that may still be loading on a slow phone — offer the page on top of it instead.
+  else if (result === "timeout") showRescueBar(url, source);
 }
 
-/** Inline booking calendar mounted into an element by id. Resolves false if the embed or the booking page fails. */
-export async function mountInlineBooking(elementId: string, source?: string, prefill?: string, opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {}) {
+/**
+ * Inline booking calendar mounted into an element by id. Resolves "ready" once times show, "failed" if the
+ * embed or the booking page fails, "timeout" if the calendar never confirms it loaded (treat as not working;
+ * listen with onLinkStatus for a late "ready").
+ */
+export async function mountInlineBooking(elementId: string, source?: string, prefill?: string, opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {}): Promise<LinkResult> {
   const { ns = BOOKING.namespace, ...rest } = opts;
   const ok = await loadCalWithin(ns);
-  if (!ok || !window.Cal?.ns[ns]) return false;
-  const shown = waitForLink(ns, 10000);
+  if (!ok || !window.Cal?.ns[ns]) return "failed";
+  const shown = waitForLink(ns, 12000);
   window.Cal.ns[ns]("inline", {
     elementOrSelector: `#${elementId}`,
     calLink: BOOKING.calLink,

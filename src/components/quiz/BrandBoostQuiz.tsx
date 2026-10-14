@@ -51,7 +51,7 @@ import {
 } from "@/content/quiz";
 import { BOOKING, SITE, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
-import { QUIZ_NS, bookingPageUrl, mountInlineBooking, openBooking } from "@/lib/cal";
+import { QUIZ_NS, bookingPageUrl, mountInlineBooking, onLinkStatus, openBooking } from "@/lib/cal";
 import { attribution, e164, newEventId, setCallContext, track, visitorId } from "@/lib/track";
 import { sendLead } from "@/lib/lead-outbox";
 import { CallLink } from "@/components/site/CallLink";
@@ -585,12 +585,18 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
     },
   };
 
+  const pageUrl = bookingPageUrl(prefill, booking.person, booking.fields, { source: `${booking.source} — direct page`, meta: booking.meta });
+  const directClick = () => track("booking_open", { source: `${booking.source} — direct page` });
+
   useEffect(() => {
     if (booked) return;
     let live = true;
-    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((ok) => live && setCal(ok ? "ready" : "failed"));
+    // A calendar that never confirms it loaded keeps the booking button up; a late "ready" still swaps it in.
+    const off = onLinkStatus(QUIZ_NS, (s) => live && s === "ready" && setCal("ready"));
+    mountInlineBooking(calId, booking.source, prefill, { ns: QUIZ_NS, person: booking.person, fields: booking.fields, meta: booking.meta }).then((r) => live && setCal((c) => (c === "ready" || r === "ready" ? "ready" : "failed")));
     return () => {
       live = false;
+      off();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booked, calId]);
@@ -625,7 +631,7 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
         ))}
       </ul>
 
-      <div className="mt-6 rounded-2xl border border-turbo/30 bg-turbo/[0.06] p-4">
+      <div data-quiz-cal className="mt-6 scroll-mt-24 rounded-2xl border border-turbo/30 bg-turbo/[0.06] p-4">
         <p className="font-semibold">Last step: pick a time and we'll walk you through it, live.</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Free · {BOOKING.length} · your details are already filled in. {SITE.founder.name.split(" ")[0]} opens calls a few days ahead, so grab the earliest slot.
@@ -634,18 +640,12 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
 
       <div className="relative mt-4 min-h-[520px] overflow-hidden rounded-2xl bg-black/20 ring-1 ring-white/5">
         {cal !== "ready" && (
-          <div className="absolute inset-0 grid place-items-center p-6 text-center">
+          <div className="absolute inset-0 z-10 grid place-items-center p-6 text-center">
             <div>
-              <p className="text-sm text-muted-foreground">{cal === "failed" ? "The calendar didn't load." : "Loading open times…"}</p>
-              {cal === "failed" ? (
-                <a href={bookingPageUrl(prefill, booking.person, booking.fields)} target="_blank" rel="noopener" onClick={() => track("booking_open", { source: `${booking.source} — direct page` })} className="btn-ignite mt-4">
-                  Open the booking calendar
-                </a>
-              ) : (
-                <button type="button" className="btn-ignite mt-4" onClick={() => void openBooking(booking.source, prefill, booking.person, { fields: booking.fields, meta: booking.meta })}>
-                  Open the booking calendar
-                </button>
-              )}
+              <p className="text-sm text-muted-foreground">{cal === "failed" ? "Tap below to pick your time on our booking page." : "Loading open times…"}</p>
+              <a href={pageUrl} onClick={directClick} className="btn-ignite mt-4">
+                Pick my call time <ArrowRight className="h-4 w-4" aria-hidden />
+              </a>
             </div>
           </div>
         )}
@@ -653,7 +653,7 @@ function Result({ answers, quizId, source, prefill, booked, uid, onRestart }: { 
       </div>
       <p className="mt-2 text-center text-xs text-muted-foreground">
         Calendar not showing?{" "}
-        <a href={bookingPageUrl(prefill, booking.person, booking.fields)} target="_blank" rel="noopener" onClick={() => track("booking_open", { source: `${booking.source} — direct page` })} className="inline-flex min-h-[44px] items-center font-semibold text-turbo underline underline-offset-2">
+        <a href={pageUrl} onClick={directClick} className="inline-flex min-h-[44px] items-center font-semibold text-turbo underline underline-offset-2">
           Open the booking page
         </a>
       </p>
