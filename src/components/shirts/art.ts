@@ -6,16 +6,44 @@ import ART from "@/content/shirt-art.json";
 export type Placement = "chest" | "front" | "back";
 export type ArtInput = {
   logo: HTMLImageElement | HTMLCanvasElement | null;
-  /** Big line under the logo (company name), "" for none. */
+  /** Big line under the logo (company or artist name), "" for none. */
   text: string;
-  /** Small line (website, phone, slogan), "" for none. */
+  /** Small line (website, phone, slogan, album title), "" for none. */
   subtext: string;
   ink: string;
-  /** Logo width as a share of the print area, 0.3–1. */
+  /** Logo width as a share of the print area, 0.2–1. */
   logoScale: number;
   /** QR code modules (true = dark), printed under the text in the ink color. */
   qr?: boolean[][] | null;
+  /** Font of the big line (FONTS id), Inter by default. */
+  font?: FontId;
+  /** Extra small lines under the design — tour dates, track list. */
+  lines?: string[];
+  /** Move the whole design inside the print area, as a share of its width / height (−0.5…0.5). */
+  x?: number;
+  y?: number;
+  /** Rotation in degrees around the design's center. */
+  rotate?: number;
 };
+
+/** Fonts for the big line. Self-hosted (@fontsource) so the canvas can draw them and the CSP allows them. */
+export const FONTS = [
+  { id: "inter", name: "Clean", family: '"Inter Variable", "Inter", "Arial Black", Arial, sans-serif', weight: 800, upper: true },
+  { id: "anton", name: "Poster", family: '"Anton", Impact, sans-serif', weight: 400, upper: true },
+  { id: "bebas", name: "Tall", family: '"Bebas Neue", Impact, sans-serif', weight: 400, upper: true },
+  { id: "marker", name: "Marker", family: '"Permanent Marker", cursive', weight: 400, upper: false },
+  { id: "gothic", name: "Gothic", family: '"UnifrakturCook", serif', weight: 700, upper: false },
+  { id: "serif", name: "Serif", family: '"Playfair Display", Georgia, serif', weight: 900, upper: false },
+] as const;
+export type FontId = (typeof FONTS)[number]["id"];
+export const fontFor = (id: FontId | undefined) => FONTS.find((f) => f.id === id) ?? FONTS[0];
+
+/** Loads a font so the canvas draws it (canvas text doesn't wait for web fonts by itself). */
+export async function loadFont(id: FontId | undefined) {
+  const f = fontFor(id);
+  if (typeof document === "undefined" || !document.fonts) return;
+  await document.fonts.load(`${f.weight} 64px ${f.family}`).catch(() => []);
+}
 
 /** Print-area size in pixels at 300 DPI (what DTF gang-sheet printers ask for): 12" × 16" front/back, 4" × 4" chest. */
 export const PRINT_PX: Record<Placement, { w: number; h: number; inches: string }> = {
@@ -29,30 +57,36 @@ export const AREAS = ART.areas as Record<Placement, { x: number; y: number; w: n
 const FONT = '"Inter Variable", "Inter", "Arial Black", Arial, sans-serif';
 
 /** Shrinks a line until it fits the width (long company names). */
-function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, size: number, maxW: number) {
+function fitText(ctx: CanvasRenderingContext2D, text: string, weight: number, size: number, maxW: number, family = FONT) {
   let s = size;
-  ctx.font = `${weight} ${s}px ${FONT}`;
+  ctx.font = `${weight} ${s}px ${family}`;
   while (s > 8 && ctx.measureText(text).width > maxW) {
     s *= 0.92;
-    ctx.font = `${weight} ${s}px ${FONT}`;
+    ctx.font = `${weight} ${s}px ${family}`;
   }
   return s;
 }
 
-/** Draws the design into a canvas of the given size. Layout: logo on top, then the two text lines. */
+/**
+ * Draws the design into a canvas of the given size. Layout: logo on top, then the big line, the small
+ * line and any extra lines; then the whole block is moved / rotated as the buyer placed it. Everything
+ * is relative to the canvas size, so the preview and the print file match.
+ */
 export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h: number) {
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d")!;
   ctx.clearRect(0, 0, w, h);
-  const text = input.text.trim();
+  const font = fontFor(input.font);
+  const text = font.upper ? input.text.trim().toUpperCase() : input.text.trim();
   const sub = input.subtext.trim();
   const square = w === h;
-  // Text sizes are relative to the width so the preview and the print file match.
+  const lines = square ? [] : (input.lines ?? []).map((l) => l.trim()).filter(Boolean).slice(0, 14);
   const titleSize = w * (square ? 0.16 : 0.12);
   const subSize = w * (square ? 0.085 : 0.055);
+  const lineSize = w * 0.042;
   const gap = w * 0.04;
-
+  const listH = lines.length ? gap * 0.8 + lines.length * lineSize * 1.35 : 0;
   const qr = input.qr?.length ? input.qr : null;
   // Quiet zone of 2 modules around the code so phones can find its edges.
   const qrSize = qr ? Math.round(w * (square ? 0.5 : 0.36)) : 0;
@@ -64,7 +98,7 @@ export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h
   if (logo) {
     const lw = "naturalWidth" in logo ? logo.naturalWidth : logo.width;
     const lh = "naturalHeight" in logo ? logo.naturalHeight : logo.height;
-    const textRoom = (text ? titleSize * 1.25 + gap : 0) + (sub ? subSize * 1.3 + gap * 0.5 : 0) + qrRoom;
+    const textRoom = (text ? titleSize * 1.25 + gap : 0) + (sub ? subSize * 1.3 + gap * 0.5 : 0) + listH + qrRoom;
     const maxW = w * Math.min(1, Math.max(0.2, input.logoScale));
     const maxH = Math.max(h * 0.25, (square ? h : h * 0.7) - textRoom);
     const k = Math.min(maxW / lw, maxH / lh);
@@ -72,29 +106,45 @@ export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h
     logoH = lh * k;
   }
 
+  const blockH = logoH + (logo && (text || sub) ? gap : 0) + (text ? titleSize * 1.1 : 0) + (sub ? (text ? gap * 0.5 : 0) + subSize * 1.15 : 0) + listH + (qr && (logo || text || sub || lines.length) ? gap : 0) + qrSize;
+  // Chest prints are centered in their box; front and back prints start near the collar.
+  const top = square ? Math.max(0, (h - blockH) / 2) : 0;
+  ctx.save();
+  const cx = w / 2 + (input.x ?? 0) * w;
+  const cy = top + blockH / 2 + (input.y ?? 0) * h;
+  ctx.translate(cx, cy);
+  if (input.rotate) ctx.rotate((input.rotate * Math.PI) / 180);
+  ctx.translate(-w / 2, -(top + blockH / 2));
+
   ctx.fillStyle = input.ink;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  const blockH = logoH + (logo && (text || sub) ? gap : 0) + (text ? titleSize * 1.1 : 0) + (sub ? (text ? gap * 0.5 : 0) + subSize * 1.15 : 0) + (qr && (logo || text || sub) ? gap : 0) + qrSize;
-  // Chest prints are centered in their box; front and back prints start near the collar.
-  let y = square ? Math.max(0, (h - blockH) / 2) : 0;
+  let y = top;
   if (logo) {
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(logo, (w - logoW) / 2, y, logoW, logoH);
     y += logoH + (text || sub ? gap : 0);
   }
   if (text) {
-    const s = fitText(ctx, text.toUpperCase(), 800, titleSize, w * 0.98);
-    ctx.fillText(text.toUpperCase(), w / 2, y);
+    const s = fitText(ctx, text, font.weight, titleSize, w * 0.98, font.family);
+    ctx.fillText(text, w / 2, y);
     y += s * 1.1 + (sub ? gap * 0.5 : 0);
   }
   if (sub) {
-    const s = fitText(ctx, sub, 600, subSize, w * 0.98);
+    fitText(ctx, sub, 600, subSize, w * 0.98);
     ctx.fillText(sub, w / 2, y);
-    y += s * 1.15;
+    y += subSize * 1.15;
+  }
+  if (lines.length) {
+    y += gap * 0.8;
+    for (const l of lines) {
+      fitText(ctx, l, 600, lineSize, w * 0.96);
+      ctx.fillText(l, w / 2, y);
+      y += lineSize * 1.35;
+    }
   }
   if (qr) {
-    if (logo || text || sub) y += gap;
+    if (logo || text || sub || lines.length) y += gap;
     const n = qr.length;
     const cell = qrSize / (n + 4);
     const x0 = (w - qrSize) / 2 + cell * 2;
@@ -102,6 +152,7 @@ export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h
     for (let r = 0; r < n; r++)
       for (let c = 0; c < n; c++) if (qr[r][c]) ctx.fillRect(Math.floor(x0 + c * cell), Math.floor(y0 + r * cell), Math.ceil(cell), Math.ceil(cell));
   }
+  ctx.restore();
   return canvas;
 }
 

@@ -1,5 +1,34 @@
 import type { FAQ } from "./services";
 import { SHIRT, SITE, money2, shirtFromPrice } from "@/config/site";
+import type { FontId } from "@/components/shirts/art";
+
+/** Words the shirt designer uses, so one engine serves company shirts and artist merch. */
+export type MakerCopy = {
+  chip: string;
+  h1: string;
+  h1Accent: string;
+  lede: string;
+  points: { title: string; body: string }[];
+  /** "Your logo" / "Your art" (step 3 heading) and the noun used in labels. */
+  artLabel: string;
+  artNoun: string;
+  textOptional: boolean;
+  textOnlyNote?: string;
+  textPlaceholder: string;
+  subPlaceholder: string;
+  sample: { text: string; sub: string };
+  sampleNote: string;
+  defaultFont: FontId;
+  backToggle: string;
+  backPlaceholder: string;
+  backSubPlaceholder: string;
+  /** Printed on the back when the buyer turns it on but types nothing ("" = they must add something). */
+  defaultBack: string;
+  discountLabel: string;
+  emptyError: string;
+  mockupNoun: string;
+  barNoun: string;
+};
 
 export const SHIRTS_PATH = "/custom-company-t-shirts";
 
@@ -11,7 +40,7 @@ const t24 = Math.round(SHIRT.tiers[2].off * 100);
 export const SHIRT_STEPS = [
   { title: "Upload your logo", body: "PNG, JPG or SVG. White box behind it? One tap removes it so it prints clean on dark shirts." },
   { title: "Pick sleeves, color and sizes", body: "Short or long sleeve, 4 colors, S to 3XL — mix sizes in one order, 1 shirt or 100." },
-  { title: "Check out — we press and ship", body: `${SHIRT.shipping.production}, then ${SHIRT.shipping.delivery.toLowerCase()}. Free US shipping.` },
+  { title: "Check out — we print and ship", body: `${SHIRT.shipping.production}, then ${SHIRT.shipping.delivery.toLowerCase()}. Free US shipping.` },
 ];
 
 export const SHIRT_POINTS = [
@@ -37,7 +66,7 @@ export const SHIRT_COMPARE: [string, string, string, string][] = [
   ["See it before you buy", "Live mockup, 2 minutes", "Proof by email", "Proof in a day or two"],
   ["Full-color logo", "Same price", "Costs more per color", "Costs more per color"],
   ["One more for a new hire", "Order 1, same price", "Minimum applies again", "Call and wait"],
-  ["Turnaround", "Ships in 2–3 days from Atlanta", "Often 1–2 weeks", "Days to weeks"],
+  ["Turnaround", "Prints in 2–4 days, free shipping", "Often 1–2 weeks", "Days to weeks"],
   ["Shipping", "Free in the US", "Often extra", "Pick up"],
 ];
 
@@ -68,11 +97,11 @@ export const SHIRT_FAQS: FAQ[] = [
   },
   {
     q: "How are the shirts printed — screen print, DTG or DTF?",
-    a: "DTF (direct-to-film): your logo is printed in full color on a film transfer, then heat-pressed into the shirt by our team in Atlanta. Full-color logos, gradients and photos cost the same as one color, there are no screens to pay for, and the print stays bright on black and navy. Wash inside out in cold water and it lasts wash after wash.",
+    a: "Digital full-color printing (DTG or DTF, depending on the shirt color) by our US print partner. Full-color logos, gradients and photos cost the same as one color, there are no screens to pay for, and the print stays bright on black and navy. Wash inside out in cold water and it lasts wash after wash.",
   },
   {
     q: "Will someone check my design before it prints?",
-    a: "Yes. We print and press every order ourselves, so a real person looks at every design before it goes to print. If the logo is blurry, cut off or the colors won't show on your shirt color, we email or text you before printing — not after.",
+    a: "Yes. A real person on our team looks at every design before we send it to print. If the logo is blurry, cut off or the colors won't show on your shirt color, we email or text you before printing — not after.",
   },
   {
     q: "What if a shirt is misprinted or the wrong size?",
@@ -94,3 +123,27 @@ export const SHIRT_SIZE_CHART: [string, string, string][] = [
 ];
 
 export const shirtFromLabel = money2(shirtFromPrice);
+
+export const COMPANY_MAKER: MakerCopy = {
+  chip: "CEO Turbo · Custom company shirts",
+  h1: "Company T-Shirts With Your Logo",
+  h1Accent: "— no minimum.",
+  lede: `Upload your logo, drag it where you want it, pick sizes, check out. Short or long sleeve, from ${money2(SHIRT.styles[0].price)} a shirt with free US shipping — 1 shirt or the whole crew.`,
+  points: SHIRT_POINTS,
+  artLabel: "Your logo",
+  artNoun: "logo",
+  textOptional: true,
+  textPlaceholder: "Company name",
+  subPlaceholder: "Small line — website, phone or slogan",
+  sample: { text: "Your logo", sub: "yourcompany.com" },
+  sampleNote: "Sample design — upload your logo to see yours",
+  defaultFont: "inter",
+  backToggle: "Print on the back too",
+  backPlaceholder: "STAFF, CREW or your company name",
+  backSubPlaceholder: "yourcompany.com · (555) 555-0123",
+  defaultBack: "STAFF",
+  discountLabel: "Team discount",
+  emptyError: "Upload your logo or type your company name first.",
+  mockupNoun: "company shirt with your logo",
+  barNoun: "custom",
+};

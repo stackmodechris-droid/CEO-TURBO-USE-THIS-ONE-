@@ -274,6 +274,17 @@ describe("custom shirt orders", () => {
     const r = parseOrder({ id: 7, name: "#1002", email: "x@y.com", total_price: "251.91", currency: "USD", line_items: [{ title: "Custom Company T-Shirt", variant_title: "Short sleeve – Front / Black / M", quantity: 4, properties: props }, { title: "Custom Company T-Shirt", variant_title: "Short sleeve – Front / Black / L", quantity: 5, properties: props }], note_attributes: [{ name: "gclid", value: "g2" }] });
     expect(r).toMatchObject({ type: "shirt-order", designId: "CT-ABCD2345", placement: "Center front", quantity: 9, gclid: "g2", sizes: "Short sleeve – Front / Black / M × 4; Short sleeve – Front / Black / L × 5" });
     expect(r.printFile).toContain("drive.google.com");
+    expect(r.kind).toBe("Company shirt");
+  });
+  it("takes artist merch designs (AM- ids) and labels them by id, not by what the browser claims", () => {
+    const { design } = cleanDesign({ kind: "company", designId: "AM-ABCD2345", frontPng: png, font: "Gothic", backText: "WORLD TOUR 2026 · 03.14 ATLANTA" });
+    expect(design).toMatchObject({ kind: "Artist merch", designId: "AM-ABCD2345", font: "Gothic", backText: "WORLD TOUR 2026 · 03.14 ATLANTA" });
+    expect(cleanDesign({ designId: "CT-ABCD2345", frontPng: png }).design!.kind).toBe("Company shirt");
+    expect(cleanDesign({ designId: "XX-ABCD2345", frontPng: png }).error).toBe("designId");
+  });
+  it("maps a paid artist merch order with the artist name and the full ship-to address", () => {
+    const r = parseOrder({ id: 8, name: "#1003", line_items: [{ title: "Custom Artist Merch T-Shirts", variant_title: "Short sleeve – Front + back / Maroon / L", quantity: 24, properties: [{ name: "Design ID", value: "AM-ZZZZ2345" }] }], note_attributes: [{ name: "Artist name", value: "Lil Test" }], shipping_address: { name: "T", address1: "1 Main St", address2: "Apt 4", city: "Atlanta", province_code: "GA", zip: "30303", country_code: "US" } });
+    expect(r).toMatchObject({ type: "shirt-order", kind: "Artist merch", designId: "AM-ZZZZ2345", business: "Lil Test", quantity: 24, shipTo: "1 Main St, Apt 4, Atlanta, GA, 30303, US" });
   });
 });
 

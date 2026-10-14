@@ -57,7 +57,7 @@ export const AUDIENCES: Audience[] = [
       { title: "Turn your videos into ads", body: "Your best clips, cut and captioned into short video ads for Instagram, Facebook, TikTok and YouTube Shorts, so every video you already shot keeps working after it posts.", service: "tiktok-ads" },
       { title: "Book more shows and tours", body: "A booking page with your EPK, live footage, a tour-dates page and a direct contact form, so promoters and venues can book you without a DM chain.", service: "website-design" },
       { title: "Get features and label attention", body: "A professional artist site with your story, numbers and press in one place — the link you send with every pitch. Take paid features and sessions from the same page.", service: "website-design" },
-      { title: "Sell merch", body: "A store connected to your site with drop emails to your fan list, so every release sells something.", service: "email-marketing" },
+      { title: "Sell merch", body: "Design shirts with your cover art and tour dates in 2 minutes — no minimum, from $24.99 — plus drop emails to your fan list so every release sells something.", service: "artist-merch" },
       { title: "Own your name in search", body: "Artist schema, consistent profiles and an official site so Google and AI assistants describe you correctly.", service: "seo-aeo-geo" },
     ],
     serviceSlugs: ["social-media-optimization", "website-design", "meta-ads", "tiktok-ads", "x-ads", "email-marketing", "seo-aeo-geo"],
