@@ -8,6 +8,7 @@ import { GUIDES, guideImage, guidePath } from "@/content/guides";
 import { HOME_FAQS, AUDIT_FAQS, BOOK_FAQS, ADS_NOT_CONVERTING_FAQS } from "@/content/faqs";
 import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { SHIRT_FAQS, SHIRTS_PATH } from "@/content/company-shirts";
+import { MERCH_FAQS, ARTIST_MERCH_PATH } from "@/content/artist-merch";
 import { PRICING_FAQS, price } from "@/content/pricing";
 import * as S from "./schema";
 
@@ -116,6 +117,17 @@ function build(): PageMeta[] {
     changefreq: "weekly",
     group: "Core",
     schema: [...base(), S.webPage(SHIRTS_PATH, "Custom company t-shirts", "Company t-shirts with your logo, designed online", "ItemPage"), S.shirtProduct(), S.breadcrumbs([{ name: "Custom company t-shirts", path: SHIRTS_PATH }]), S.faqPage(SHIRT_FAQS, SHIRTS_PATH)],
+  });
+
+  pages.push({
+    path: ARTIST_MERCH_PATH,
+    title: "Custom Artist Merch T-Shirts, No Minimum | CEO Turbo",
+    description: "Make band and artist merch in 2 minutes: your cover art, name and tour dates on a tee. No minimum, from $24.99, free US shipping, 20% off 50+.",
+    ogImage: "/og/artist-merch.jpg",
+    priority: 0.9,
+    changefreq: "weekly",
+    group: "Core",
+    schema: [...base(), S.webPage(ARTIST_MERCH_PATH, "Custom artist merch", "Artist and band merch t-shirts, designed online", "ItemPage"), S.artistMerchProduct(), S.breadcrumbs([{ name: "Artists", path: "/artist" }, { name: "Artist merch", path: ARTIST_MERCH_PATH }]), S.faqPage(MERCH_FAQS, ARTIST_MERCH_PATH)],
   });
 
   pages.push({

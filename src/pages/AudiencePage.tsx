@@ -71,8 +71,8 @@ export default function AudiencePage({ slug }: { slug: Audience["slug"] }) {
                 <h3 className="text-xl font-semibold tracking-tight">{o.title}</h3>
                 <p className="mt-2 flex-1 leading-relaxed text-muted-foreground">{o.body}</p>
                 {o.service && (
-                  <Link to={o.service === "google-review-cards" ? "/google-review-cards" : `/services/${o.service}`} className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-turbo">
-                    {o.service === "google-review-cards" ? "Shop review cards" : `About ${SERVICES.find((x) => x.slug === o.service)?.name ?? "this service"}`}
+                  <Link to={o.service === "google-review-cards" || o.service === "artist-merch" ? `/${o.service}` : `/services/${o.service}`} className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-turbo">
+                    {o.service === "google-review-cards" ? "Shop review cards" : o.service === "artist-merch" ? "Design your merch" : `About ${SERVICES.find((x) => x.slug === o.service)?.name ?? "this service"}`}
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </Link>
                 )}

@@ -6,6 +6,7 @@ import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
 import { REVIEWS_AD_PATH, SHOP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH } from "@/content/company-shirts";
+import { ARTIST_MERCH_PATH } from "@/content/artist-merch";
 
 /** True once the visitor has finished the quiz but not booked yet — the bar should then say "pick a time", not "answer questions". */
 function usePlanReady() {
@@ -34,7 +35,7 @@ function usePlanReady() {
 export function MobileActionBar({ focus = false }: { focus?: boolean }) {
   const { pathname } = useLocation();
   const planReady = usePlanReady();
-  if (pathname === SHOP_PATH || pathname === SHIRTS_PATH) return null;
+  if (pathname === SHOP_PATH || pathname === SHIRTS_PATH || pathname === ARTIST_MERCH_PATH) return null;
   if (pathname === REVIEWS_AD_PATH)
     return (
       <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">

@@ -151,7 +151,7 @@ export function ShippingReturns() {
       <section>
         <h2>Custom company t-shirts</h2>
         <p>
-          Custom shirts are printed to order with your logo: {SHIRT.shipping.production.toLowerCase()}, then {SHIRT.shipping.delivery.toLowerCase()}, with free US shipping. {SHIRT.guarantee} Because each shirt is made for you, we can't accept returns or exchanges for a size you chose, a change of mind or a logo file you supplied — check the size chart and the live preview before ordering.
+          Custom shirts and artist merch are made to order with your logo or art: {SHIRT.shipping.production.toLowerCase()} by our US print partner, then {SHIRT.shipping.delivery.toLowerCase()}, with free US shipping. {SHIRT.guarantee} Because each shirt is made for you, we can't accept returns or exchanges for a size you chose, a change of mind or a logo or art file you supplied — check the size chart and the live preview before ordering.
         </p>
       </section>
       <section>

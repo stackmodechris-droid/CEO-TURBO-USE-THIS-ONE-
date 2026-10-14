@@ -16,6 +16,7 @@ const BrandBoost = lazy(() => import("./pages/BrandBoost"));
 const ReviewCards = lazy(() => import("./pages/ReviewCards"));
 const ReviewCardSetup = lazy(() => import("./pages/ReviewCardSetup"));
 const CompanyShirts = lazy(() => import("./pages/CompanyShirts"));
+const ArtistMerch = lazy(() => import("./pages/ArtistMerch"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Book = lazy(() => import("./pages/Book"));
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/google-review-cards" element={<ReviewCards />} />
           <Route path="/google-review-card-setup" element={<ReviewCardSetup />} />
           <Route path="/custom-company-t-shirts" element={<CompanyShirts />} />
+          <Route path="/artist-merch" element={<ArtistMerch />} />
           <Route path="/services" element={<ServicesHub />} />
           <Route path="/services/:slug" element={<ServicePage />} />
           <Route path="/portfolio" element={<Portfolio />} />

@@ -318,4 +318,25 @@ describe("custom company shirt pricing", () => {
     expect(t.subtotal).toBe(+(SHIRT.styles[0].price * 12 + SHIRT.plusSizeUpcharge * 2).toFixed(2));
     expect(t.total).toBe(+(t.subtotal - +(t.subtotal * 0.1).toFixed(2)).toFixed(2));
   });
+  it("prices artist merch with its own product, colors and the 50+ tier", async () => {
+    const { ARTIST_SHIRT: A, SHIRT, shirtTotal, shirtTier, shirtSku, shirtStyleOption } = await import("@/config/site");
+    expect(A.productId).toMatch(/^\d+$/);
+    expect(A.productId).not.toBe(SHIRT.productId);
+    expect(A.colors.map((c) => c.name)).toEqual(expect.arrayContaining(["Maroon", "Forest Green"]));
+    expect([shirtTier(11, A).off, shirtTier(12, A).off, shirtTier(24, A).off, shirtTier(49, A).off, shirtTier(50, A).off]).toEqual([0, 0.1, 0.15, 0.15, 0.2]);
+    expect(shirtTotal("short", false, { L: 50 }, A).total).toBe(+(A.styles[0].price * 50 * 0.8).toFixed(2));
+    expect(shirtSku("long", true, A)).toBe("CT-MERCH-LS-FB");
+    expect(shirtStyleOption("short", true, A)).toBe("Short sleeve – Front + back");
+  });
+});
+
+describe("artist merch page", () => {
+  it("is routed, in the sitemap pages and linked from the nav and the artist page", async () => {
+    const { PAGES } = await import("@/seo/pages");
+    const page = PAGES.find((p) => p.path === "/artist-merch");
+    expect(page?.title).toMatch(/merch/i);
+    expect(JSON.stringify(page?.schema)).toContain("CT-MERCH-SS");
+    for (const f of ["../App.tsx", "../components/site/Header.tsx", "../components/site/Footer.tsx", "../content/audiences.ts"])
+      expect(readFileSync(path.resolve(__dirname, f), "utf8"), f).toMatch(/artist-merch|ARTIST_MERCH_PATH/);
+  });
 });

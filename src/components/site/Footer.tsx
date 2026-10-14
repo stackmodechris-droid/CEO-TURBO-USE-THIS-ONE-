@@ -5,6 +5,7 @@ import { GUIDES, guidePath } from "@/content/guides";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
+import { ARTIST_MERCH_PATH, artistFromLabel } from "@/content/artist-merch";
 import { BookButton } from "@/components/cta/Actions";
 import { CallLink } from "./CallLink";
 import { SocialLinks } from "./SocialLinks";
@@ -75,6 +76,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               { to: SHOP_PATH, label: `Google review cards — from ${fromPriceLabel}` },
               { to: SETUP_PATH, label: "Review card setup guide" },
               { to: SHIRTS_PATH, label: `Company t-shirts with your logo — from ${shirtFromLabel}` },
+              { to: ARTIST_MERCH_PATH, label: `Artist merch t-shirts — from ${artistFromLabel}` },
             ]}
           />
           <FooterCol title="Services" links={SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short }))} />

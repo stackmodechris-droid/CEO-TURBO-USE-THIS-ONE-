@@ -8,6 +8,7 @@ import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
 import { REVIEWS_AD_PATH, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
+import { ARTIST_MERCH_PATH, artistFromLabel } from "@/content/artist-merch";
 import { cn } from "@/lib/utils";
 
 type Item = { to: string; label: string; sub?: string };
@@ -48,6 +49,7 @@ const MENUS: Menu[] = [
     items: [
       { to: SHOP_PATH, label: "Shop review cards", sub: `Tap-to-review NFC cards — from ${fromPriceLabel}` },
       { to: SHIRTS_PATH, label: "Company t-shirts", sub: `Your logo on short & long sleeves — from ${shirtFromLabel}, no minimum` },
+      { to: ARTIST_MERCH_PATH, label: "Artist merch", sub: `Your cover art & tour dates on a tee — from ${artistFromLabel}, no minimum` },
       { to: SETUP_PATH, label: "Card setup guide", sub: "Program your card in 5 minutes" },
       { to: "/how-to-get-more-google-reviews", label: "Get more Google reviews", sub: "The playbook that works" },
     ],

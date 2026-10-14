@@ -1,88 +1,92 @@
-# Custom company t-shirts — we print, press and ship them ourselves
+# Custom shirts — company shirts + artist merch (manual dropship)
 
-Page: **https://www.ceoturbo.com/custom-company-t-shirts** (`src/pages/CompanyShirts.tsx`, designer in `src/components/shirts/`).
-Shopify product: **Custom Company T-Shirts With Your Logo** — id `15418511327467`, handle `custom-company-t-shirts`, 96 variants (Style × Color × Size), published to every sales channel.
-No print-on-demand company: every order is a **DTF transfer heat-pressed in Atlanta** and shipped by us.
+Two stores, one designer, one workflow:
+
+| | Company shirts | Artist merch |
+| --- | --- | --- |
+| Page | **https://www.ceoturbo.com/custom-company-t-shirts** | **https://www.ceoturbo.com/artist-merch** |
+| Shopify product | `15418511327467` · `custom-company-t-shirts` · 96 variants | `15419989033195` · `custom-artist-merch-t-shirts` · 144 variants |
+| Design IDs | `CT-…` | `AM-…` |
+| Blank | Gildan 64000 / 64400 Softstyle | Gildan 5000 / 5400 Heavy Cotton |
+| Price (front) | $27.99 short · $34.99 long | $24.99 short · $31.99 long |
+| Back print / 2XL–3XL | +$8 / +$3 | +$7 / +$3 |
+| Volume discounts (Shopify automatic) | 10% at 12+, 15% at 24+ | 10% at 12+, 15% at 24+, 20% at 50+ |
+
+Code: designer `src/components/shirts/` (one engine, `ShirtMaker` takes `SHIRT` or `ARTIST_SHIRT` from `src/config/site.ts`), pages `src/pages/CompanyShirts.tsx` + `src/pages/ArtistMerch.tsx`, copy in `src/content/company-shirts.ts` + `src/content/artist-merch.ts`. Both products are in the Shopify collection **Custom Shirts**.
+
+**Fulfillment for now: you order every shirt by hand from a print-on-demand partner (Printify, free plan — no monthly fee, no store connection) and it ships straight to the buyer.** When you open your own print shop, the old in-house DTF routine is at the bottom ("Phase 2").
 
 ## How an order flows
 
-1. The buyer uploads a logo, picks sleeves / color / placement / back print, sets a quantity per size and taps **Order**.
-2. The browser renders the **print file** — a transparent PNG at **300 DPI** (3600 × 4800 px = 12" × 16" for front/back, 1200 × 1200 px = 4" × 4" for the left chest; it steps down only if the logo is huge) — plus a mockup JPEG, and posts them to `/api/shirt-design`.
-3. The leads Apps Script saves them in the Google Drive folder **CEO Turbo Shirt Designs** and adds a row to the **Shirt Designs** tab (preview, Drive links, sizes, text, ad source). Status *Designed*.
-4. Shopify checkout. Every cart line carries `Design ID`, `Placement`, `Print file` (Drive link), `Front text`, `Back text`.
-5. Paid → the *Order payment* webhook adds a row to **Shirt Orders** (Status *New*) and marks the design *Paid*.
-6. **You make it** (below), then set Status *Transfers ordered → Pressed & packed → Shipped*, paste the tracking number, and mark the Shopify order fulfilled (Shopify emails the buyer).
+1. Buyer designs it: uploads a logo/art, drags it into place, size/rotate, font, text, back print (artists: tour dates or different back art), sizes → **Order**.
+2. The browser renders the **print file** — transparent PNG at **300 DPI** (3600 × 4800 px = 12" × 16" front/back, 1200 × 1200 = 4" × 4" left chest) — plus a mockup, and posts them to `/api/shirt-design`.
+3. The leads Apps Script saves them in Drive (**CEO Turbo Shirt Designs**) and adds a row to **Shirt Designs** (Type, preview, Drive links, sizes, font, ad source). Status *Designed*.
+4. Shopify checkout. Each cart line carries `Design ID`, `Placement`, `Print file`, `Front text`, `Back text`.
+5. Paid → webhook adds a row to **Shirt Orders** (Status *New*, full ship-to address) and marks the design *Paid*. **You get an email** with everything you need (set `ORDER_EMAIL` in the Apps Script).
+6. **You place it with the printer** (below) → Status *Ordered from printer* → *In production* → *Shipped* → paste tracking → mark the Shopify order fulfilled with that tracking number (Shopify emails the buyer).
 
-Designs left at *Designed* = abandoned carts. The ad-source columns show which ad brought them — call or text them.
+Designs left at *Designed* = abandoned carts. Text or call them — the ad source columns say which ad brought them.
 
-## Making the shirts (daily routine)
+## Placing an order on Printify (5 minutes)
 
-1. **Morning:** filter *Shirt Orders* → Status *New*. For each row open the print file and note the quantity (sizes column).
-2. **Gang sheet:** upload the PNGs to your DTF printer's gang-sheet builder. Width: about **11"** for a center-front logo (10" for S/M-heavy orders), **3.5"** for a left chest, **11–12"** for a back print. Copies = number of shirts. Order before their same-day cutoff → Status *Transfers ordered*.
-   - Use an **Atlanta DTF shop with same-day pickup or next-day shipping** — the page promises "pressed and shipped in 2–3 business days".
-3. **Press:** follow the transfer maker's card. Typical cotton settings: **300–325°F, 10–15 s, medium-firm pressure**, peel hot or cold as they say, then re-press 5–10 s with parchment. Center front: top of the print about **3"** below the collar (about 4 finger-widths). Left chest: about 3.5" down from the shoulder seam, 4" from center.
-4. **Pack and ship:** fold, poly mailer, packing slip (Shopify → order → Print packing slip). Buy the label in Shopify (Shopify Shipping = discounted USPS Ground Advantage) → Status *Shipped*.
+One-time: create a free Printify account → **My stores → Add new store → "Manual orders / API"** (don't connect Shopify — you don't need to). Add a payment card.
 
-**One-time kit (≈ $400–700):** 16" × 20" heat press (clamshell or swing-away, $250–500), Teflon sheet + parchment, heat tape, tape measure / shirt ruler, poly mailers 10" × 13" and 14.5" × 19", optional 4" × 6" thermal label printer (~$100).
+Every paid order:
 
-**Blanks** (wholesale account at S&S Activewear, SanMar or Jiffy Shirts — Atlanta has same/next-day warehouse delivery): Gildan **64000** Softstyle (short) and **64400** Softstyle long sleeve, in Black, White, Navy, Sport Grey. Starter stock: Black and Navy in M, L, XL (the sizes that sell most), about 5 dozen. Order the rest per order.
+1. Open the **Print file** link from the email / Shirt Orders row (Drive) and download the PNG (and the back PNG if it says Front + back).
+2. Printify → **Catalog** → pick the blank:
+   - Company shirts: **Gildan 64000 Softstyle** (short) / **Gildan 64400** (long).
+   - Artist merch: **Gildan 5000 Heavy Cotton** (short) / **Gildan 5400** (long).
+   - Choose the print provider with the **lowest price + US location + good rating** (usually Monster Digital, SwiftPOD or Print Geek). Stick to one provider per blank so colors match between orders.
+3. **Start designing** → upload the front PNG → for a center-front design click **Fit to print area width** and align to the top; for left chest put it on the *Left chest* area at about 3.5" wide. Add the back PNG on *Back* if the order has one. Enable only the colors in the order. Save as **"CT-XXXX" (the Design ID)** — next time the same customer reorders you just reuse it.
+4. **Orders → Create order** → pick that product → add each color/size × quantity from the *Sizes* column → paste the **Ship to** name and address → **Standard shipping** → pay.
+5. Paste Printify's order number and the total you paid into **Print partner order # / Print partner cost $** → Status *Ordered from printer*.
+6. When Printify marks it shipped, copy the tracking number → Shopify → order → **Fulfill items** → paste tracking → Status *Shipped*.
 
-## Profit per order (estimates — check your real supplier prices)
+**Before you pay, look at the mockup Printify shows.** Blurry, cut off, white box on a dark shirt, or a logo that isn't theirs? Text the buyer first (that's the "a real person checks it" promise on the page).
 
-| | 1 shirt | 12 shirts (10% off) | 24 shirts (15% off) |
-| --- | --- | --- | --- |
-| Revenue (short sleeve, front) | $27.99 | $302.29 | $570.99 |
-| Blanks (~$4 each) | $4 | $48 | $96 |
-| DTF transfers (~$2.50 big front) | $2.50 | $30 | $60 |
-| Mailer + USPS label (free shipping) | ~$6 | ~$15 | ~$22 |
-| Shopify payments (2.9% + 30¢) | $1.11 | $9.07 | $16.86 |
-| **Profit before ads** | **≈ $14** | **≈ $200** | **≈ $376** |
+Backup partners if Printify has a problem: **Gelato** or **Printful** (manual orders too, a few $ more per shirt), or **Tapstitch** for a heavyweight "premium" artist line later. Same steps.
 
-That's about **$14–17 a shirt**, compared with about $8–11 with Printful/Printify. Long sleeve ($34.99, blank ~$7–8) lands about the same per shirt. A back print (+$8 for the buyer) costs you about $2.50 in transfer, so it's roughly $5.50 extra profit. Left-chest-only transfers cost about 40¢, so those orders are the most profitable.
+## Profit per order (Printify free plan estimates — check the live price on the product you pick)
 
-## Microsoft Ads (the only ad channel for shirts)
+Printify Gildan 5000 ≈ $8.50–9.50, Softstyle 64000 ≈ $9.50–11, long sleeve ≈ $13–15, back print adds ≈ $3–5. US shipping ≈ $4.29–4.75 first shirt, ≈ $2.09–2.50 each extra. Shopify Payments 2.9% + 30¢.
 
-File: **`docs/ads/microsoft-ads-company-shirts.csv`** — campaign **CEO Turbo | Company Shirts | Microsoft**, PAUSED, $15/day, manual CPC, US. 4 ad groups, 45 keywords × phrase + exact = 90, 35 negatives, one responsive search ad per group. UTMs: `utm_source=bing&utm_medium=cpc&utm_campaign=company_shirts&utm_content=<ad group>`.
+| | 1 shirt | 12 shirts | 24 shirts | 50 shirts |
+| --- | --- | --- | --- | --- |
+| **Company** revenue (short, front) | $27.99 | $302.29 (−10%) | $570.99 (−15%) | $1,189.58 (−15%) |
+| Printify cost + shipping | ≈ $15 | ≈ $150 | ≈ $295 | ≈ $610 |
+| **Profit before ads** | **≈ $12** | **≈ $143** | **≈ $259** | **≈ $545** |
+| **Artist** revenue (short, front) | $24.99 | $269.89 (−10%) | $509.80 (−15%) | $999.60 (−20%) |
+| Printify cost + shipping | ≈ $14 | ≈ $140 | ≈ $275 | ≈ $565 |
+| **Profit before ads** | **≈ $10** | **≈ $121** | **≈ $220** | **≈ $405** |
 
-**Import (account 189366985):** Microsoft Advertising → Tools → **Import** → **Import from file** → upload the CSV → map as a Google Ads Editor file → review → Import. Then:
+Back print: buyer pays +$7–8, you pay ≈ $3–5 → a few dollars more profit. Free US shipping is already in these numbers (Shopify → Settings → Shipping: US rate **Free**).
 
-1. Campaign settings → **Ad distribution: Microsoft sites and select traffic only** (untick *Audience network*).
-2. Locations → "People **in** your targeted locations".
-3. **Conversion goal:** campaign uses the UET goal **Purchase** (event action `purchase`, revenue varies) — it already exists on UET `187280408`; the Shopify custom pixel sends it with the order value. The designer also sends `customize_product`, `add_to_cart` and `begin_checkout`: add `begin_checkout` as a secondary goal to watch.
-4. **LinkedIn profile targeting** (Microsoft only): bid **+30%** for Company size 1–10 and 11–50, and Industries Construction, Facilities Services, Consumer Services, Restaurants, Retail, Real Estate. These are the owners who buy crew shirts.
-5. Auto-apply recommendations and automatically generated assets: **off**.
-6. Assets: callouts *No minimum · Free US shipping · Ships in 2–3 days · 15% off 24+*; sitelink to `/google-review-cards` ("Google review cards"); call asset (470) 502-9543.
-7. Bids: start at the CSV's $2.50–3.00 max CPC. After 15–30 purchases switch to **Maximize conversions** → then **Target ROAS 300%**.
+**Printify Premium** ($24.99/mo billed yearly) cuts blank prices about 20–30%. Turn it on once you do ~10+ shirts a week — it pays for itself at about 15 shirts a month.
 
-**Break-even check:** at ~$2.50 a click and ~3% of clicks buying, a sale costs about $85 in ads. An average order of 6+ shirts covers that; 12+ shirts doubles it. Look at it after $300 of spend: if the average order is under 6 shirts, keep only *Company Shirts With Logo* and *Custom Work Shirts* and push the 12+ discount harder.
+## Ads
 
-The Google Ads campaign built earlier (**CEO Turbo | Company Shirts | Search**, id `24358056151`) is **paused and stays paused**. It costs nothing; delete it in Google Ads if you don't want it there.
+Meta (Facebook + Instagram) and TikTok for both lines: **`docs/ads/meta-tiktok-shirts.md`** (campaigns, audiences, budgets, kill/scale rules) and the video ads in **`ads/hyperframes/`**. The Microsoft campaign (`docs/ads/microsoft-ads-company-shirts.csv`) is still there, paused — turn it on later if you want search traffic too; its ad copy says "No minimum · Free US shipping", update the "Ships in 2–3 days" callout to "Printed in 2–4 days" first.
 
-## How to beat the big shirt companies
-
-They win on 200 identical shirts. You win on **1–50 shirts, fast**:
-
-- **Speed:** "Ships in 2–3 days from Atlanta" vs their 1–2 weeks. It's in every ad and on the page. Keep the promise.
-- **No minimum + no setup fees + live mockup:** they quote, email a proof and want 12–24 minimum.
-- **Reorders:** new hires mean steady reorders. Every *Shirt Designs* row is saved, so a reorder is "same design, 2 more in L". Text past buyers every 60–90 days.
-- **Bundle with what you already sell:** offer review cards on the shirt thank-you email, and shirts to every booked-call / review-card customer (they're business owners, already in your sheet).
-- **Atlanta first:** later, add a Microsoft ad group targeted to a 30-mile radius around Atlanta with "Local pickup / same-day" headlines. Locals pay more for speed.
-
-## Tracking (already live — nothing to install)
+## Tracking (live — nothing to install on the site)
 
 | Step | Event | Where it goes |
 | --- | --- | --- |
-| Page view | `view_item` (SKU `CT-TEE-SS` / `CT-TEE-LS`) | Microsoft UET `view_item`, GA4, Meta ViewContent |
-| First logo upload / text | `customize_product` | UET `customize_product`, Meta CustomizeProduct, TikTok, GA4 |
-| Order button | `add_to_cart` → `begin_checkout` (value = order total) | UET, GA4, Meta, TikTok, Clarity |
-| Paid order | `purchase` | Shopify custom pixel → UET + GA4; Facebook & Instagram app → Meta |
+| Page view | `view_item` (SKU `CT-TEE-SS` / `CT-MERCH-SS` …) | Meta ViewContent, TikTok ViewContent, GA4, UET |
+| First upload / text / font / drag | `customize_product` | Meta CustomizeProduct, TikTok, GA4, UET |
+| Order button | `add_to_cart` → `begin_checkout` (value = order total) | Meta (Pixel + Conversions API), TikTok (Pixel + Events API), GA4, UET, Clarity |
+| Paid order | `purchase` | Meta: Shopify **Facebook & Instagram** app · TikTok: Shopify **TikTok** app · GA4 + UET: Shopify custom pixel |
 
 ## One-time setup checklist
 
-1. **Apps Script** (required, or designs won't reach the sheet): paste the new `docs/leads-apps-script.js` (keep your real `SECRET`) → **Deploy → Manage deployments → Edit → New version → Deploy** → allow **Drive** access → run `setupSheet` once.
-2. Shopify → Settings → Shipping: US rate **free** (the page promises it).
-3. Team pricing is live as two automatic discounts (10% off 12+, 15% off 24+). If you change them, change `SHIRT.tiers` in `src/config/site.ts`.
-4. Buy the press kit and open the blank + DTF supplier accounts.
-5. Deploy the site, place one real test order (refund it), check the *Shirt Orders* row and the Microsoft **Purchase** goal, then import and enable the Microsoft campaign.
+1. **Apps Script** (required): paste the new `docs/leads-apps-script.js` (keep your real `SECRET`; check `ORDER_EMAIL`) → **Deploy → Manage deployments → Edit → New version → Deploy** → allow **Drive** and **Gmail (send mail)** → run `setupSheet` once. New columns (Type, Print partner order #, Print partner cost $) are added to the tabs automatically.
+2. Printify account + payment card (above).
+3. Shopify → Settings → Shipping: US rate **Free** (both pages promise it).
+4. Deploy the site, place one real test order on each page (refund it), check the *Shirt Orders* row + email, place it on Printify as a dry run (cancel before production) so you know the clicks.
+5. TikTok: install the **TikTok** sales channel app on Shopify (purchases), then set `VITE_TIKTOK_PIXEL_ID` + `TIKTOK_ACCESS_TOKEN` in Vercel (`docs/tracking-setup.md`).
 
-Product photos: `node scripts/shirt-images.mjs` regenerates them. Once you've pressed your first shirts, replace them with real photos — they'll sell better.
+Product photos: `node scripts/shirt-images.mjs` regenerates both lines. Replace them with real photos of your first orders as soon as you have them.
+
+## Phase 2: your own print shop (when volume justifies it)
+
+At ~40+ shirts a week, pressing in-house doubles profit per shirt (≈ $14–17 vs ≈ $10–12). The kit: 16" × 20" heat press ($250–500), DTF transfers from a local gang-sheet printer (≈ $2.50 a big front, 40¢ a left chest), blanks from S&S Activewear / SanMar / Jiffy (≈ $4), poly mailers, Shopify Shipping labels. Press at 300–325°F, 10–15 s, medium-firm pressure; center front starts about 3" below the collar. The print files the site already makes (300 DPI PNG) are exactly what gang-sheet builders want — nothing on the site changes, only who presses the shirt.

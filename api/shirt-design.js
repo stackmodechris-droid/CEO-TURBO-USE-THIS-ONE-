@@ -1,4 +1,4 @@
-// POST /api/shirt-design — a finished custom shirt design from /custom-company-t-shirts.
+// POST /api/shirt-design — a finished custom shirt design from /custom-company-t-shirts or /artist-merch.
 // The print-ready PNG(s) and a mockup JPEG go to the leads Apps Script, which saves them to a Google
 // Drive folder and adds a row to the "Shirt Designs" tab (with the Drive links). The buyer then
 // checks out on Shopify; every cart line carries the same Design ID, so a paid order on the
@@ -26,7 +26,7 @@ const SIZES = ["S", "M", "L", "XL", "2XL", "3XL"];
 /** Validates a design. Returns { design } or { error } (exported for tests). */
 export function cleanDesign(body) {
   const designId = text(body.designId, 40);
-  if (!/^CT-[A-Z0-9]{6,12}$/.test(designId)) return { error: "designId" };
+  if (!/^(CT|AM)-[A-Z0-9]{6,12}$/.test(designId)) return { error: "designId" };
   const front = dataUrl(body.frontPng, "image/png");
   if (!front) return { error: "frontPng" };
   const back = body.backPng ? dataUrl(body.backPng, "image/png") : "";
@@ -35,6 +35,8 @@ export function cleanDesign(body) {
   const sizes = Object.fromEntries(SIZES.map((s) => [s, Math.max(0, Math.min(999, Math.floor(Number(body.sizes?.[s]) || 0)))]).filter(([, q]) => q > 0));
   return {
     design: {
+      // The design id prefix decides the line (AM- = artist merch), never the browser's own label.
+      kind: designId.startsWith("AM-") ? "Artist merch" : "Company shirt",
       designId,
       style: text(body.style, 20),
       color: text(body.color, 30),
@@ -42,8 +44,9 @@ export function cleanDesign(body) {
       backPrint: back ? "Yes" : "No",
       text: text(body.text, 80),
       subtext: text(body.subtext, 80),
-      backText: text(body.backText, 80),
-      logoName: text(body.logoName, 120),
+      backText: text(body.backText, 600),
+      logoName: text(body.logoName, 160),
+      font: text(body.font, 30),
       dpi: Math.max(0, Math.min(600, Number(body.dpi) || 0)),
       sizes: Object.entries(sizes).map(([s, q]) => `${s}×${q}`).join(", "),
       quantity: Object.values(sizes).reduce((n, q) => n + q, 0),

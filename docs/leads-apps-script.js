@@ -9,6 +9,7 @@
 
 const SECRET = "REPLACE_WITH_LEADS_WEBHOOK_SECRET"; // same value as LEADS_WEBHOOK_SECRET in Vercel (copy in docs/leads-apps-script.local.js, gitignored)
 const SHEET_ID = "1sToqSfGp6eDAowaqvmtKxDPUHqDGNUruWsnIUzkr1GI"; // FREE Lead Magnet Leads (works even if this script is not attached to the sheet)
+const ORDER_EMAIL = "stackmodenetwork@gmail.com"; // gets an email for every paid shirt order ("" = off)
 
 // header label shown in the sheet  ->  field name sent by the website
 const ATTR = {
@@ -137,11 +138,12 @@ const TABS = {
     ATTR,
     { "Form page": "page", "Order ID": "orderId", "Event ID": "eventId" }
   ),
-  // Custom company shirts (/custom-company-t-shirts). Every finished design lands here with its print-ready
-  // PNG saved to Google Drive; when it's paid, Status flips to "Paid" and the order number is filled in.
+  // Custom shirts (/custom-company-t-shirts and /artist-merch). Every finished design lands here with its
+  // print-ready PNG saved to Google Drive; when it's paid, Status flips to "Paid" and the order number is filled in.
   "Shirt Designs": Object.assign(
     {
       Received: "receivedAt",
+      Type: "kind",
       "Design ID": "designId",
       Preview: "preview",
       Status: "",
@@ -161,24 +163,28 @@ const TABS = {
       Mockup: "mockupUrl",
       "Print DPI": "dpi",
       "Logo file": "logoName",
-      Company: "business",
+      Font: "font",
+      "Company / artist": "business",
     },
     ATTR,
     { "Form page": "page" }
   ),
-  // Paid shirt orders = the press queue: add each "New" row's print file to your next DTF gang sheet
-  // (× the quantity), press, pack, ship — moving Status along and pasting the tracking number.
+  // Paid shirt orders = the to-do list: place each "New" row with the print partner (Printify manual order:
+  // print file + sizes + ship-to), paste their order # and cost, then the tracking number when it ships.
+  // docs/company-shirts.md has the step-by-step.
   "Shirt Orders": Object.assign(
     {
       Received: "receivedAt",
+      Type: "kind",
       "Order #": "orderNumber",
       Status: "",
-      "Gang sheet / transfer order #": "",
+      "Print partner order #": "",
+      "Print partner cost $": "",
       Tracking: "",
       Name: "name",
       Email: "email",
       Phone: "phone",
-      Company: "business",
+      "Company / artist": "business",
       "Sizes (style / color / size / print × qty)": "sizes",
       Quantity: "quantity",
       Total: "total",
@@ -212,8 +218,8 @@ const STATUS = {
   ],
   "Shirt Orders": [
     ["New", "#ffd8b3", "#7a3b00"],
-    ["Transfers ordered", "#fff2b3", "#6b5200"],
-    ["Pressed & packed", "#cce0ff", "#1a3a6b"],
+    ["Ordered from printer", "#fff2b3", "#6b5200"],
+    ["In production", "#cce0ff", "#1a3a6b"],
     ["Shipped", "#d4edda", "#1e5631"],
     ["Delivered", "#a8e6a8", "#0f4d0f"],
     ["Issue", "#f8c9c9", "#7a1212"],
@@ -414,8 +420,28 @@ function doPost(e) {
     if (name === "Shirt Designs") sheet.setRowHeight(next, 110);
     // Optional: email yourself every lead
     // MailApp.sendEmail("you@example.com", "New lead: " + data.name, JSON.stringify(data, null, 2));
-    // A new paid shirt order: email yourself so it goes to the printer the same day.
-    // if (name === "Shirt Orders") MailApp.sendEmail("you@example.com", "Shirt order " + data.orderNumber + " — add to the next gang sheet", data.sizes + "\n" + data.printFile);
+    // A new paid shirt order: email yourself so it goes to the print partner the same day.
+    if (name === "Shirt Orders" && ORDER_EMAIL) {
+      try {
+        MailApp.sendEmail(
+          ORDER_EMAIL,
+          "💰 Shirt order " + (data.orderNumber || "") + " — " + (data.kind || "") + " — place it with the printer",
+          [
+            "Total: " + (data.total || ""),
+            "Sizes: " + (data.sizes || ""),
+            "Print file: " + (data.printFile || "(see Shirt Designs tab)"),
+            "Placement: " + (data.placement || ""),
+            "Back: " + (data.backText || "none"),
+            "",
+            "Ship to: " + (data.name || ""),
+            data.shipTo || "",
+            "Phone: " + (data.phone || "") + "  Email: " + (data.email || ""),
+            "",
+            "Steps: Printify → Orders → Create order (manual) → product + print file above → paste the address → pay → put the order # and cost in the sheet.",
+          ].join("\n")
+        );
+      } catch (e) {}
+    }
     if (name === "Shirt Designs") return ContentService.createTextOutput(JSON.stringify({ ok: true, front: data.frontUrl, back: data.backUrl, mockup: data.mockupUrl }));
     return ContentService.createTextOutput("ok");
   } finally {

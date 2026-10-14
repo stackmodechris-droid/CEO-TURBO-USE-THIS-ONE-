@@ -24,7 +24,8 @@ npm run indexnow   # after deploying: push every URL to Bing/IndexNow
 | Free audit engine (runs on Vercel) | `api/audit.js`, `api/_lib/audit.js` |
 | Lead capture → Google Sheet / CRM | `api/lead.js`, `api/_lib/leads.js`, `docs/leads-google-sheet.md` |
 | Audit UI | `src/components/audit/` |
-| Custom company t-shirt designer + store (in-house DTF, Microsoft Ads) | `src/pages/CompanyShirts.tsx`, `src/components/shirts/`, `api/shirt-design.js`, `docs/company-shirts.md` |
+| Custom shirt designer + stores: company t-shirts and artist merch (manual dropship via Printify) | `src/pages/CompanyShirts.tsx`, `src/pages/ArtistMerch.tsx`, `src/components/shirts/`, `api/shirt-design.js`, `docs/company-shirts.md`, `docs/artist-merch.md` |
+| Shirt video ads (HyperFrames, 9:16) + Meta/TikTok playbook | `ads/hyperframes/build.mjs` (`npm run ads:build`, `npm run ads:render`), `docs/ads/meta-tiktok-shirts.md` |
 | Review card store + setup guide | `src/pages/ReviewCards.tsx`, `src/pages/ReviewCardSetup.tsx`, `src/components/shop/`, `src/content/review-cards.ts` |
 | Security headers / CSP (keep `vercel.json` in sync — a test checks) | `src/config/headers.ts` |
 | Client sites (20 case studies) | `src/content/clients.ts` |

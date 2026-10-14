@@ -1,4 +1,4 @@
-import { forwardRef, useId } from "react";
+import { forwardRef, useId, useRef, type PointerEvent } from "react";
 import ART from "@/content/shirt-art.json";
 import type { ShirtStyle } from "@/config/site";
 import { AREAS, type Placement } from "./art";
@@ -15,11 +15,27 @@ type Props = {
   guide?: boolean;
   className?: string;
   title?: string;
+  /** Drag the design inside the print area: called with the move as a share of the area's width / height. */
+  onMove?: (dx: number, dy: number) => void;
 };
 
 /** Flat-lay T-shirt mockup (short or long sleeve, front or back) with the design in its print area. */
-export const ShirtMockup = forwardRef<SVGSVGElement, Props>(function ShirtMockup({ style, color, dark, side, art, placement, guide, className, title }, ref) {
+export const ShirtMockup = forwardRef<SVGSVGElement, Props>(function ShirtMockup({ style, color, dark, side, art, placement, guide, className, title, onMove }, ref) {
   const id = useId().replace(/:/g, "");
+  const drag = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
+  const onDown = (e: PointerEvent<SVGRectElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    drag.current = { x: e.clientX, y: e.clientY, w: r.width, h: r.height };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onDrag = (e: PointerEvent<SVGRectElement>) => {
+    const d = drag.current;
+    if (!d || !onMove) return;
+    onMove((e.clientX - d.x) / d.w, (e.clientY - d.y) / d.h);
+    d.x = e.clientX;
+    d.y = e.clientY;
+  };
+  const onUp = () => (drag.current = null);
   const body = style === "long" ? ART.long : ART.short;
   const area = AREAS[side === "back" ? "back" : placement];
   const shade = dark ? 0.35 : 0.14;
@@ -60,6 +76,11 @@ export const ShirtMockup = forwardRef<SVGSVGElement, Props>(function ShirtMockup
         <path d="M146 598 C240 611 360 611 454 598" fill="none" stroke="#000" strokeOpacity={dark ? 0.5 : 0.2} strokeWidth="1.5" strokeDasharray="5 4" />
         {guide && <rect x={area.x} y={area.y} width={area.w} height={area.h} fill="none" stroke={dark ? "#fff" : "#000"} strokeOpacity="0.35" strokeDasharray="6 5" rx="4" />}
         {art && <image href={art} x={area.x} y={area.y} width={area.w} height={area.h} preserveAspectRatio="xMidYMin meet" style={{ mixBlendMode: dark ? "normal" : "multiply" }} />}
+        {onMove && art && (
+          <rect x={area.x} y={area.y} width={area.w} height={area.h} fill="transparent" style={{ cursor: "move", touchAction: "none" }} onPointerDown={onDown} onPointerMove={onDrag} onPointerUp={onUp} onPointerCancel={onUp}>
+            <title>Drag to move the design</title>
+          </rect>
+        )}
       </g>
     </svg>
   );

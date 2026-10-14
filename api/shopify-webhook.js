@@ -47,14 +47,16 @@ export function parseOrder(o) {
   // Custom shirts: every cart line carries the design's properties (Design ID, Print file…), see src/lib/shopify.ts.
   const lines = Array.isArray(o.line_items) ? o.line_items : [];
   const props = (li) => Object.fromEntries((Array.isArray(li?.properties) ? li.properties : []).map((p) => [str(p?.name, 60), str(p?.value, 300)]));
-  const shirtLines = lines.filter((li) => props(li)["Design ID"] || /company t-shirt/i.test(String(li?.title || "")));
+  const shirtLines = lines.filter((li) => props(li)["Design ID"] || /company t-shirt|artist merch/i.test(String(li?.title || "")));
   const design = shirtLines.length ? props(shirtLines[0]) : {};
-  const shipTo = [ship.address1, ship.city, ship.province_code, ship.zip, ship.country_code].map((x) => str(x, 80)).filter(Boolean).join(", ");
+  // The full address: shirts are dropshipped, so this is what gets pasted into the print partner's order.
+  const shipTo = [ship.address1, ship.address2, ship.city, ship.province_code, ship.zip, ship.country_code].map((x) => str(x, 80)).filter(Boolean).join(", ");
   return {
     type: shirtLines.length ? "shirt-order" : "shopify-order",
     ...(shirtLines.length
       ? {
           designId: design["Design ID"] || notes["Design ID"] || "",
+          kind: /^AM-/.test(design["Design ID"] || notes["Design ID"] || "") || shirtLines.some((li) => /artist merch/i.test(String(li?.title || ""))) ? "Artist merch" : "Company shirt",
           printFile: design["Print file"] || "",
           placement: design.Placement || "",
           frontText: design["Front text"] || "",
@@ -68,7 +70,7 @@ export function parseOrder(o) {
     name,
     email: str(o.email || o.contact_email || cust.email, 200).toLowerCase(),
     phone: str(o.phone || ship.phone || bill.phone || cust.phone, 30),
-    business: notes["Business name"] || str(ship.company || bill.company, 140),
+    business: notes["Business name"] || notes["Artist name"] || str(ship.company || bill.company, 140),
     items: items.join("; "),
     quantity: qty,
     total: `${str(o.total_price, 20)} ${str(o.currency, 5)}`.trim(),

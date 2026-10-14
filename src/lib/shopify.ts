@@ -2,7 +2,7 @@
 // Talks to the Storefront API with the public token (what the Buy Button SDK does under the hood,
 // without its 100 KB script or its UI). Purchase conversions are tracked on Shopify's side —
 // see docs/tracking-setup.md.
-import { SHIRT, SHOPIFY, type ReviewPack } from "@/config/site";
+import { SHOPIFY, type ReviewPack, type ShirtProduct } from "@/config/site";
 import { attribution } from "@/lib/track";
 
 type Variant = { id: string; availableForSale: boolean; price: { amount: string }; selectedOptions: { name: string; value: string }[] };
@@ -133,9 +133,9 @@ export type ShirtLine = { options: Record<string, string>; quantity: number };
  * Custom shirt checkout: one cart line per size, each tagged with the design id and print file link
  * (line item properties show on the order and in the order webhook, so every order maps to its PNG).
  */
-export async function createShirtCheckout(lines: ShirtLine[], properties: Record<string, string>, business: string) {
-  if (!SHIRT.productId) throw new Error("Shirt product id not set");
-  const variants = await loadVariants(SHIRT.productId);
+export async function createShirtCheckout(product: ShirtProduct, lines: ShirtLine[], properties: Record<string, string>, business: string) {
+  if (!product.productId) throw new Error("Shirt product id not set");
+  const variants = await loadVariants(product.productId);
   const props = Object.entries(properties)
     .filter(([, v]) => v)
     .map(([key, value]) => ({ key, value: value.slice(0, 250) }));
@@ -144,5 +144,6 @@ export async function createShirtCheckout(lines: ShirtLine[], properties: Record
     if (!v) throw new Error(`No Shopify variant for ${Object.values(l.options).join(" / ")}`);
     return { merchandiseId: v.id, quantity: l.quantity, attributes: props };
   });
-  return cartCheckout(cartLines, attributionAttributes({ "Business name": business.trim(), "Design ID": properties["Design ID"] }));
+  const who = product.kind === "artist" ? "Artist name" : "Business name";
+  return cartCheckout(cartLines, attributionAttributes({ [who]: business.trim(), "Design ID": properties["Design ID"] }));
 }
