@@ -67,6 +67,21 @@
       "permanent": true
     },
     {
+      "source": "/apps",
+      "destination": "/app-marketing",
+      "permanent": true
+    },
+    {
+      "source": "/email",
+      "destination": "/services/email-marketing",
+      "permanent": true
+    },
+    {
+      "source": "/services/tracking",
+      "destination": "/services/conversion-tracking",
+      "permanent": true
+    },
+    {
       "source": "/digital-business-card",
       "destination": "/google-review-cards",
       "permanent": true
