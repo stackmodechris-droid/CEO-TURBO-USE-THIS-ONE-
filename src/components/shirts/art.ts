@@ -13,6 +13,8 @@ export type ArtInput = {
   ink: string;
   /** Logo width as a share of the print area, 0.3–1. */
   logoScale: number;
+  /** QR code modules (true = dark), printed under the text in the ink color. */
+  qr?: boolean[][] | null;
 };
 
 /** Print-area size in pixels at 300 DPI (what DTF gang-sheet printers ask for): 12" × 16" front/back, 4" × 4" chest. */
@@ -51,13 +53,18 @@ export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h
   const subSize = w * (square ? 0.085 : 0.055);
   const gap = w * 0.04;
 
+  const qr = input.qr?.length ? input.qr : null;
+  // Quiet zone of 2 modules around the code so phones can find its edges.
+  const qrSize = qr ? Math.round(w * (square ? 0.5 : 0.36)) : 0;
+  const qrRoom = qr ? qrSize + gap : 0;
+
   let logoW = 0;
   let logoH = 0;
   const logo = input.logo;
   if (logo) {
     const lw = "naturalWidth" in logo ? logo.naturalWidth : logo.width;
     const lh = "naturalHeight" in logo ? logo.naturalHeight : logo.height;
-    const textRoom = (text ? titleSize * 1.25 + gap : 0) + (sub ? subSize * 1.3 + gap * 0.5 : 0);
+    const textRoom = (text ? titleSize * 1.25 + gap : 0) + (sub ? subSize * 1.3 + gap * 0.5 : 0) + qrRoom;
     const maxW = w * Math.min(1, Math.max(0.2, input.logoScale));
     const maxH = Math.max(h * 0.25, (square ? h : h * 0.7) - textRoom);
     const k = Math.min(maxW / lw, maxH / lh);
@@ -68,7 +75,7 @@ export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h
   ctx.fillStyle = input.ink;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  const blockH = logoH + (logo && (text || sub) ? gap : 0) + (text ? titleSize * 1.1 : 0) + (sub ? (text ? gap * 0.5 : 0) + subSize * 1.15 : 0);
+  const blockH = logoH + (logo && (text || sub) ? gap : 0) + (text ? titleSize * 1.1 : 0) + (sub ? (text ? gap * 0.5 : 0) + subSize * 1.15 : 0) + (qr && (logo || text || sub) ? gap : 0) + qrSize;
   // Chest prints are centered in their box; front and back prints start near the collar.
   let y = square ? Math.max(0, (h - blockH) / 2) : 0;
   if (logo) {
@@ -82,8 +89,18 @@ export function drawArt(canvas: HTMLCanvasElement, input: ArtInput, w: number, h
     y += s * 1.1 + (sub ? gap * 0.5 : 0);
   }
   if (sub) {
-    fitText(ctx, sub, 600, subSize, w * 0.98);
+    const s = fitText(ctx, sub, 600, subSize, w * 0.98);
     ctx.fillText(sub, w / 2, y);
+    y += s * 1.15;
+  }
+  if (qr) {
+    if (logo || text || sub) y += gap;
+    const n = qr.length;
+    const cell = qrSize / (n + 4);
+    const x0 = (w - qrSize) / 2 + cell * 2;
+    const y0 = y + cell * 2;
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++) if (qr[r][c]) ctx.fillRect(Math.floor(x0 + c * cell), Math.floor(y0 + r * cell), Math.ceil(cell), Math.ceil(cell));
   }
   return canvas;
 }

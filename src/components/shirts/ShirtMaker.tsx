@@ -61,6 +61,8 @@ export function ShirtMaker() {
   const [backText, setBackText] = useState("");
   const [backSub, setBackSub] = useState("");
   const [backLogo, setBackLogo] = useState(false);
+  const [backQr, setBackQr] = useState("");
+  const [qrCells, setQrCells] = useState<boolean[][] | null>(null);
   const [sizes, setSizes] = useState<Sizes>({ M: 1, L: 1 });
   const [side, setSide] = useState<"front" | "back">("front");
   const [frontArt, setFrontArt] = useState<string | null>(null);
@@ -86,9 +88,27 @@ export function ShirtMaker() {
     [hasDesign, logoSrc, text, subtext, ink, logoScale, placement],
   );
   const backInput: ArtInput = useMemo(
-    () => ({ logo: backLogo ? logoSrc : null, text: backText || (backLogo ? "" : "STAFF"), subtext: backSub, ink, logoScale: 0.7 }),
-    [backLogo, logoSrc, backText, backSub, ink],
+    () => ({ logo: backLogo ? logoSrc : null, text: backText || (backLogo || qrCells ? "" : "STAFF"), subtext: backSub, ink, logoScale: 0.7, qr: qrCells }),
+    [backLogo, logoSrc, backText, backSub, ink, qrCells],
   );
+  const qrLink = backQr.trim();
+
+  // QR code for the back print (menu, booking page, Linktree, socials…): built from the link as they type.
+  useEffect(() => {
+    if (!back || !qrLink) return setQrCells(null);
+    let live = true;
+    import("qrcode-generator").then(({ default: qrcode }) => {
+      if (!live) return;
+      const q = qrcode(0, "M");
+      q.addData(/^[a-z][a-z0-9+.-]*:/i.test(qrLink) ? qrLink : `https://${qrLink}`);
+      q.make();
+      const n = q.getModuleCount();
+      setQrCells(Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => q.isDark(r, c))));
+    });
+    return () => {
+      live = false;
+    };
+  }, [back, qrLink]);
 
   // Ad / sitelink links can preselect: ?style=long&color=navy
   useEffect(() => {
@@ -158,7 +178,7 @@ export function ShirtMaker() {
     setError("");
     if (!hasDesign) return setError("Upload your logo or type your company name first.");
     if (qty < 1) return setError("Add at least one shirt size.");
-    if (back && !backText.trim() && !backSub.trim() && !backLogo) return setError("Add text or your logo for the back print — or turn the back print off.");
+    if (back && !backText.trim() && !backSub.trim() && !backLogo && !qrLink) return setError("Add text, your logo or a QR link for the back print — or turn the back print off.");
     const ecommerce = ecommerceFor(style, back, color.name, sizes);
     serverTrack("add_to_cart", track("add_to_cart", { content_name: SHIRT.name, quantity: qty }, { ecommerce }), serverEcommerce(ecommerce));
     setBusy("saving");
@@ -186,7 +206,7 @@ export function ShirtMaker() {
           dpi: front.dpi,
           text,
           subtext,
-          backText: back ? [backText, backSub].filter(Boolean).join(" · ") || (backLogo ? "Logo" : "") : "",
+          backText: back ? [backText, backSub, qrLink && `QR: ${qrLink}`].filter(Boolean).join(" · ") || (backLogo ? "Logo" : "") : "",
           logoName: logo?.name ?? "",
           sizes,
           total,
@@ -213,7 +233,8 @@ export function ShirtMaker() {
           Placement: placeLabel,
           "Print file": printLink,
           "Front text": [text, subtext].filter(Boolean).join(" · "),
-          ...(back ? { "Back text": [backText, backSub].filter(Boolean).join(" · ") || (backLogo ? "Logo" : "STAFF") } : {}),
+          ...(back ? { "Back text": [backText, backSub].filter(Boolean).join(" · ") || (backLogo ? "Logo" : qrLink ? "QR code" : "STAFF") } : {}),
+          ...(back && qrLink ? { "QR link": qrLink } : {}),
         },
         text,
       );
@@ -405,6 +426,11 @@ export function ShirtMaker() {
                     Put my logo on the back too
                   </label>
                 )}
+                <label htmlFor={`${uid}-qr`} className="mt-4 block text-sm font-semibold">
+                  QR code <span className="font-normal text-muted-foreground">— optional, free</span>
+                </label>
+                <input id={`${uid}-qr`} className="field mt-1.5" value={backQr} onChange={(e) => setBackQr(e.target.value)} placeholder="Link to your site, menu, booking page or socials" inputMode="url" maxLength={300} onFocus={() => setSide("back")} />
+                <p className="mt-1 text-xs text-muted-foreground">Printed big on the back so people can scan it from across the room. Test it with your phone camera on the preview.</p>
               </div>
             )}
           </fieldset>
