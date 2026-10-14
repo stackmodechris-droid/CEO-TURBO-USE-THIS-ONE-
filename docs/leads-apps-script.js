@@ -200,6 +200,21 @@ const TABS = {
     ATTR,
     { "Order ID": "orderId" }
   ),
+  "Dev Intake Leads": Object.assign(
+    {
+      Received: "receivedAt",
+      Name: "name",
+      Email: "email",
+      "App / repo / site": "appUrl",
+      Platform: "platform",
+      Stage: "stage",
+      "Monthly ad budget": "budget",
+      "What's stopping installs": "blocker",
+      Type: "type",
+    },
+    ATTR,
+    { "Form page": "page", "Event ID": "eventId" }
+  ),
   "Other Leads": Object.assign({ Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Company: "business", Type: "type", Note: "note" }, ATTR, { "Form page": "page" }),
 };
 
@@ -245,6 +260,7 @@ function tabFor(type) {
   if (type === "order-request" || type === "shopify-order") return "Card Orders";
   if (type === "shirt-design") return "Shirt Designs";
   if (type === "shirt-order") return "Shirt Orders";
+  if (type === "dev-intake") return "Dev Intake Leads";
   return "Other Leads";
 }
 

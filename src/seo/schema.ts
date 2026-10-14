@@ -368,6 +368,20 @@ export const itemList = (name: string, items: { name: string; path: string }[]):
   itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, url: abs(it.path) })),
 });
 
+/** Marketing for software developers (/app-marketing): the packages from pricing.ts as the offers. */
+export const devMarketing = (): JsonLd => ({
+  "@type": "Service",
+  "@id": `${SITE.url}/app-marketing#service`,
+  name: "Marketing for software developers",
+  serviceType: "App and software marketing",
+  description: "Landing page, conversion tracking, Reddit, Meta, TikTok and Google ads, SEO and a launch plan for indie developers and small software teams. Starts with a free 30-minute growth call.",
+  url: abs("/app-marketing"),
+  provider: { "@id": ORG_ID },
+  audience: { "@type": "Audience", audienceType: "Software developers, indie hackers and small SaaS and app teams" },
+  areaServed: { "@type": "Country", name: "United States" },
+  offers: PACKAGES.map(priceOffer),
+});
+
 /** The Brand Boost call as a named, free service — helps "CEO Turbo Brand Boost" searches resolve to us. */
 export const brandBoost = (): JsonLd => ({
   "@type": "Service",
