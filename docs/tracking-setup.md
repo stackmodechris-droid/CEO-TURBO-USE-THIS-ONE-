@@ -98,6 +98,7 @@ GTM (GTM-KRPRZ67Z) stays on the site for anything you add later. Its old Google 
 - [ ] Run a free check with your real email: **Lead** appears twice (Browser + Server) and is marked *deduplicated*.
 - [ ] Take the quiz on `/brand-boost` with your real email: **Lead** (Browser + Server, deduplicated) and a row on the *Call Quiz Leads* tab.
 - [ ] Book a test call from the quiz calendar: **Schedule** appears from Browser + Server; a row lands on *Booked Calls* and the quiz row flips to **Booked? = Yes**.
+- [ ] **Microsoft Ads (UET `187280408`):** install the *UET Tag Helper* Chrome extension, take the quiz and book a test call. The helper shows the tag firing, then **`book_appointment`** once (event category `lead`, label `brand-boost-quiz`, revenue = the quiz call value). In Microsoft Ads → Conversion goals, the goal *Event → action equals `book_appointment`* must exist; its status turns to "Recording conversions" within a few hours. The same booking arrives in Google Ads as `book_call` (transaction id `book_<uid>`, so it is never counted twice).
 - [ ] After the labels are in: a test free check shows the Google Ads *Lead* conversion as "Recording" within ~3h.
 - [ ] Place a real $24.99 order (refund it afterwards): Meta **Purchase**, GA4 **purchase** (Realtime), Google Ads conversion (shows within ~3h), and the order shows the gclid/fbclid notes.
 - [ ] Delete `META_TEST_EVENT_CODE`, then redeploy.

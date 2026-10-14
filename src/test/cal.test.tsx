@@ -38,6 +38,16 @@ describe("Cal.com embed loader", () => {
     expect(init?.[2]).toEqual({ origin: "https://app.cal.com" });
   });
 
+  it("listens for a finished booking on both calendars (the quiz's and the site-wide modal)", () => {
+    void loadCal("brandboostquiz");
+    for (const ns of ["brandboost", "brandboostquiz"]) {
+      const actions = queue(ns)
+        .filter((a) => a[0] === "on")
+        .map((a) => (a[1] as { action: string }).action);
+      expect(actions).toContain("bookingSuccessfulV2");
+    }
+  });
+
   it("reports a booking page that fails to load, so the visitor gets a working link instead of a blank box", async () => {
     document.body.innerHTML = '<div id="cal-test"></div>';
     const { mountInlineBooking, QUIZ_NS } = await import("@/lib/cal");
