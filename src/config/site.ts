@@ -155,7 +155,8 @@ export const NFC_APP = {
 } as const;
 
 /**
- * Custom company T-shirts (print on demand, dropshipped). Checkout is the same headless Shopify
+ * Custom company T-shirts, printed (full-color DTF transfers, heat-pressed) and shipped by CEO Turbo
+ * from Atlanta — docs/company-shirts.md has the in-house workflow. Checkout is the same headless Shopify
  * flow as the review cards. Shopify allows 3 options, so the product has Style (sleeves + print sides,
  * see `shirtStyleOption`), Color and Size; every variant price matches `shirtUnitPrice` below
  * (docs/company-shirts.md).
@@ -196,10 +197,11 @@ export const SHIRT = {
   shipping: {
     label: "Free US shipping",
     /** Printed to order, then shipped. */
-    production: "Printed in 2–5 business days",
-    delivery: "Arrives 3–5 business days after it ships",
-    minDays: 5,
-    maxDays: 10,
+    /** Pressed and packed in-house in Atlanta. */
+    production: "Pressed and shipped from Atlanta in 2–3 business days",
+    delivery: "Arrives 2–5 business days after it ships (USPS)",
+    minDays: 4,
+    maxDays: 8,
   },
   returnDays: 30,
   guarantee: "Misprint, wrong size from us or damaged in shipping? Tell us within 30 days of delivery with a photo and we reprint it free.",

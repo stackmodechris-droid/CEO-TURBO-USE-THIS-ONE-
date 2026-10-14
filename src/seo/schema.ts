@@ -236,7 +236,7 @@ export const reviewCardProduct = (): JsonLd => ({
 });
 
 const SHIRT_DESCRIPTION =
-  "Custom company t-shirts with your logo, designed online with a live preview. Short and long sleeve, 100% ring-spun cotton, Black, White, Navy or Sport Grey, unisex S–3XL. Full-color DTG print up to 12 × 16 in on the front (or a 4 × 4 in left-chest logo) plus an optional back print. No minimum order, 10% off 12+ and 15% off 24+, free US shipping.";
+  "Custom company t-shirts with your logo, designed online with a live preview. Short and long sleeve, 100% ring-spun cotton, Black, White, Navy or Sport Grey, unisex S–3XL. Full-color DTF transfer, heat-pressed in Atlanta, up to 12 × 16 in on the front (or a 4 × 4 in left-chest logo) plus an optional back print. No minimum order, 10% off 12+ and 15% off 24+, free US shipping.";
 
 /** Custom shirt product group: one variant per sleeve style × print (prices from SHIRT, sizes S–3XL). */
 export const shirtProduct = (): JsonLd => ({
@@ -274,8 +274,8 @@ export const shirtProduct = (): JsonLd => ({
           shippingDestination: { "@type": "DefinedRegion", addressCountry: "US" },
           deliveryTime: {
             "@type": "ShippingDeliveryTime",
-            handlingTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
-            transitTime: { "@type": "QuantitativeValue", minValue: 3, maxValue: 5, unitCode: "DAY" },
+            handlingTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 3, unitCode: "DAY" },
+            transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 5, unitCode: "DAY" },
           },
         },
         hasMerchantReturnPolicy: {

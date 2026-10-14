@@ -11,12 +11,12 @@ const t24 = Math.round(SHIRT.tiers[2].off * 100);
 export const SHIRT_STEPS = [
   { title: "Upload your logo", body: "PNG, JPG or SVG. White box behind it? One tap removes it so it prints clean on dark shirts." },
   { title: "Pick sleeves, color and sizes", body: "Short or long sleeve, 4 colors, S to 3XL — mix sizes in one order, 1 shirt or 100." },
-  { title: "Check out — we print and ship", body: `${SHIRT.shipping.production}, then ${SHIRT.shipping.delivery.toLowerCase()}. Free US shipping.` },
+  { title: "Check out — we press and ship", body: `${SHIRT.shipping.production}, then ${SHIRT.shipping.delivery.toLowerCase()}. Free US shipping.` },
 ];
 
 export const SHIRT_POINTS = [
   { title: "No minimum", body: "Order 1 shirt for a new hire or 50 for the whole crew." },
-  { title: "Full-color logos", body: "Printed straight on the shirt (DTG) — every color, no screen fees." },
+  { title: "Full-color logos", body: "Any colors, gradients or photos — same price, no screen fees." },
   { title: `Save ${t24}% on 24+`, body: `${t12}% off at 12 shirts, ${t24}% off at 24. Applied at checkout.` },
   { title: "Free reprint promise", body: `Misprint or damaged? Photo within ${SHIRT.returnDays} days, we reprint it free.` },
 ];
@@ -37,6 +37,7 @@ export const SHIRT_COMPARE: [string, string, string, string][] = [
   ["See it before you buy", "Live mockup, 2 minutes", "Proof by email", "Proof in a day or two"],
   ["Full-color logo", "Same price", "Costs more per color", "Costs more per color"],
   ["One more for a new hire", "Order 1, same price", "Minimum applies again", "Call and wait"],
+  ["Turnaround", "Ships in 2–3 days from Atlanta", "Often 1–2 weeks", "Days to weeks"],
   ["Shipping", "Free in the US", "Often extra", "Pick up"],
 ];
 
@@ -66,12 +67,12 @@ export const SHIRT_FAQS: FAQ[] = [
     a: `Yes. Turn on “Back print” (+${money2(SHIRT.backPrintPrice)} per shirt) and add your website, phone number, “STAFF” or your logo across the back. The back is printed up to 12 × 16 inches.`,
   },
   {
-    q: "How are the shirts printed — screen print or DTG?",
-    a: "Direct-to-garment (DTG): the ink is printed straight into the cotton, so full-color logos, gradients and photos cost the same as one color, and there are no screens to pay for. It is soft to the touch and lasts wash after wash when washed inside out in cold water.",
+    q: "How are the shirts printed — screen print, DTG or DTF?",
+    a: "DTF (direct-to-film): your logo is printed in full color on a film transfer, then heat-pressed into the shirt by our team in Atlanta. Full-color logos, gradients and photos cost the same as one color, there are no screens to pay for, and the print stays bright on black and navy. Wash inside out in cold water and it lasts wash after wash.",
   },
   {
     q: "Will someone check my design before it prints?",
-    a: "Yes. A real person looks at every design before it goes to print. If the logo is blurry, cut off or the colors won't show on your shirt color, we email or text you before printing — not after.",
+    a: "Yes. We print and press every order ourselves, so a real person looks at every design before it goes to print. If the logo is blurry, cut off or the colors won't show on your shirt color, we email or text you before printing — not after.",
   },
   {
     q: "What if a shirt is misprinted or the wrong size?",

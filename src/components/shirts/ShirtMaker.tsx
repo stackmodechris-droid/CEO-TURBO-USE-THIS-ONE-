@@ -167,8 +167,9 @@ export function ShirtMaker() {
     const placeLabel = placement === "chest" ? "Left chest" : "Center front";
     let printLink = "";
     try {
-      const front = printPng(frontInput, placement);
-      const backFile = back ? printPng(backInput, "back") : null;
+      // Front + back + mockup stay under Vercel's 4.5 MB request limit.
+      const front = printPng(frontInput, placement, back ? 2_500_000 : 4_000_000);
+      const backFile = back ? printPng(backInput, "back", 1_500_000) : null;
       if (!front) throw new Error("too big");
       const mockup = frontSvg.current ? await svgToJpeg(frontSvg.current).catch(() => "") : "";
       const res = await fetch("/api/shirt-design", {

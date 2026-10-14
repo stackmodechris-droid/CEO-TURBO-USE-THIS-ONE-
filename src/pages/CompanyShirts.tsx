@@ -136,7 +136,7 @@ export default function CompanyShirts() {
       </section>
 
       <p className="container-x pb-10 text-xs leading-relaxed text-muted-foreground">
-        Only upload logos you own or have permission to use. Printed to order by our US print partner. See{" "}
+        Only upload logos you own or have permission to use. Printed, pressed and packed by our team in Atlanta, GA. See{" "}
         <Link to="/shipping-returns" className="underline underline-offset-2">
           shipping &amp; returns
         </Link>

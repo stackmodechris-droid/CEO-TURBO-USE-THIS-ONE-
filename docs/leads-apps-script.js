@@ -166,14 +166,14 @@ const TABS = {
     ATTR,
     { "Form page": "page" }
   ),
-  // Paid shirt orders = the dropship queue: submit each "New" row to the print partner with its print file,
-  // then set Status to "Sent to printer" and paste the tracking number.
+  // Paid shirt orders = the press queue: add each "New" row's print file to your next DTF gang sheet
+  // (× the quantity), press, pack, ship — moving Status along and pasting the tracking number.
   "Shirt Orders": Object.assign(
     {
       Received: "receivedAt",
       "Order #": "orderNumber",
       Status: "",
-      "Printer order #": "",
+      "Gang sheet / transfer order #": "",
       Tracking: "",
       Name: "name",
       Email: "email",
@@ -212,7 +212,8 @@ const STATUS = {
   ],
   "Shirt Orders": [
     ["New", "#ffd8b3", "#7a3b00"],
-    ["Sent to printer", "#cce0ff", "#1a3a6b"],
+    ["Transfers ordered", "#fff2b3", "#6b5200"],
+    ["Pressed & packed", "#cce0ff", "#1a3a6b"],
     ["Shipped", "#d4edda", "#1e5631"],
     ["Delivered", "#a8e6a8", "#0f4d0f"],
     ["Issue", "#f8c9c9", "#7a1212"],
@@ -220,7 +221,7 @@ const STATUS = {
   "Shirt Designs": [
     ["Designed", "#e8eef7", "#44546a"],
     ["Paid", "#ffd8b3", "#7a3b00"],
-    ["Sent to printer", "#cce0ff", "#1a3a6b"],
+    ["Shipped", "#d4edda", "#1e5631"],
   ],
   "Call Quiz Leads": [
     ["New", "#cce0ff", "#1a3a6b"],
@@ -414,7 +415,7 @@ function doPost(e) {
     // Optional: email yourself every lead
     // MailApp.sendEmail("you@example.com", "New lead: " + data.name, JSON.stringify(data, null, 2));
     // A new paid shirt order: email yourself so it goes to the printer the same day.
-    // if (name === "Shirt Orders") MailApp.sendEmail("you@example.com", "Shirt order " + data.orderNumber + " — send to printer", data.sizes + "\n" + data.printFile);
+    // if (name === "Shirt Orders") MailApp.sendEmail("you@example.com", "Shirt order " + data.orderNumber + " — add to the next gang sheet", data.sizes + "\n" + data.printFile);
     if (name === "Shirt Designs") return ContentService.createTextOutput(JSON.stringify({ ok: true, front: data.frontUrl, back: data.backUrl, mockup: data.mockupUrl }));
     return ContentService.createTextOutput("ok");
   } finally {

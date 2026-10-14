@@ -15,10 +15,10 @@ export type ArtInput = {
   logoScale: number;
 };
 
-/** Print-area size in pixels: 12" × 16" at 200 DPI for front/back, 4" × 4" at 300 DPI for the chest. */
+/** Print-area size in pixels at 300 DPI (what DTF gang-sheet printers ask for): 12" × 16" front/back, 4" × 4" chest. */
 export const PRINT_PX: Record<Placement, { w: number; h: number; inches: string }> = {
-  front: { w: 2400, h: 3200, inches: '12" × 16"' },
-  back: { w: 2400, h: 3200, inches: '12" × 16"' },
+  front: { w: 3600, h: 4800, inches: '12" × 16"' },
+  back: { w: 3600, h: 4800, inches: '12" × 16"' },
   chest: { w: 1200, h: 1200, inches: '4" × 4"' },
 };
 
@@ -136,9 +136,9 @@ export function hasWhiteBackground(img: HTMLImageElement) {
 export function printPng(input: ArtInput, placement: Placement, maxChars = 2_600_000) {
   const { w, h } = PRINT_PX[placement];
   const c = document.createElement("canvas");
-  for (const k of [1, 0.85, 0.7, 0.55]) {
+  for (const k of [1, 0.85, 0.7, 0.55, 0.45]) {
     const url = drawArt(c, input, Math.round(w * k), Math.round(h * k)).toDataURL("image/png");
-    if (url.length <= maxChars) return { url, dpi: Math.round((placement === "chest" ? 300 : 200) * k) };
+    if (url.length <= maxChars) return { url, dpi: Math.round(300 * k) };
   }
   return null;
 }
