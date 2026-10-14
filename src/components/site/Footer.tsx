@@ -77,7 +77,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               { to: SHIRTS_PATH, label: `Company t-shirts with your logo — from ${shirtFromLabel}` },
             ]}
           />
-          <FooterCol title="Services" links={SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short }))} />
+          <FooterCol title="Services" links={[...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short })), { to: SHIRTS_PATH, label: "Custom company t-shirts" }]} />
           <FooterCol title="Guides" links={GUIDES.map((g) => ({ to: guidePath(g), label: g.metaTitle.split(" — ")[0].split(":")[0] }))} />
           <FooterCol
             title="Company"

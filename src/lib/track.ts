@@ -256,7 +256,8 @@ export function captureAttribution() {
   const fresh: Attribution = {};
   for (const k of ATTR_PARAMS) {
     const v = q.get(k);
-    if (v) fresh[k] = v.slice(0, 300);
+    // Click ids are kept exactly as the ad platform sent them (a cut-off fbclid is rejected by Meta); only free-text UTMs are shortened.
+    if (v && (k.startsWith("utm_") || v.length <= 1000)) fresh[k] = k.startsWith("utm_") ? v.slice(0, 300) : v;
   }
   buildMetaParams(fresh.fbclid);
   if (!Object.keys(fresh).length) return;

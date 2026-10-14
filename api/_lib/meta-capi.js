@@ -11,6 +11,16 @@ const GRAPH = process.env.META_GRAPH_VERSION || "v24.0";
 
 const sha256 = (v) => createHash("sha256").update(v).digest("hex");
 const clean = (v, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+/**
+ * Ad click ids (fbclid, fbc, gclid…) must reach the ad platform byte-for-byte: Meta rejects an fbc whose fbclid was
+ * edited, and a truncated id is an edited id. So an oversize value is dropped, never cut. The cap only guards abuse
+ * (real Meta click ids are a few hundred characters at most).
+ */
+export const CLICK_ID_MAX = 1000;
+const intact = (v, max = CLICK_ID_MAX) => {
+  const t = typeof v === "string" ? v.trim() : "";
+  return t.length <= max ? t : "";
+};
 
 /** Meta wants lowercase, trimmed values hashed; phones as digits with country code. */
 export function hashedUser({ email, phone, name, city, externalId } = {}) {
@@ -46,8 +56,8 @@ function fbcFromClickId(fbclid) {
 /** Builds one CAPI event (exported for tests). */
 export function buildEvent({ eventName, eventId, eventTime, url, user, attribution = {}, ip, userAgent, customData }) {
   const fbp = clean(attribution.fbp, 200);
-  let fbc = clean(attribution.fbc, 300);
-  const fbclid = clean(attribution.fbclid, 250);
+  let fbc = intact(attribution.fbc);
+  const fbclid = intact(attribution.fbclid);
   if (!fbc && fbclid) fbc = fbcFromClickId(fbclid);
   return {
     event_name: eventName,
@@ -92,8 +102,10 @@ export async function sendMetaEvents(events) {
 /** Ad click ids / UTMs posted by the browser (src/lib/track.ts attribution()). */
 export function cleanAttribution(a) {
   if (!a || typeof a !== "object") return {};
-  const keys = ["fbp", "fbc", "fbclid", "gclid", "gbraid", "wbraid", "msclkid", "ttclid", "ttp", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing"];
-  return Object.fromEntries(keys.map((k) => [k, clean(a[k], 300).replace(/[\u0000-\u001f<>]/g, "")]).filter(([, v]) => v));
+  const ids = ["fbp", "fbc", "fbclid", "gclid", "gbraid", "wbraid", "msclkid", "ttclid", "ttp"];
+  const text = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing"];
+  const strip = (v) => v.replace(/[\u0000-\u001f<>]/g, "");
+  return Object.fromEntries([...ids.map((k) => [k, strip(intact(a[k]))]), ...text.map((k) => [k, strip(clean(a[k], 300))])].filter(([, v]) => v));
 }
 
 /**

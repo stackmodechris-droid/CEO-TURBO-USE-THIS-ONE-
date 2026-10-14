@@ -189,6 +189,17 @@ describe("Meta Parameter Builder (server)", () => {
     expect(fbc).not.toContain("Old-ClickId");
   });
 
+  it("never cuts a long fbclid: Meta sees the exact click id, or no fbc at all", () => {
+    for (const len of [250, 260, 300, 340, 600]) {
+      const fbclid = "IwZXh0bgNhZW0C" + "aB3-_xY9".repeat(80).slice(0, len - 14);
+      const cookieFbc = `fb.1.1700000000000.${fbclid}.AQIBAQIA`;
+      expect(buildEvent({ eventName: "Lead", attribution: cleanAttribution({ fbclid }) }).user_data.fbc?.split(".")[3]).toBe(fbclid);
+      expect(buildEvent({ eventName: "Lead", attribution: cleanAttribution({ fbc: cookieFbc }) }).user_data.fbc).toBe(cookieFbc);
+    }
+    // Absurdly long values are dropped rather than sent altered.
+    expect(cleanAttribution({ fbc: `fb.1.1.${"A".repeat(1200)}`, fbclid: "A".repeat(1200) })).toEqual({});
+  });
+
   it("leaves a mixed-case fbclid byte-for-byte intact in fbc, including the fallback built from a bare fbclid", () => {
     const fbclid = "IwY2xjawN_AbCdEfGh-ij0KLmN_oPqRsTuV";
     const fallback = buildEvent({ eventName: "Schedule", attribution: { fbclid } }).user_data.fbc as string;

@@ -77,6 +77,8 @@ function attributionAttributes(extra: Record<string, string | undefined>) {
     utm_term: a.utm_term,
   })
     .filter(([, v]) => v)
+    // Click ids (fbclid, _fbc, gclid…) are kept whole or left out: a cut-off fbclid is an edited fbclid, which Meta rejects.
+    .filter(([key, value]) => !/^(_?fbc|fbclid|_fbp|gclid|gbraid|wbraid|msclkid)$/.test(key) || String(value).length <= 250)
     .map(([key, value]) => ({ key, value: String(value).slice(0, 250) }));
 }
 

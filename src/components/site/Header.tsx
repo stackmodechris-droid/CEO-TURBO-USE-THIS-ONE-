@@ -30,7 +30,7 @@ const MENUS: Menu[] = [
     label: "Services",
     to: "/services",
     wide: true,
-    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
+    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}` }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
   },
   {
     label: "Results",

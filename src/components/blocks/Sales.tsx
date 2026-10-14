@@ -10,6 +10,7 @@ import { BookButton } from "@/components/cta/Actions";
 import { SCENES } from "@/components/visuals/Scenes";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
+import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
 import { BrandBoostQuiz } from "@/components/quiz/BrandBoostQuiz";
 import { track } from "@/lib/track";
 
@@ -83,6 +84,18 @@ export function ServiceGrid({ slugs }: { slugs?: string[] }) {
           </span>
         </Link>
       </li>
+      {!slugs && (
+        <li className="bg-background">
+          <Link to={SHIRTS_PATH} className="group flex h-full flex-col p-6 transition-colors hover:bg-white/[0.025]">
+            <span className="text-sm font-semibold text-ignite">From {shirtFromLabel} · no minimum</span>
+            <h3 className="mt-3 text-lg font-semibold tracking-tight">Custom company t-shirts</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Upload your logo, preview it on the shirt, and we press and ship it from Atlanta.</p>
+            <span className="mt-auto pt-5 text-sm font-medium text-foreground/70 group-hover:text-turbo">
+              Design your shirt <span aria-hidden>›</span>
+            </span>
+          </Link>
+        </li>
+      )}
     </ul>
   );
 }
