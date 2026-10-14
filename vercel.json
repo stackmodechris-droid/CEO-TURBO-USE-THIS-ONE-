@@ -5,6 +5,11 @@
   "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
+  "git": {
+    "deploymentEnabled": {
+      "claude/**": false
+    }
+  },
   "functions": {
     "api/audit.js": {
       "maxDuration": 40
