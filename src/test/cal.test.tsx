@@ -55,7 +55,7 @@ describe("Cal.com embed loader", () => {
     embeds()[0].dispatchEvent(new Event("load"));
     await new Promise((r) => setTimeout(r, 0));
     fire(QUIZ_NS, "linkFailed");
-    expect(await mounted).toBe(false);
+    expect(await mounted).toBe("failed");
   });
 
   it("resolves true once the calendar shows times", async () => {
@@ -65,7 +65,49 @@ describe("Cal.com embed loader", () => {
     embeds()[0].dispatchEvent(new Event("load"));
     await new Promise((r) => setTimeout(r, 0));
     fire(QUIZ_NS, "linkReady");
-    expect(await mounted).toBe(true);
+    expect(await mounted).toBe("ready");
+  });
+
+  it("does not call a calendar that never confirms it loaded (the blank box) working", async () => {
+    vi.useFakeTimers();
+    try {
+      document.body.innerHTML = '<div id="cal-test"></div>';
+      const { mountInlineBooking, QUIZ_NS } = await import("@/lib/cal");
+      const mounted = mountInlineBooking("cal-test", "test", undefined, { ns: QUIZ_NS });
+      embeds()[0].dispatchEvent(new Event("load"));
+      await vi.advanceTimersByTimeAsync(13000);
+      expect(await mounted).toBe("timeout");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("sends a failed modal calendar to the booking page in the same tab, with ad click ids for the webhook", async () => {
+    localStorage.setItem("ct_attr", JSON.stringify({ gclid: "G1", msclkid: "M1", at: Date.now() }));
+    const assign = vi.fn();
+    const loc = window.location;
+    Object.defineProperty(window, "location", { configurable: true, value: { ...loc, pathname: "/brand-boost", assign } });
+    try {
+      const { openBooking } = await import("@/lib/cal");
+      const opened = openBooking("test", "hi", { email: "a@b.co" }, { meta: { quizId: "q1" } });
+      embeds()[0].dispatchEvent(new Event("load"));
+      await new Promise((r) => setTimeout(r, 0));
+      fire("brandboost", "linkFailed");
+      await opened;
+      expect(assign).toHaveBeenCalledTimes(1);
+      const url = new URL(assign.mock.calls[0][0]);
+      expect(url.origin + url.pathname).toBe("https://cal.com/stackmodechris/ceoturbo-brandboost");
+      expect(url.searchParams.get("email")).toBe("a@b.co");
+      expect(url.searchParams.get("notes")).toBe("hi");
+      expect(url.searchParams.get("metadata[gclid]")).toBe("G1");
+      expect(url.searchParams.get("metadata[msclkid]")).toBe("M1");
+      expect(url.searchParams.get("metadata[quizId]")).toBe("q1");
+      expect(url.searchParams.get("metadata[source]")).toBe("test");
+      expect(url.searchParams.has("layout")).toBe(false);
+    } finally {
+      Object.defineProperty(window, "location", { configurable: true, value: loc });
+      localStorage.clear();
+    }
   });
 
   it("shares one script between callers once it is loading", async () => {
