@@ -242,7 +242,9 @@ function buildMetaParams(fbclid?: string) {
       return b.processAndCollectAllParams(window.location.href);
     })
     .catch(() => {
-      if (fbclid && !cookie("_fbc")) document.cookie = `_fbc=fb.1.${Date.now()}.${fbclid}; max-age=${90 * 86400}; path=/; SameSite=Lax; Secure`;
+      // Same domain scope as the builder's own cookie, so a later successful run overwrites this one instead of sitting beside it.
+      const domain = /(^|\.)ceoturbo\.com$/.test(window.location.hostname) ? "; domain=.ceoturbo.com" : "";
+      if (fbclid && !cookie("_fbc")) document.cookie = `_fbc=fb.1.${Date.now()}.${fbclid}; max-age=${90 * 86400}; path=/; SameSite=Lax; Secure${domain}`;
     });
 }
 
