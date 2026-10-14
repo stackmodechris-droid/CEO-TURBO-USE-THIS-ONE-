@@ -76,11 +76,19 @@ function attributionAttributes(extra: Record<string, string | undefined>) {
     utm_content: a.utm_content,
     utm_term: a.utm_term,
   })
+<<<<<<< HEAD
     .filter(([, v]) => v)
     // Click ids (fbclid, _fbc, gclid…) are kept whole or left out: a cut-off fbclid is an edited fbclid, which Meta rejects.
     .filter(([key, value]) => !/^(_?fbc|fbclid|_fbp|gclid|gbraid|wbraid|msclkid)$/.test(key) || String(value).length <= 250)
     .map(([key, value]) => ({ key, value: String(value).slice(0, 250) }));
 }
+=======
+    .filter(([, v]) => Boolean(v))
+    .map(([key, value]) => {
+      const max = key === "_fbc" || key === "fbclid" || key === "_fbp" || key === "gclid" || key === "msclkid" || key === "ttclid" ? 2048 : 250;
+      return { key, value: String(value).slice(0, max) };
+    });
+>>>>>>> 6de524b (cww)
 
 type CartLine = { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] };
 

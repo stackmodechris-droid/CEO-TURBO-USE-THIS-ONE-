@@ -227,6 +227,7 @@ const ATTR_KEY = "ct_attr";
 const ATTR_PARAMS = ["gclid", "gbraid", "wbraid", "fbclid", "msclkid", "ttclid", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
 export type Attribution = Partial<Record<(typeof ATTR_PARAMS)[number] | "landing" | "fbp" | "fbc" | "fbi" | "ttp", string>>;
 
+<<<<<<< HEAD
 const decode = (v = "") => {
   try {
     return decodeURIComponent(v);
@@ -235,6 +236,18 @@ const decode = (v = "") => {
   }
 };
 const cookie = (name: string) => (typeof document === "undefined" ? undefined : document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))?.[1]);
+=======
+const cookie = (name: string) => {
+  if (typeof document === "undefined") return undefined;
+  const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  if (!m) return undefined;
+  try {
+    return decodeURIComponent(m[1].trim());
+  } catch {
+    return m[1].trim();
+  }
+};
+>>>>>>> 6de524b (cww)
 
 /**
  * The visitor's own IP, IPv6 first, for the Parameter Builder's _fbi cookie. The site is served over IPv4,
@@ -290,8 +303,15 @@ export function captureAttribution() {
   const fresh: Attribution = {};
   for (const k of ATTR_PARAMS) {
     const v = q.get(k);
+<<<<<<< HEAD
     // Click ids are kept whole (Meta rejects a cut-short fbclid); only absurd lengths are dropped.
     if (v && v.length <= 1000) fresh[k] = k.endsWith("clid") || k.endsWith("braid") ? v : v.slice(0, 300);
+=======
+    if (v) {
+      const max = k === "fbclid" || k === "gclid" || k === "gbraid" || k === "wbraid" || k === "msclkid" || k === "ttclid" ? 2048 : 300;
+      fresh[k] = v.slice(0, max);
+    }
+>>>>>>> 6de524b (cww)
   }
   buildMetaParams(fresh.fbclid);
   if (!Object.keys(fresh).length) return;
