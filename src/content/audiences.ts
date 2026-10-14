@@ -3,7 +3,7 @@ import type { FAQ } from "./services";
 import { price } from "./pricing";
 
 export type Audience = {
-  slug: "artist" | "producers" | "local-business" | "shopify";
+  slug: "artist" | "producers" | "visual-artists" | "local-business" | "shopify";
   category: Category;
   nav: string;
   /** Lower-case plural for running text, e.g. "local businesses". */
@@ -22,6 +22,14 @@ export type Audience = {
   ctaLabel: string;
   bookingNote: string;
   faqs: FAQ[];
+  /** Price-list ids shown in the page's price section (defaults to the music set in AudiencePage). */
+  priceIds?: string[];
+  /** Shown under the price cards. */
+  priceNote?: string;
+  /** false hides "sites we've built" (the music client sites don't fit this audience). */
+  showWork?: boolean;
+  /** "all" shows only the general guides, not the audience's own (e.g. the Spotify guides). */
+  guidesFrom?: "all";
 };
 
 export const AUDIENCES: Audience[] = [
@@ -187,4 +195,49 @@ export const PRODUCERS: Audience = {
   ],
 };
 
-export const audienceBySlug = (slug: string) => [...AUDIENCES, PRODUCERS].find((a) => a.slug === slug);
+/** Painters and other visual artists selling originals, prints and commissions. Not in AUDIENCES (kept off the home picker). */
+export const VISUAL_ARTISTS: Audience = {
+  slug: "visual-artists",
+  category: "artist",
+  nav: "Visual artists",
+  plural: "visual artists",
+  metaTitle: "Sell More Paintings Online — Marketing for Visual Artists",
+  metaDescription:
+    "A site that sells your originals, prints and commissions, plus video ads from your process clips on Instagram, Facebook, TikTok and Google. Free call.",
+  eyebrow: "For painters & visual artists",
+  h1: "Sell more paintings, prints and commissions online",
+  answer:
+    "CEO Turbo helps painters and visual artists turn followers into buyers: a site you own that sells originals, prints and commissions, clear prices and shipping, and ads built from your process videos on Instagram, Facebook, TikTok and Google so collectors find you.",
+  pains: [
+    { title: "Lots of likes, few sales", body: "People love the work on Instagram and never find where to buy it, what it costs or how it ships." },
+    { title: "You depend on a marketplace", body: "On a marketplace your art sits beside thousands of others, with no email list of collectors and nothing of your own for Google to show." },
+    { title: "Prices, sizes and shipping are unclear", body: "Serious buyers will not DM to ask what a piece costs. They buy from whoever makes it easy." },
+    { title: "Commissions never get booked", body: "Without a simple request page with your process, prices and timeline, commission inquiries go cold." },
+  ],
+  outcomes: [
+    { title: "A site that sells your work", body: "Originals, prints and commissions on a site you own, with clear prices, sizes and shipping, and your name in Google.", service: "website-design" },
+    { title: "Turn your process videos into ads", body: "Time-lapses and studio clips cut and captioned into short ads for Instagram, Facebook, TikTok and YouTube Shorts, aimed at people who buy art.", service: "meta-ads" },
+    { title: "Search ads for people ready to buy", body: "Google and Microsoft ads for collectors searching for the kind of art you make, sent to a page built to sell it.", service: "google-ads" },
+    { title: "Book commissions", body: "A request page with your examples, price ranges and timeline, so serious buyers can start a commission without a DM chain.", service: "website-design" },
+    { title: "Email your collectors", body: "A simple list and a drop email for every new series, so past buyers hear first.", service: "email-marketing" },
+    { title: "Own your name in search", body: "Matching profiles and an official site so Google and AI assistants describe you correctly.", service: "seo-aeo-geo" },
+  ],
+  serviceSlugs: ["website-design", "meta-ads", "google-ads", "tiktok-ads", "email-marketing", "social-media-optimization"],
+  adVertical: "artist",
+  resultKeys: [],
+  ctaLabel: "Book my art growth call",
+  bookingNote: "Visual artists — sell paintings, prints, commissions",
+  showWork: false,
+  guidesFrom: "all",
+  priceIds: ["social-setup", "tracking-setup", "growth"],
+  priceNote: `Need a site that sells your originals and prints? Artist websites start at ${price("site-artist")} one-time. We confirm the exact scope for a gallery or store on the free call, after we see your work.`,
+  faqs: [
+    { q: "How do I sell paintings online?", a: "Put your best pieces, prices, sizes and shipping on one page you own, point your social profiles at it, then send people there with short video ads of your process. A marketplace can handle checkout while your own site collects emails and commission requests." },
+    { q: "Do I still need Etsy or another marketplace?", a: "Many artists keep one for checkout. Your own site is where Google finds you, where you collect collectors' emails and where commissions get booked, so the two work together." },
+    { q: "What do ads for art cost?", a: "You set the budget and it goes straight to the platform. Most artists start with $5 a day on one platform, test for a couple of weeks, then put more behind whatever brings buyers or commission requests." },
+    { q: "Do you have painters as clients?", a: "Our proof so far is with music artists and local businesses, and we say so. A free call is the way to see whether it fits your work before you spend anything." },
+    { q: "How much does it cost to get started?", a: `Social profile setup is ${price("social-setup")} one-time, ads and tracking setup is ${price("tracking-setup")} one-time, and weekly ad management is ${price("growth")} a month, month to month with 30 days' notice. Ad spend goes straight to the platform, never marked up.` },
+  ],
+};
+
+export const audienceBySlug = (slug: string) => [...AUDIENCES, PRODUCERS, VISUAL_ARTISTS].find((a) => a.slug === slug);

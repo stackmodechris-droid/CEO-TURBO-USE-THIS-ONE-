@@ -25,9 +25,11 @@ Google Ads, last 30 days (read from the connected account on 2026-10-14):
 |---|---|---|
 | Artist page, refreshed | `/artist` | Adds "turn your videos into ads", shows and tours, paid features and sessions, and a clear price section |
 | Producers page (new) | `/producers` | Landing page for beat-selling searches. In the header menu, footer and sitemap |
+| Visual artists page (new) | `/visual-artists` | For painters selling originals, prints and commissions. No painter-client claims; shows only prices that fit |
 | Price section on both pages | `src/content/pricing.ts` | Reads the one price list, so it can't drift from `/pricing` |
-| Google Ads upload (paused) | `docs/ads/google-ads-upload-music.csv` | 2 campaigns, 7 ad groups, 39 phrase keywords, 188 negatives, 7 responsive search ads |
+| Google Ads upload (paused) | `docs/ads/google-ads-upload-music.csv` | 3 campaigns, 10 ad groups, 82 phrase keywords, 266 negatives, 10 responsive search ads |
 | Microsoft Ads upload (paused) | `docs/ads/microsoft-ads-upload-music.csv` | Same structure, `utm_source=bing`, campaign names end in `\| Microsoft` |
+| Manus edit prompt | `docs/manus-campaign-edit-prompt.md` | Edits the campaigns inside spend caps, with a before/after log |
 | Chrome audit prompt | `docs/claude-chrome-campaign-audit-prompt.md` | Paste into Claude in Chrome to check every campaign |
 
 **Campaigns in the files**
@@ -36,8 +38,9 @@ Google Ads, last 30 days (read from the connected account on 2026-10-14):
 |---|---|---|---|
 | CEO Turbo \| Music \| Artists | $10 | Spotify Listeners (your winning keyword and close variants), Music Promotion, Artist Website, Shows & Booking | `/artist` |
 | CEO Turbo \| Music \| Producers | $5 | Sell Beats, Beat Promotion, Producer Website | `/producers` |
+| CEO Turbo \| Art \| Visual Artists | $5 | Sell Art Online, Art Website, Promote Your Art | `/visual-artists` |
 
-All rows are **Paused**. Bids are Manual CPC, max $2.00, matching your existing campaigns. The playbook settings in `docs/ads-launch-playbook.md` section 3 still apply after import: turn off Search Partners and Display, set location to "people in", switch off AI Max / final URL expansion / auto-created assets / auto-apply, and set only Booked call + Lead as Primary goals.
+All rows are **Paused**. Bids are Manual CPC. Max CPC is $2.00 on most groups, $2.50 on the art "sell" and "promote" groups, and $3.00 on the website groups, based on the Keyword Planner data in `docs/manus-campaign-edit-prompt.md`. The playbook settings in `docs/ads-launch-playbook.md` section 3 still apply after import: turn off Search Partners and Display, set location to "people in", switch off AI Max / final URL expansion / auto-created assets / auto-apply, and set only Booked call + Lead as Primary goals.
 
 **Who the keywords target:** producers and artists searching for *how to grow*, not artists searching to *buy* beats. A "buy beats" search is a customer for your client, not for you, so those terms are negatives. The "Sell Beats" ads describe the search ads you'd run for a producer client, but the campaigns here advertise your agency to producers.
 
@@ -91,16 +94,46 @@ If you pick one, it's a single new entry in `src/content/pricing.ts`, and every 
 - "Book tours" is a site and promotion service, not a guarantee of bookings. The page copy says so. Keep it that way in sales calls too.
 - Merch: connect the artist's store or a Shopify page to the site and email a drop to the fan list. Handle fulfilment separately.
 
-## 5. Ads for review cards, business shirts, or both?
+## 5. Ads for review cards, business shirts, or both? (with real CPCs)
 
-**Both, but as separate campaigns, and shirts first.**
+Keyword Planner, US, pulled 2026-10-14:
 
-- **Same buyer, different intent.** Both sell to local business owners. Shirts get searched for directly ("custom company t-shirts with logo", "company shirts no minimum") and the buyer can check out alone, with no call. Review cards are usually a "didn't know I needed it" purchase, which suits Meta and your own pages better than search.
-- **Shirts have a tighter loop.** A search click becomes an order in one sitting, so you learn what works in days. Your Microsoft shirts campaign is already written (`docs/ads/microsoft-ads-company-shirts.csv`). Add Google next.
-- **Review cards already have a campaign** (`Review Cards | Search | US` on Google, $0 spend; and a paused Microsoft campaign, id 571816100). Turn on whichever shows the better gross profit per order after 14 days.
-- **Cross-sell instead of competing.** Anyone who buys one is the ideal buyer of the other. The post-booking page and the shop already link to review cards. Add a shirt link to the card order confirmation and a card link to the shirt order email.
+| Product | Keyword | Searches/mo | Avg CPC | Low-high top-of-page bid |
+|---|---|---|---|---|
+| Shirts | company shirts with logo | 4,400 | $6.37 | $2.12-$10.61 |
+| Shirts | print custom t shirt (broad) | 33,100 | $4.83 | $1.79-$7.88 |
+| Cards | google review card | 5,400 | $2.74 | $1.00-$4.48 |
+| Cards | nfc review card | 390 | $1.43 | $0.45-$2.41 |
+| Cards | how to get more google reviews | 590 | $24.51 | $5.70-$43.31 |
 
-**Decision rule** (I don't have your margins, so fill in the blanks): gross profit per order = price − blank − print − shipping − fees. After 30 clicks or 14 days per campaign, compare *cost per order ÷ gross profit per order*. Put the next dollar behind whichever is lower. If shirts are not dropshipped (see the open question below), their margin math is different from a partner-fulfilled one.
+**The arithmetic.** The most you can pay per click and still profit is `profit per order x share of clicks that become an order`. The assumptions below are mine, so replace them with your real margins:
+
+| | Order value | Assumed margin | Profit/order | Assumed click-to-order | Max profitable CPC |
+|---|---|---|---|---|---|
+| Shirts (a 6-shirt team order) | about $168 | 40% | about $67 | 3% | about $2.00 |
+| Review cards (2-card pack) | $39.99 | 70% | about $28 | 3% | about $0.85 |
+
+**What that says, if those assumptions are close:**
+- **Review cards on search lose money.** Even the cheapest term ($1.43) is above $0.85. Keep cards on **Meta**, where you are already getting clicks, and where the cost per click is a fraction of search.
+- **Shirts on search only work at the cheap end.** The $6.37 average click loses money. A bid near $2 is break-even. So run shirts with a **$2.50 max CPC cap**, long-tail phrases ("custom work shirts", "company printed shirts", "shirts for employees"), and accept less traffic. Do not bid for the head terms.
+- **Shirts make more per order, cards make more per click on Meta.** Put shirts on search with tight caps and cards on Meta, not both on search. Cross-link each on the other's order page.
+- If you find your margin or conversion rate is higher than assumed, the caps move up with them. If lower, shirts search is not worth running yet.
+
+**Decision rule after 30 clicks or 14 days per campaign:** compare `cost per order / profit per order`. Put the next dollar behind the lower number.
+
+## 5b. Should you double down on the artist niche?
+
+**Yes, as a staged bet, not a switch.** The working keyword averaged $1.36 a click. For an agency service the arithmetic is better than for $25-$170 products: with a $997 site, an assumed 20% close rate on calls, 30% lead-to-call and 3% click-to-lead, you can afford about $1.80 a click, and Turbo Growth at $597/month raises that. So artists are the lane where search clicks can pay.
+
+**But the evidence is still thin:** 13 clicks, 0 conversions. Keep local-business campaigns running in the background, put new test budget into artists first, and use these gates:
+1. **Week 1-2:** the three new campaigns run at $20/day combined. Judge on Lead and Booked call counts, not clicks.
+2. **Go further** (raise artist budgets 20% every 3 days) only if cost per Lead is under your ceiling.
+3. **Cut** a group at 15+ clicks with 0 leads, or fix its landing page first.
+4. **Offer ladder** (artists have small budgets): free visibility check first, then Social setup ($197) or Ads & tracking setup ($397), then the $997 site and $597/mo management.
+
+**Keywords:** "artist website" costs $7.45 a click, "musician website" $5.04, so the working lane is the cheap "how to ..." and "promote my music" family, not the head terms. The files target that family. "Website builder" terms are excluded in spirit: those searchers want a DIY builder, not an agency.
+
+**Painters and visual artists (the lane you asked about):** "sell art online" and "sell paintings online" are 1,900 searches a month at $3.81 a click, "best place to sell art online" 390 at $4.24. There is demand, but the searchers are comparing marketplaces and tend to have small budgets, and I have **no painter clients to point to**, so the page does not claim any. The Art campaign is a $5/day test with its own page and its own kill rule: 15 clicks without a lead means fix or pause.
 
 ## 6. Open questions for you
 1. **Shirts: dropship or in-house?** The site says "pressed and shipped from Atlanta in 2–3 business days." If a partner prints and ships, that wording and the delivery times need to change before Google and Microsoft ads go live. Inaccurate shipping claims can get ads disapproved.

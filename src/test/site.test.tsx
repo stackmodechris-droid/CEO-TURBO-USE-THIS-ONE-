@@ -8,7 +8,7 @@ import { CLIENTS } from "@/content/clients";
 import { ADS } from "@/content/ads";
 import { AD_RESULTS, AD_TOTALS } from "@/content/results";
 import { GUIDES } from "@/content/guides";
-import { AUDIENCES, PRODUCERS } from "@/content/audiences";
+import { AUDIENCES, PRODUCERS, VISUAL_ARTISTS } from "@/content/audiences";
 import { price } from "@/content/pricing";
 import { SERVICES } from "@/content/services";
 import { CSP } from "@/config/headers";
@@ -60,6 +60,14 @@ describe("page registry (SEO)", () => {
     expect(PRODUCERS.h1.toLowerCase()).toContain("beats");
     const text = [...PRODUCERS.faqs, ...AUDIENCES[0].faqs].map((f) => f.a).join(" ");
     for (const id of ["site-artist", "tracking-setup", "growth"]) expect(text).toContain(price(id));
+  });
+
+  it("has a visual-artists page whose prices match the price list and that makes no painter-client claim it can't back", () => {
+    expect(paths.has("/visual-artists")).toBe(true);
+    const text = VISUAL_ARTISTS.faqs.map((f) => f.a).join(" ");
+    for (const id of ["social-setup", "tracking-setup", "growth"]) expect(text).toContain(price(id));
+    expect(VISUAL_ARTISTS.resultKeys).toEqual([]);
+    expect(VISUAL_ARTISTS.showWork).toBe(false);
   });
 
   it("only links guides to pages that exist", () => {

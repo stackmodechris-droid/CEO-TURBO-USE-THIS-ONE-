@@ -69,6 +69,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
             links={[
               { to: "/artist", label: "Artists" },
               { to: "/producers", label: "Producers & beatmakers" },
+              { to: "/visual-artists", label: "Painters & visual artists" },
               { to: "/local-business", label: "Local businesses" },
               { to: "/shopify", label: "Shopify stores" },
               { to: "/atlanta", label: "Atlanta businesses" },
