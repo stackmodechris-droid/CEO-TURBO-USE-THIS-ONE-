@@ -34,13 +34,13 @@ describe("Cal.com embed loader", () => {
 
   it("points the embed at app.cal.com, where the booking app and embed.js live", () => {
     void loadCal();
-    const init = queue("brandboost").find((a) => a[0] === "init");
+    const init = queue("ceoturbo-brandboost").find((a) => a[0] === "init");
     expect(init?.[2]).toEqual({ origin: "https://app.cal.com" });
   });
 
   it("listens for a finished booking on both calendars (the quiz's and the site-wide modal)", () => {
     void loadCal("brandboostquiz");
-    for (const ns of ["brandboost", "brandboostquiz"]) {
+    for (const ns of ["ceoturbo-brandboost", "brandboostquiz"]) {
       const actions = queue(ns)
         .filter((a) => a[0] === "on")
         .map((a) => (a[1] as { action: string }).action);
@@ -92,7 +92,7 @@ describe("Cal.com embed loader", () => {
       const opened = openBooking("test", "hi", { email: "a@b.co" }, { meta: { quizId: "q1" } });
       embeds()[0].dispatchEvent(new Event("load"));
       await new Promise((r) => setTimeout(r, 0));
-      fire("brandboost", "linkFailed");
+      fire("ceoturbo-brandboost", "linkFailed");
       await opened;
       expect(assign).toHaveBeenCalledTimes(1);
       const url = new URL(assign.mock.calls[0][0]);
@@ -107,6 +107,29 @@ describe("Cal.com embed loader", () => {
     } finally {
       Object.defineProperty(window, "location", { configurable: true, value: loc });
       localStorage.clear();
+    }
+  });
+
+  it("leaves a slow modal calendar alone (Cal.com's own loader) and uses the official embed config", async () => {
+    vi.useFakeTimers();
+    const assign = vi.fn();
+    const loc = window.location;
+    Object.defineProperty(window, "location", { configurable: true, value: { ...loc, assign } });
+    try {
+      const { openBooking } = await import("@/lib/cal");
+      const opened = openBooking("test");
+      embeds()[0].dispatchEvent(new Event("load"));
+      await vi.advanceTimersByTimeAsync(25000);
+      await opened;
+      expect(assign).not.toHaveBeenCalled();
+      expect(document.getElementById("ct-cal-rescue")).toBeNull();
+      const modal = queue("ceoturbo-brandboost").find((a) => a[0] === "modal")?.[1] as { calLink: string; config: Record<string, string> };
+      expect(modal.calLink).toBe("stackmodechris/ceoturbo-brandboost");
+      expect(modal.config.layout).toBe("month_view");
+      expect(modal.config.useSlotsViewOnSmallScreen).toBe("true");
+    } finally {
+      Object.defineProperty(window, "location", { configurable: true, value: loc });
+      vi.useRealTimers();
     }
   });
 

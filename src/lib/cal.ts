@@ -171,6 +171,7 @@ const defined = (o: Record<string, unknown> = {}) => Object.fromEntries(Object.e
 
 const calConfig = ({ source, prefill, person, fields, meta }: Prefill = {}) => ({
   layout: "month_view",
+  useSlotsViewOnSmallScreen: "true",
   theme: "dark",
   ...(prefill ? { notes: prefill } : {}),
   ...(person?.name ? { name: person.name } : {}),
@@ -197,7 +198,7 @@ function attributionMeta() {
  * metadata as the embed, so api/cal-webhook.js still sends the server-side "Schedule" with the ad click ids.
  */
 export function bookingPageUrl(prefill?: string, person?: Person, fields?: Prefill["fields"], extra: Pick<Prefill, "source" | "meta"> = {}) {
-  const { layout: _layout, theme: _theme, ...params } = calConfig({ prefill, person, fields, ...extra });
+  const { layout: _layout, theme: _theme, useSlotsViewOnSmallScreen: _slots, ...params } = calConfig({ prefill, person, fields, ...extra });
   const q = new URLSearchParams(defined(params) as Record<string, string>);
   return `${BOOKING.url}${q.toString() ? `?${q}` : ""}`;
 }
@@ -208,39 +209,17 @@ function goToBookingPage(url: string, source?: string) {
   window.location.assign(url);
 }
 
-/** A bar over the Cal.com modal for when the calendar is slow or blank, so the visitor always has a way to book. */
-function showRescueBar(url: string, source?: string) {
-  if (document.getElementById("ct-cal-rescue")) return;
-  const bar = document.createElement("a");
-  bar.id = "ct-cal-rescue";
-  bar.href = url;
-  bar.textContent = "Calendar not loading? Tap here to book your call →";
-  bar.setAttribute("style", "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483647;max-width:calc(100% - 32px);padding:14px 20px;border-radius:9999px;background:#ff6b1a;color:#fff;font:600 15px/1.3 system-ui,sans-serif;text-align:center;text-decoration:none;box-shadow:0 8px 30px rgba(0,0,0,.45)");
-  bar.addEventListener("click", () => track("booking_open", { source: `${source ?? "site"} — rescue bar` }));
-  document.body.appendChild(bar);
-  const off = onLinkStatus(BOOKING.namespace, (s) => {
-    if (s === "ready") remove();
-  });
-  window.addEventListener("ct:booked", remove, { once: true });
-  function remove() {
-    off();
-    bar.remove();
-  }
-}
-
 /** Opens the Brand Boost booking modal; goes to the Cal.com page if the embed can't load or the calendar fails. */
 export async function openBooking(source?: string, prefill?: string, person?: Person, extra: Omit<Prefill, "source" | "prefill" | "person"> = {}) {
   track("booking_open", { source });
   const ns = BOOKING.namespace;
   const url = bookingPageUrl(prefill, person, extra.fields, { source, meta: extra.meta });
-  const ok = await loadCalWithin(ns, 4000);
+  const ok = await loadCalWithin(ns);
   if (!ok || !window.Cal?.ns[ns]) return goToBookingPage(url, source);
-  const shown = waitForLink(ns, 8000);
+  const shown = waitForLink(ns, 20000);
   window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
-  const result = await shown;
-  if (result === "failed") goToBookingPage(url, source);
-  // Never yank a calendar that may still be loading on a slow phone — offer the page on top of it instead.
-  else if (result === "timeout") showRescueBar(url, source);
+  // Cal.com's own loader shows while the calendar loads; only a real error from the booking page sends the visitor to it.
+  if ((await shown) === "failed") goToBookingPage(url, source);
 }
 
 /**
