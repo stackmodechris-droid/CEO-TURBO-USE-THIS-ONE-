@@ -67,7 +67,8 @@ export function Footer({ focus = false }: { focus?: boolean }) {
           <FooterCol
             title="Who we help"
             links={[
-              { to: "/artist", label: "Artists & producers" },
+              { to: "/artist", label: "Artists" },
+              { to: "/producers", label: "Producers & beatmakers" },
               { to: "/local-business", label: "Local businesses" },
               { to: "/shopify", label: "Shopify stores" },
               { to: "/atlanta", label: "Atlanta businesses" },

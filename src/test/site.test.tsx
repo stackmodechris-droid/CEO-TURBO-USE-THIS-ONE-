@@ -8,7 +8,8 @@ import { CLIENTS } from "@/content/clients";
 import { ADS } from "@/content/ads";
 import { AD_RESULTS, AD_TOTALS } from "@/content/results";
 import { GUIDES } from "@/content/guides";
-import { AUDIENCES } from "@/content/audiences";
+import { AUDIENCES, PRODUCERS } from "@/content/audiences";
+import { price } from "@/content/pricing";
 import { SERVICES } from "@/content/services";
 import { CSP } from "@/config/headers";
 import { GTM_IDS } from "@/lib/gtm";
@@ -52,6 +53,13 @@ describe("page registry (SEO)", () => {
     SERVICES.forEach((s) => expect(paths.has(`/services/${s.slug}`)).toBe(true));
     AUDIENCES.forEach((a) => expect(paths.has(`/${a.slug}`)).toBe(true));
     GUIDES.forEach((g) => expect(paths.has(g.path ?? `/guides/${g.slug}`)).toBe(true));
+  });
+
+  it("has a producers landing page for beat-selling ads, quoting the same prices as /pricing", () => {
+    expect(paths.has("/producers")).toBe(true);
+    expect(PRODUCERS.h1.toLowerCase()).toContain("beats");
+    const text = [...PRODUCERS.faqs, ...AUDIENCES[0].faqs].map((f) => f.a).join(" ");
+    for (const id of ["site-artist", "tracking-setup", "growth"]) expect(text).toContain(price(id));
   });
 
   it("only links guides to pages that exist", () => {

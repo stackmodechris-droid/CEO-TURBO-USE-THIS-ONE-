@@ -20,7 +20,8 @@ const MENUS: Menu[] = [
     to: "/local-business",
     items: [
       { to: "/local-business", label: "Local businesses", sub: "More calls, more 5-star reviews" },
-      { to: "/artist", label: "Artists & producers", sub: "More listeners, fans and bookings" },
+      { to: "/artist", label: "Artists", sub: "More listeners, shows, features and merch" },
+      { to: "/producers", label: "Producers & beatmakers", sub: "Sell more beats, custom tracks and sessions" },
       { to: "/shopify", label: "Shopify & online stores", sub: "More traffic that actually buys" },
       { to: "/atlanta", label: "Atlanta businesses", sub: "Local, founder-led growth" },
       { to: "/app-marketing", label: "Software & app developers", sub: "More users & installs, zero fluff" },

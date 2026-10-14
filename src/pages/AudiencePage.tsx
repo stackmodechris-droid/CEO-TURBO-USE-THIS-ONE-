@@ -10,10 +10,15 @@ import { SCENES } from "@/components/visuals/Scenes";
 import { SiteWall } from "@/components/visuals/SiteWall";
 import { WorkGrid, AdResultsGrid, AdGallery } from "@/components/blocks/Proof";
 import { ServiceGrid, BrandBoostSteps, BookingSection, ReviewCardPromo } from "@/components/blocks/Sales";
+import { PriceCard } from "@/components/blocks/PriceBlocks";
+import { ALL_PRICES, PRICING_TERMS } from "@/content/pricing";
 import { SectionHeader, DirectAnswer, Breadcrumbs, FAQList } from "@/components/blocks/Basics";
 import NotFound from "./NotFound";
 
-const SCENE_FOR = { artist: SCENES.artist, "local-business": SCENES.local, shopify: SCENES.shopify } as const;
+const SCENE_FOR = { artist: SCENES.artist, producers: SCENES.artist, "local-business": SCENES.local, shopify: SCENES.shopify } as const;
+
+/** Prices shown on the artist and producer pages: straight from src/content/pricing.ts, so they match /pricing. */
+const MUSIC_PRICE_IDS = ["site-artist", "tracking-setup", "growth"];
 
 export default function AudiencePage({ slug }: { slug: Audience["slug"] }) {
   const a = audienceBySlug(slug);
@@ -122,10 +127,32 @@ export default function AudiencePage({ slug }: { slug: Audience["slug"] }) {
         <div className="container-x">
           <SectionHeader title={<span id="services-title">Services for {a.plural}</span>} />
           <div className="mt-10">
-            <ServiceGrid slugs={a.serviceSlugs} />
+            <ServiceGrid slugs={a.serviceSlugs} cards={a.category !== "artist"} />
           </div>
         </div>
       </section>
+
+      {(a.slug === "artist" || a.slug === "producers") && (
+        <section className="section border-t border-border" aria-labelledby="music-prices">
+          <div className="container-x">
+            <SectionHeader title={<span id="music-prices">Fair, clear prices for {a.plural}</span>} lede="Pay once to get set up right. Add weekly ad management only if you want it. Ad spend goes straight to the platform from your own account, never marked up." />
+            <ul className="mt-12 grid gap-6 md:grid-cols-3">
+              {MUSIC_PRICE_IDS.map((id) => ALL_PRICES.find((p) => p.id === id)!).map((p) => (
+                <PriceCard key={p.id} p={p} />
+              ))}
+            </ul>
+            <p className="mt-6 text-sm text-muted-foreground">{PRICING_TERMS.contract}</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <BookButton note={`${a.bookingNote} — prices`} prefill={a.bookingNote}>
+                {a.ctaLabel}
+              </BookButton>
+              <Link to="/pricing" className="btn-chrome">
+                See every price
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {a.slug === "local-business" && (
         <section className="section border-t border-border" aria-label="Google review cards">

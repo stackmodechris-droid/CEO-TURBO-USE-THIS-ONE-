@@ -42,6 +42,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/artist" element={<AudiencePage slug="artist" />} />
+          <Route path="/producers" element={<AudiencePage slug="producers" />} />
           <Route path="/local-business" element={<AudiencePage slug="local-business" />} />
           <Route path="/shopify" element={<AudiencePage slug="shopify" />} />
           <Route path="/brand-boost" element={<BrandBoost />} />
