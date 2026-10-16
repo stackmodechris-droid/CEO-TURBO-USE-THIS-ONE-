@@ -99,6 +99,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [showBar, setShowBar] = useState(false);
+  const [moreFonts, setMoreFonts] = useState(false);
   const frontSvg = useRef<SVGSVGElement>(null);
   const buyRef = useRef<HTMLButtonElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -319,7 +320,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
     <>
       <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         {/* Mockup */}
-        <div className="order-2 lg:sticky lg:top-24 lg:order-none lg:self-start">
+        <div className="sticky top-14 z-20 order-2 -mx-1 bg-background/95 pb-2 pt-1 backdrop-blur lg:top-24 lg:order-none lg:self-start lg:bg-transparent lg:pb-0 lg:pt-0 lg:backdrop-blur-none [&_svg]:max-h-[40vh] lg:[&_svg]:max-h-none">
           <div className="relative overflow-hidden rounded-3xl bg-[radial-gradient(80%_70%_at_50%_35%,#ffffff,#e9ebef)] ring-1 ring-white/10">
             <div className={cn("px-[8%] pb-[4%] pt-[10%]", side !== "front" && "hidden")}>
               <ShirtMockup ref={frontSvg} style={style} color={color.hex} dark={color.dark} side="front" art={frontArt} placement={placement} guide={!hasDesign} onMove={hasDesign ? onMove : undefined} title={`${color.name} ${style === "long" ? "long" : "short"} sleeve ${copy.mockupNoun}, front`} className="mx-auto w-full max-w-[520px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.25)]" />
@@ -372,6 +373,16 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
               </li>
             ))}
           </ul>
+
+          {/* Progress */}
+          <ol className="mt-6 grid grid-cols-4 gap-1.5 text-center text-[11px] font-semibold" aria-label="Progress">
+            {[["Style", true], ["Logo", hasDesign], ["Customize", hasDesign && (!!text.trim() || back)], ["Sizes", qty > 0 && hasDesign]].map(([l, ok]) => (
+              <li key={l as string}>
+                <span className={cn("block h-1.5 rounded-full", ok ? "bg-turbo" : "bg-white/10")} />
+                <span className={cn("mt-1 block", ok ? "text-foreground" : "text-muted-foreground")}>{l as string}</span>
+              </li>
+            ))}
+          </ol>
 
           {/* 1. Style */}
           <fieldset className="mt-7">
@@ -436,7 +447,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             )}
             {lowRes && (
               <p className="mt-3 flex items-start gap-2 text-xs text-[hsl(var(--ignite-hot))]">
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /> This image is small ({logo!.img.naturalWidth}px wide) and may print soft. Upload a bigger PNG if you have one — or we'll check it with you before printing.
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden /> This will print blurry ({logo!.img.naturalWidth}px wide). Want us to fix it? (free) — just order and we'll rebuild it sharp and send a proof, or upload a bigger PNG.
               </p>
             )}
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -467,11 +478,16 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             <input id={`${uid}-sub`} className="field mt-2" value={subtext} onChange={(e) => setSubtext(e.target.value)} placeholder={copy.subPlaceholder} maxLength={48} />
             <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Font">
               <span className="text-xs text-muted-foreground">Font</span>
-              {FONTS.map((f) => (
+              {FONTS.filter((f, i) => moreFonts || i < 3 || f.id === font).map((f) => (
                 <button key={f.id} type="button" onClick={() => (setFont(f.id), markCustomized())} aria-pressed={font === f.id} className={cn("min-h-[44px] rounded-full px-3.5 text-sm ring-1", font === f.id ? "bg-white text-black ring-white" : "ring-white/15 hover:ring-white/40")} style={{ fontFamily: f.family, fontWeight: f.weight }}>
                   {f.name}
                 </button>
               ))}
+              {FONTS.length > 3 && !moreFonts && (
+                <button type="button" onClick={() => setMoreFonts(true)} className="min-h-[44px] px-2 text-xs text-muted-foreground underline underline-offset-2">
+                  More fonts
+                </button>
+              )}
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Print color">
               <span className="text-xs text-muted-foreground">Print color</span>
@@ -586,6 +602,13 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
                 </div>
               ))}
             </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[["Small team", { M: 2, L: 2, XL: 1 }], ["Crew of 12", { M: 3, L: 5, XL: 3, "2XL": 1 }]].map(([l, v]) => (
+                <button key={l as string} type="button" onClick={() => setSizes(v as Sizes)} className="btn-chrome !min-h-[40px] !px-3 !text-xs">
+                  Quick add: {l as string} ({Object.values(v as Sizes).reduce((a, b) => a + (b || 0), 0)})
+                </button>
+              ))}
+            </div>
             <ol className={cn("mt-3 grid gap-2 text-center", P.tiers.length > 3 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3")}>
               {P.tiers.map((t) => (
                 <li key={t.min} className={cn("rounded-xl px-2 py-2 ring-1", tier.min === t.min ? "bg-turbo/10 ring-turbo" : "ring-white/10")}>
@@ -624,20 +647,24 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
               </div>
             </dl>
             {nextTier && qty > 0 && <p className="mt-2 text-xs text-[hsl(var(--ignite-hot))]">Add {nextTier.min - qty} more and save {Math.round(nextTier.off * 100)}% on every shirt.</p>}
-            <button ref={buyRef} type="button" onClick={onCheckout} disabled={!!busy} className="btn-ignite btn-shine mt-4 w-full justify-center">
+            <button ref={buyRef} type="button" onClick={onCheckout} disabled={!!busy} className="btn-ignite btn-shine mt-4 w-full justify-center !min-h-[56px] !text-base shadow-[0_0_32px_rgba(255,120,40,0.45)]">
               {busy ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> {busy === "saving" ? "Saving your print file…" : "Opening secure checkout…"}
                 </>
               ) : (
                 <>
-                  <Lock className="h-4 w-4" aria-hidden /> Order {qty} {qty === 1 ? "shirt" : "shirts"} — {money2(total)}
+                  <Lock className="h-4 w-4" aria-hidden /> Add to cart — {money2(total)}
                 </>
               )}
             </button>
-            <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <Lock className="h-3 w-3" aria-hidden /> Secure checkout · Printed in 2–4 days
+            {!hasDesign && <p role="alert" className="mt-2 text-center text-sm text-[hsl(var(--ignite-hot))]">Add your logo or company name to continue.</p>}
+            <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-foreground/80">
+              <span>✓ Real person checks your design before printing</span>
+              <span>✓ Free reprint if anything is wrong</span>
+              <span>✓ Free US shipping</span>
             </p>
+            <p className="mt-2 text-center text-xs text-muted-foreground">Most teams order 12–24 shirts · Secure checkout · Printed in 2–4 days</p>
             <p role="status" aria-live="polite" className={cn("text-sm text-emerald-300", status && "mt-3")}>
               {status && <Check className="mr-1.5 inline h-4 w-4" aria-hidden />}
               {status}
@@ -679,7 +706,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             <p className="text-xs text-muted-foreground">{money2(total)} · free shipping</p>
           </div>
           <button type="button" tabIndex={showBar ? 0 : -1} onClick={onCheckout} disabled={!!busy} className="btn-ignite !min-h-[44px] !px-4 !text-sm">
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : "Order now"}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : "Add to cart · " + money2(total)}
           </button>
         </div>
       </div>
