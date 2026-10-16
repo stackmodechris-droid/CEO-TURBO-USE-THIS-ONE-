@@ -1,6 +1,6 @@
 // Registry of every indexable URL: title, description, OG image and JSON-LD.
 // The prerender script, sitemap, llms.txt and client-side head updates all read from here.
-import { SITE, fromPriceLabel } from "@/config/site";
+import { SITE, PITCH_VIDEO, fromPriceLabel } from "@/config/site";
 import { CLIENTS } from "@/content/clients";
 import { SERVICES } from "@/content/services";
 import { AUDIENCES, PRODUCERS, VISUAL_ARTISTS } from "@/content/audiences";
@@ -265,6 +265,7 @@ function build(): PageMeta[] {
     { path: "/privacy-policy", title: "Privacy Policy | CEO Turbo", description: "How CEO Turbo collects, uses and protects your personal information, including what we collect, why, and how you can control it.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
     { path: "/terms", title: "Terms & Conditions | CEO Turbo", description: "Terms for using ceoturbo.com and buying CEO Turbo products and services.", priority: 0.2, changefreq: "yearly", group: "Company", schema: base() },
     { path: "/shipping-returns", title: "Shipping & Returns | CEO Turbo", description: "Shipping times, costs and the 5-day return policy for CEO Turbo Google review cards.", priority: 0.3, changefreq: "yearly", group: "Company", schema: base() },
+    { path: "/watch", title: "Watch: How to Get More Customers in 2026 | CEO Turbo", description: "A 1-minute video from Christopher Robinson of CEO Turbo on getting found on Google, Maps and AI assistants, and turning that attention into customers.", ogImage: "/media/brand-boost-poster.webp", priority: 0.6, changefreq: "monthly", group: "Core", schema: [...base(), S.webPage("/watch", "Watch: how to get more customers in 2026", PITCH_VIDEO.description), S.video("/watch"), S.breadcrumbs([{ name: "Watch", path: "/watch" }])] },
     {
       path: "/how-to-get-more-customers",
       title: "How to Get More Customers in 2026: Free Step-by-Step | CEO Turbo",

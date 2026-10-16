@@ -262,6 +262,9 @@ export function VideoPitch({ note, className }: { note: string; className?: stri
           </button>
         )}
       </div>
+      <figcaption className="mt-3 text-center text-xs">
+        <Link to="/watch" className="text-muted-foreground underline underline-offset-4 hover:text-foreground">Open the video page</Link>
+      </figcaption>
     </figure>
   );
 }

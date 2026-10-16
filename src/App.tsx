@@ -20,6 +20,7 @@ const ArtistMerch = lazy(() => import("./pages/ArtistMerch"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Book = lazy(() => import("./pages/Book"));
+const Watch = lazy(() => import("./pages/Watch"));
 const HowToGetMoreCustomers = lazy(() => import("./pages/HowToGetMoreCustomers"));
 const GetMoreReviews = lazy(() => import("./pages/GetMoreReviews"));
 const AdsNotConverting = lazy(() => import("./pages/AdsNotConverting"));
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/free-audit" element={<FreeAudit />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/book" element={<Book />} />
+          <Route path="/watch" element={<Watch />} />
           <Route path="/how-to-get-more-customers" element={<HowToGetMoreCustomers />} />
           <Route path="/get-more-reviews" element={<GetMoreReviews />} />
           <Route path="/ads-not-converting" element={<AdsNotConverting />} />
