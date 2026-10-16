@@ -97,6 +97,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
   const [backArt, setBackArt] = useState<string | null>(null);
   const [busy, setBusy] = useState<"" | "saving" | "checkout">("");
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
   const [showBar, setShowBar] = useState(false);
   const frontSvg = useRef<SVGSVGElement>(null);
   const buyRef = useRef<HTMLButtonElement>(null);
@@ -233,6 +234,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
   const onCheckout = async () => {
     if (busy) return;
     setError("");
+    setStatus("");
     if (!hasDesign) return setError(copy.emptyError);
     if (qty < 1) return setError("Add at least one shirt size.");
     if (back && !hasBack && !copy.defaultBack) return setError("Add text, art or a QR link for the back print — or turn the back print off.");
@@ -282,6 +284,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
       // The design couldn't be saved (offline, file too big): the order still goes through with the
       // design id and text, and we contact the buyer for the logo file.
     }
+    setStatus(printLink ? `Design saved as ${designId}. Opening secure checkout…` : `Your design is saved as ${designId}. We'll contact you for the logo file if needed. Opening secure checkout…`);
     setBusy("checkout");
     try {
       const lines: ShirtLine[] = (Object.entries(sizes) as [ShirtSize, number][])
@@ -305,6 +308,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
       setTimeout(() => window.location.assign(url), 250);
     } catch {
       setBusy("");
+      setStatus("");
       setError(`Checkout didn't open. Your design is saved as ${designId} — try again, or call/text ${SITE.phone.display} and we'll send you a payment link.`);
     }
   };
@@ -353,10 +357,10 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             {copy.h1} <span className="text-turbo-grad">{copy.h1Accent}</span>
           </h1>
           <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">{copy.lede}</p>
-          <button type="button" onClick={() => document.getElementById(`${uid}-logo-step`)?.scrollIntoView({ behavior: "smooth", block: "center" })} className="btn-ignite btn-shine mt-5 w-full justify-center lg:hidden">
+          <button type="button" onClick={() => document.getElementById(`${uid}-logo-step`)?.scrollIntoView({ behavior: "smooth", block: "center" })} className="btn-ignite btn-shine mt-5 w-full justify-center sm:w-auto">
             <ImageUp className="h-4 w-4" aria-hidden /> Upload my {copy.artNoun} · from {money2(P.styles[0].price)}
           </button>
-          <p className="mt-2 text-center text-xs text-muted-foreground lg:hidden">Free US shipping · prints in 2–4 days · free reprint if it's wrong</p>
+          <p className="mt-2 text-center text-xs text-muted-foreground sm:text-left">Free US shipping · prints in 2–4 days · free reprint if it's wrong</p>
           </div>
 
           <div className="order-3 lg:order-none">
@@ -631,6 +635,13 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
                 </>
               )}
             </button>
+            <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+              <Lock className="h-3 w-3" aria-hidden /> Secure checkout · Printed in 2–4 days
+            </p>
+            <p role="status" aria-live="polite" className={cn("text-sm text-emerald-300", status && "mt-3")}>
+              {status && <Check className="mr-1.5 inline h-4 w-4" aria-hidden />}
+              {status}
+            </p>
             {error && (
               <p role="alert" className="mt-3 text-sm text-[#ff8a8a]">
                 {error}
