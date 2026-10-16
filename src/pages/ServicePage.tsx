@@ -1,16 +1,17 @@
-import { Link, useParams } from "react-router-dom";
-import { Check, X } from "lucide-react";
-import { serviceBySlug, SERVICES } from "@/content/services";
+import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
+import { PriceBox } from "@/components/blocks/PriceBlocks";
+import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
+import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
+import { BookButton } from "@/components/cta/Actions";
+import { SITE } from "@/config/site";
+import { SCENES, SearchScene } from "@/components/visuals/Scenes";
+import { ADS } from "@/content/ads";
 import { AUDIENCES } from "@/content/audiences";
 import { clientBySlug } from "@/content/clients";
-import { ADS } from "@/content/ads";
-import { BookButton } from "@/components/cta/Actions";
-import { SearchScene, SCENES } from "@/components/visuals/Scenes";
-import { WorkGrid, AdResultsGrid, AdGallery } from "@/components/blocks/Proof";
-import { ServiceGrid, BookingSection, ReviewCardPromo } from "@/components/blocks/Sales";
-import { SectionHeader, DirectAnswer, Breadcrumbs, FAQList } from "@/components/blocks/Basics";
-import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { priceLabel, pricesFor } from "@/content/pricing";
+import { serviceBySlug, SERVICES } from "@/content/services";
+import { Check, MessageSquare, Phone, X } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
 
 export default function ServicePage() {
@@ -21,6 +22,7 @@ export default function ServicePage() {
   const path = `/services/${s.slug}`;
   const work = (s.proof?.clientSlugs ?? []).map(clientBySlug).filter((c): c is NonNullable<typeof c> => Boolean(c));
   const isAds = ["meta-ads", "google-ads", "tiktok-ads", "x-ads"].includes(s.slug);
+  const isHomeOffice = s.slug === "home-office-setup";
   const Scene = s.slug === "seo-aeo-geo" ? SearchScene : s.slug === "google-business-profile" ? SCENES.local : s.slug === "email-marketing" || s.slug === "tiktok-ads" ? SCENES.shopify : s.slug === "social-media-optimization" || s.slug === "x-ads" ? SCENES.artist : SearchScene;
   const note = `Service: ${s.name}`;
   const prefill = `Interested in ${s.name}.`;
@@ -38,7 +40,20 @@ export default function ServicePage() {
               <p className="chip">{s.outcome}</p>
               <h1 className="mt-5 text-4xl font-bold leading-[1.02] sm:text-6xl">{s.h1}</h1>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <BookButton note={note} prefill={prefill}>Book a free call about {s.short}</BookButton>
+                {isHomeOffice ? (
+                  <>
+                    <a href={SITE.phone.href} data-call-location="home-office-hero" className="btn-ignite flex items-center justify-center gap-2">
+                      <Phone className="h-4 w-4" />
+                      Call {SITE.phone.display}
+                    </a>
+                    <a href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent("Hi, I'd like a quote for office setup.")}`} data-call-location="home-office-hero-text" className="btn-chrome flex items-center justify-center gap-2">
+                      <MessageSquare className="h-4 w-4" />
+                      Text for a quote
+                    </a>
+                  </>
+                ) : (
+                  <BookButton note={note} prefill={prefill}>Book a free call about {s.short}</BookButton>
+                )}
                 <a href="#included" className="btn-chrome">
                   What's included
                 </a>
@@ -115,9 +130,16 @@ export default function ServicePage() {
               <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
                 {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Need more than one piece? A package covers it for less — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
               </p>
-              <BookButton note={`${note} — pricing`} className="mt-6">
-                Which do I need? Get my free plan
-              </BookButton>
+              {isHomeOffice ? (
+                <a href={SITE.phone.href} data-call-location="home-office-pricing" className="btn-ignite mt-6 inline-flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  Call for a flat quote
+                </a>
+              ) : (
+                <BookButton note={`${note} — pricing`} className="mt-6">
+                  Which do I need? Get my free plan
+                </BookButton>
+              )}
             </div>
             <PriceBox items={prices} />
           </div>
@@ -146,6 +168,56 @@ export default function ServicePage() {
         </section>
       )}
 
+      {isHomeOffice && (
+        <section className="section border-t border-border" aria-labelledby="areas">
+          <div className="container-x">
+            <SectionHeader title={<span id="areas">Areas We Serve</span>} lede="We serve the entire Atlanta metro area within a 50-mile radius, plus extended service up to 2 hours from Duluth for larger projects." />
+            <div className="mt-10 grid gap-8 md:grid-cols-3">
+              <div>
+                <h3 className="text-lg font-semibold">Atlanta Metro</h3>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  <li>Atlanta</li>
+                  <li>Decatur</li>
+                  <li>Buckhead</li>
+                  <li>Sandy Springs</li>
+                  <li>Marietta</li>
+                  <li>Smyrna</li>
+                  <li>Roswell</li>
+                  <li>Alpharetta</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Gwinnett County</h3>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  <li>Duluth</li>
+                  <li>Lawrenceville</li>
+                  <li>Johns Creek</li>
+                  <li>Peachtree Corners</li>
+                  <li>Snellville</li>
+                  <li>Norcross</li>
+                  <li>Sugar Hill</li>
+                  <li>Suwanee</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Extended Area</h3>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  <li>Athens (60 miles)</li>
+                  <li>All cities within 50-mile radius</li>
+                  <li>Up to 2 hours from Duluth</li>
+                  <li>For larger projects only</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-8 panel p-6">
+              <p className="text-sm">
+                <strong>Service Area:</strong> Atlanta, Decatur, Buckhead, Sandy Springs, Marietta, Smyrna, Roswell, Alpharetta, Johns Creek, Duluth, Norcross, Lawrenceville, Stone Mountain, Athens, Gwinnett County, and all surrounding cities within 50 miles. Extended service available up to 2 hours from Duluth for business and school projects.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       <FAQList faqs={s.faqs} title={`${s.short} questions`} />
 
       <section className="pb-8" aria-labelledby="more">
@@ -159,7 +231,28 @@ export default function ServicePage() {
         </div>
       </section>
 
-      <BookingSection note={note} prefill={prefill} />
+      {isHomeOffice ? (
+        <section className="section border-t border-border pb-28 md:pb-16" aria-labelledby="call-now">
+          <div className="container-x text-center">
+            <h2 id="call-now" className="h-section">Ready to get your workspace set up?</h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">Call or text and we'll confirm your price and a time that works. Seniors and accessibility needs welcome.</p>
+            <a href={SITE.phone.href} data-call-location="home-office-footer" className="btn-ignite mt-6 inline-flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              Call {SITE.phone.display}
+            </a>
+          </div>
+        </section>
+      ) : (
+        <BookingSection note={note} prefill={prefill} />
+      )}
+      {isHomeOffice && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 backdrop-blur md:hidden">
+          <a href={SITE.phone.href} data-call-location="home-office-sticky-mobile" className="btn-ignite flex min-h-12 w-full items-center justify-center gap-2">
+            <Phone className="h-5 w-5" />
+            Call {SITE.phone.display}
+          </a>
+        </div>
+      )}
     </>
   );
 }

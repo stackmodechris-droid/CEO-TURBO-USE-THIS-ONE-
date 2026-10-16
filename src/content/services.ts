@@ -26,6 +26,48 @@ export type Service = {
 
 export const SERVICES: Service[] = [
   {
+    slug: "home-office-setup",
+    name: "Home office & computer setup",
+    short: "Office setup",
+    icon: "layout",
+    metaTitle: "Home Office & Computer Setup — Atlanta Metro Area",
+    metaDescription:
+      "Home office, computer, desk, Wi-Fi and device setup in Atlanta, Gwinnett and Athens. From $89. Call 470-502-9543.",
+    h1: "Home office and computer setup — we build your workspace so you can get to work",
+    answer:
+      "CEO Turbo provides complete home office and computer setup services for Atlanta metro area residents and businesses. We assemble desks and chairs, set up monitors and computers, configure internet and networks, install software, connect tablets and devices, and organize your entire workspace. Perfect for new home offices, business setups, school computer labs, and anyone who needs a professional tech workspace without the hassle.",
+    outcome: "A fully functional, organized workspace ready for work or study — no tech headaches.",
+    bestFor: ["People moving into new homes who need office setup", "Remote workers upgrading their home office", "Businesses setting up new office spaces", "Schools needing computer lab setup", "Seniors or anyone who isn't tech-savvy", "Disabled individuals who need accessibility setup"],
+    includes: [
+      "Desk, chair, and furniture assembly",
+      "Computer and monitor setup and configuration",
+      "Internet and Wi-Fi network setup",
+      "Printer and peripheral installation",
+      "Software installation (Microsoft Office, security tools, business apps)",
+      "Tablet, phone, and device connection",
+      "Cable management and wire organization",
+      "Ergonomic workspace optimization",
+      "Data transfer from old devices to new",
+      "Walkthrough training so you know how to use everything",
+    ],
+    process: [
+      { title: "Consultation", body: "We discuss your needs, space, budget, and what devices you have or need." },
+      { title: "Setup", body: "We assemble furniture, install equipment, configure networks, and organize cables." },
+      { title: "Configuration", body: "Software is installed, devices are connected, and everything is tested." },
+      { title: "Training", body: "We walk you through your new setup so you're confident using it." },
+    ],
+    notFor: "Problems with an existing device or ongoing IT contracts — we specialize in new setups and installations.",
+    audiences: ["local"],
+    faqs: [
+      { q: "What areas do you serve?", a: "We serve the entire Atlanta metro area within a 50-mile radius, including Atlanta, Decatur, Buckhead, Sandy Springs, Marietta, Smyrna, Roswell, Alpharetta, Johns Creek, Duluth, Norcross, Lawrenceville, Stone Mountain, Athens, Gwinnett County, and all surrounding cities. We also travel up to 2 hours from Duluth, Georgia for larger projects." },
+      { q: "How much does home office setup cost?", a: "Our pricing is transparent and listed up front. Basic computer setup starts at $89, full home office setup with furniture assembly starts at $149, and complete business office setups start at $249. All pricing is confirmed before we begin work." },
+      { q: "Do you provide the equipment?", a: "We can recommend and source equipment at your request, or we set up what you already have. You provide the furniture and devices, we handle the assembly, installation, and configuration." },
+      { q: "How long does setup take?", a: "Most home office setups are completed in 2-4 hours. Larger business office setups or school computer labs may take a full day. We'll give you a time estimate during our consultation." },
+      { q: "Do you offer ongoing support?", a: "We focus on setup and installation. For ongoing IT support, we can refer you to trusted partners or discuss a maintenance plan for your specific needs." },
+      { q: "Can you set up Mac and iPhone devices?", a: "Yes, we support Windows PCs, Mac computers, iPhones, iPads, Android devices, and most consumer technology. We'll make sure everything works together seamlessly." },
+    ],
+  },
+  {
     slug: "seo-aeo-geo",
     name: "SEO, AEO & GEO",
     short: "SEO · AEO · GEO",

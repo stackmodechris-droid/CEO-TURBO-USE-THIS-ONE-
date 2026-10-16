@@ -95,6 +95,43 @@ export const PACKAGES: PriceItem[] = [
 
 export const SETUP: PriceItem[] = [
   {
+    id: "office-basic",
+    name: "Basic computer setup",
+    price: 89,
+    billing: "once",
+    service: "home-office-setup",
+    summary: "Get your new computer ready to use with professional setup and configuration.",
+    includes: ["Computer unboxing and setup", "Operating system configuration and updates", "Software installation (Office, security tools)", "Printer and peripheral connection", "Basic Wi-Fi setup", "Data transfer from old device", "30-minute walkthrough training"],
+  },
+  {
+    id: "office-home",
+    name: "Full home office setup",
+    price: 149,
+    billing: "once",
+    service: "home-office-setup",
+    summary: "Complete home office setup with furniture assembly and full tech configuration.",
+    includes: ["Desk, chair, and furniture assembly", "Computer and monitor setup", "Internet and Wi-Fi network configuration", "Printer and all peripherals installed", "Software suite installation", "Cable management and wire organization", "Ergonomic workspace optimization", "Full walkthrough training"],
+    popular: true,
+  },
+  {
+    id: "office-business",
+    name: "Business office setup",
+    price: 249,
+    billing: "once",
+    service: "home-office-setup",
+    summary: "Complete business office setup for multiple workstations and professional environments.",
+    includes: ["Multiple workstation setup (up to 3 computers)", "Network and router configuration", "Shared printer and equipment setup", "Business software installation", "File sharing and backup setup", "Professional cable management", "Team training and documentation"],
+  },
+  {
+    id: "office-school",
+    name: "School computer lab setup",
+    price: 349,
+    billing: "once",
+    service: "home-office-setup",
+    summary: "Complete computer lab setup for schools and educational institutions.",
+    includes: ["Multiple computer setup (up to 10 stations)", "Network infrastructure and security", "Educational software installation", "Printer and shared resource setup", "Teacher workstation configuration", "Student access management", "Staff training and documentation"],
+  },
+  {
     id: "gbp-setup",
     name: "Google Business Profile setup & optimization",
     price: 297,
@@ -265,6 +302,7 @@ export const alaCarte = (p: PriceItem) => (p.replaces ?? []).reduce((n, id) => n
 /** What each service page shows in its price box: the à-la-carte setup, the package that covers it, the monthly plan. */
 export function pricesFor(service: string): PriceItem[] {
   const map: Record<string, string[]> = {
+    "home-office-setup": ["office-basic", "office-home", "office-business", "office-school"],
     "seo-aeo-geo": ["visibility-foundation", "pkg-start", "pkg-launch", "care", "growth"],
     "website-design": ["site-artist", "site-launch", "site-growth", "site-shopify", "pkg-launch", "care"],
     "meta-ads": ["conversion-rescue", "pkg-launch", "growth", "ads-additional"],
