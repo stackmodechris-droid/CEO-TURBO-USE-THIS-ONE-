@@ -66,38 +66,12 @@ function fbcFromClickId(fbclid) {
 
 /** Builds one CAPI event (exported for tests). */
 export function buildEvent({ eventName, eventId, eventTime, url, user, attribution = {}, ip, userAgent, customData }) {
-<<<<<<< HEAD
   const fbp = metaId(attribution.fbp);
   let fbc = metaId(attribution.fbc);
   const fbclid = metaId(attribution.fbclid);
   if (!fbc && fbclid) fbc = fbcFromClickId(fbclid);
   // No request IP (e.g. a booking webhook): use the IPv6 the visitor's browser stored in _fbi.
   ip = ip && ip !== "unknown" ? ip : cleanIp(attribution.fbi);
-=======
-  const fbp = clean(attribution.fbp, 500);
-  let fbc = clean(attribution.fbc, 2048);
-  const fbclid = clean(attribution.fbclid, 2048);
-  if (!fbc && fbclid) {
-    try {
-      const host = (url ? new URL(url, "https://www.ceoturbo.com").hostname : "ceoturbo.com") || "ceoturbo.com";
-      const builder = new ParamBuilder(["ceoturbo.com", "localhost"]);
-      builder.processRequest(host, { fbclid }, {});
-      fbc = builder.getFbc() || `fb.1.${Date.now()}.${fbclid}`;
-    } catch {
-      fbc = `fb.1.${Date.now()}.${fbclid}`;
-    }
-  } else if (fbc) {
-    try {
-      const host = (url ? new URL(url, "https://www.ceoturbo.com").hostname : "ceoturbo.com") || "ceoturbo.com";
-      const builder = new ParamBuilder(["ceoturbo.com", "localhost"]);
-      builder.processRequest(host, {}, { _fbc: fbc });
-      const normalized = builder.getFbc();
-      if (normalized) fbc = normalized;
-    } catch {
-      /* keep fbc as-is */
-    }
-  }
->>>>>>> 6de524b (cww)
   return {
     event_name: eventName,
     event_time: Math.floor((eventTime ? new Date(eventTime).getTime() : Date.now()) / 1000),
@@ -141,22 +115,10 @@ export async function sendMetaEvents(events) {
 /** Ad click ids / UTMs posted by the browser (src/lib/track.ts attribution()). */
 export function cleanAttribution(a) {
   if (!a || typeof a !== "object") return {};
-<<<<<<< HEAD
   const ids = { fbp: metaId(a.fbp), fbc: metaId(a.fbc), fbclid: metaId(a.fbclid), fbi: cleanIp(a.fbi) };
   const keys = ["gclid", "gbraid", "wbraid", "msclkid", "ttclid", "ttp", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing"];
   const rest = keys.map((k) => [k, clean(a[k], 300).replace(/[\u0000-\u001f<>]/g, "")]);
   return Object.fromEntries([...Object.entries(ids), ...rest].filter(([, v]) => v));
-=======
-  const keys = ["fbp", "fbc", "fbclid", "gclid", "gbraid", "wbraid", "msclkid", "ttclid", "ttp", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "landing"];
-  return Object.fromEntries(
-    keys
-      .map((k) => {
-        const max = k === "fbc" || k === "fbclid" || k === "gclid" || k === "gbraid" || k === "wbraid" || k === "msclkid" || k === "ttclid" ? 2048 : 300;
-        return [k, clean(a[k], max).replace(/[\u0000-\u001f<>]/g, "")];
-      })
-      .filter(([, v]) => v),
-  );
->>>>>>> 6de524b (cww)
 }
 
 /**
