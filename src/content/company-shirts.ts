@@ -147,3 +147,9 @@ export const COMPANY_MAKER: MakerCopy = {
   mockupNoun: "company shirt with your logo",
   barNoun: "custom",
 };
+
+export const SHIRT_PRESETS: { id: string; name: string; logoScale: number; font: FontId; text: string; subtext: string; inkId: string }[] = [
+  { id: "minimal", name: "Minimal", logoScale: 0.6, font: "inter", text: "", subtext: "", inkId: "auto" },
+  { id: "bold", name: "Bold", logoScale: 0.9, font: "gothic", text: "", subtext: "", inkId: "white" },
+  { id: "classic", name: "Classic", logoScale: 0.75, font: "inter", text: "", subtext: "", inkId: "auto" },
+];

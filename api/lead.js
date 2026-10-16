@@ -48,7 +48,7 @@ export default async function handler(req, res) {
 
   const type = text(body.type, 30) || "order-request";
   const dev = type === "dev-intake" ? devFields(body) : null;
-  const { lead, error } = cleanLead(body, { phoneOptional: !!dev });
+  const { lead, error } = cleanLead(body, { phoneOptional: !!dev || type === "shirt-exit-intent" });
   if (error) return send(res, 400, { error });
 
   const quiz = type === "brand-boost-quiz" ? quizFields(body) : null;

@@ -1,10 +1,10 @@
 import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AlertTriangle, Check, Crosshair, ImageUp, Loader2, Lock, Minus, Move, Phone, Plus, RotateCcw, ShieldCheck, Truck, X } from "lucide-react";
 import { SHIRT, SITE, money2, shirtSku, shirtStyleOption, shirtTotal, shirtUnitPrice, type ShirtProduct, type ShirtSize, type ShirtStyle } from "@/config/site";
-import { COMPANY_MAKER, type MakerCopy } from "@/content/company-shirts";
+import { COMPANY_MAKER, SHIRT_PRESETS, type MakerCopy } from "@/content/company-shirts";
 import { attribution, newEventId, serverTrack, track, type Ecommerce } from "@/lib/track";
 import { createShirtCheckout, loadVariants, type ShirtLine } from "@/lib/shopify";
-import { cn } from "@/lib/utils";
+import { cn, useDebounce } from "@/lib/utils";
 import { ShirtMockup } from "./ShirtMockup";
 import { FONTS, drawArt, hasWhiteBackground, loadFont, printPng, removeWhite, svgToJpeg, type ArtInput, type FontId, type Placement } from "./art";
 import "./fonts";
@@ -105,12 +105,21 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
   const fileRef = useRef<HTMLInputElement>(null);
   const backFileRef = useRef<HTMLInputElement>(null);
   const customized = useRef(false);
+  const [selectedPreset, setSelectedPreset] = useState<string>("");
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [exitEmail, setExitEmail] = useState("");
+  const [exitDone, setExitDone] = useState(false);
+  const history = useRef<{ side: "front" | "back"; pos: Pos }[]>([]);
+  const historyIndex = useRef(-1);
+  const restoring = useRef(false);
 
   const color = P.colors.find((c) => c.id === colorId) ?? P.colors[0];
   const ink = inkId === "auto" ? (color.dark ? "#ffffff" : "#111111") : INKS.find((i) => i.id === inkId)!.hex;
   const logoSrc = logo ? (logo.white && useClean && logo.clean ? logo.clean : logo.img) : null;
   const hasDesign = !!logo || !!text.trim() || !!subtext.trim();
   const { qty, subtotal, discount, total, tier } = shirtTotal(style, back, sizes, P);
+  const dPos = useDebounce(pos, 150);
+  const dBackPos = useDebounce(backPos, 150);
   const nextTier = P.tiers.find((t) => t.min > qty);
   const lowRes = logo && logo.img.naturalWidth < (placement === "chest" ? 600 : 1200);
   const backImg = backArtFile ? (backArtFile.white && useClean && backArtFile.clean ? backArtFile.clean : backArtFile.img) : backLogo ? logoSrc : null;
@@ -119,16 +128,16 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
   const frontInput: ArtInput = useMemo(
     () =>
       hasDesign
-        ? { logo: logoSrc, text, subtext, ink, font, logoScale: placement === "chest" ? Math.max(0.5, logoScale) : logoScale, ...pos }
-        : { logo: null, text: copy.sample.text, subtext: copy.sample.sub, ink, font, logoScale, ...pos },
+        ? { logo: logoSrc, text, subtext, ink, font, logoScale: placement === "chest" ? Math.max(0.5, logoScale) : logoScale, ...dPos }
+        : { logo: null, text: copy.sample.text, subtext: copy.sample.sub, ink, font, logoScale, ...dPos },
     // fontTick redraws once a web font has loaded.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hasDesign, logoSrc, text, subtext, ink, font, logoScale, placement, pos, copy, fontTick],
+    [hasDesign, logoSrc, text, subtext, ink, font, logoScale, placement, dPos, copy, fontTick],
   );
   const backInput: ArtInput = useMemo(
-    () => ({ logo: backImg, text: backText || (backImg || tourLines.length || qrCells ? "" : copy.defaultBack), subtext: backSub, ink, font, logoScale: 0.75, lines: tourLines, qr: qrCells, ...backPos }),
+    () => ({ logo: backImg, text: backText || (backImg || tourLines.length || qrCells ? "" : copy.defaultBack), subtext: backSub, ink, font, logoScale: 0.75, lines: tourLines, qr: qrCells, ...dBackPos }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [backImg, backText, backSub, ink, font, tourLines, qrCells, backPos, copy, fontTick],
+    [backImg, backText, backSub, ink, font, tourLines, qrCells, dBackPos, copy, fontTick],
   );
   const qrLink = backQr.trim();
   const hasBack = !!(backText.trim() || backSub.trim() || backImg || tourLines.length || qrLink);
@@ -229,6 +238,78 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
   };
   const curPos = side === "back" ? backPos : pos;
   const setCurPos = side === "back" ? setBackPos : setPos;
+  const dCur = side === "back" ? dBackPos : dPos;
+
+  // Position history for Cmd/Ctrl+Z (recorded from the debounced position so a slider drag is one step).
+  useEffect(() => {
+    if (restoring.current) {
+      restoring.current = false;
+      return;
+    }
+    const h = history.current.slice(0, historyIndex.current + 1);
+    const last = h[h.length - 1];
+    if (last && last.side === side && last.pos.x === dCur.x && last.pos.y === dCur.y && last.pos.rotate === dCur.rotate) return;
+    h.push({ side, pos: dCur });
+    history.current = h.slice(-50);
+    historyIndex.current = history.current.length - 1;
+  }, [dCur, side]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      const k = e.key.toLowerCase();
+      const typing = (e.target as HTMLElement | null)?.closest?.("input[type=text],input:not([type]),textarea");
+      if (mod && k === "z" && !typing) {
+        e.preventDefault();
+        const i = historyIndex.current + (e.shiftKey ? 1 : -1);
+        const entry = history.current[i];
+        if (!entry) return;
+        historyIndex.current = i;
+        restoring.current = true;
+        (entry.side === "back" ? setBackPos : setPos)(entry.pos);
+      } else if (mod && k === "s") {
+        e.preventDefault();
+        buyRef.current?.click();
+      } else if (e.key === "Escape") {
+        setShowExitModal(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Exit intent (desktop): cursor leaves through the top of the page before they've touched the design.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("exitIntentShown")) return;
+    } catch {
+      return;
+    }
+    const onLeave = (e: MouseEvent) => {
+      if (e.clientY < 50 && !customized.current) {
+        setShowExitModal(true);
+        try {
+          sessionStorage.setItem("exitIntentShown", "true");
+        } catch {}
+      }
+    };
+    document.addEventListener("mouseleave", onLeave);
+    return () => document.removeEventListener("mouseleave", onLeave);
+  }, []);
+
+  const submitExitEmail = async () => {
+    const email = exitEmail.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) return;
+    try {
+      localStorage.setItem("shirt_exit_email", email);
+    } catch {}
+    setExitDone(true);
+    fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "shirt-exit-intent", name: "Shirt visitor", email, note: "shirt_exit_intent", page: window.location.pathname }),
+    }).catch(() => {});
+  };
 
   const setQty = (size: ShirtSize, n: number) => setSizes((s) => ({ ...s, [size]: Math.max(0, Math.min(999, n)) }));
 
@@ -414,6 +495,13 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
           {/* 3. Logo */}
           <fieldset id={`${uid}-logo-step`} className="mt-6 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5">
             <legend className={cn(H2, "px-1")}>3 · {copy.artLabel}</legend>
+            <div className="mb-3 grid grid-cols-3 gap-2">
+              {SHIRT_PRESETS.map((p) => (
+                <button key={p.id} type="button" aria-pressed={selectedPreset === p.id} onClick={() => (setSelectedPreset(p.id), setLogoScale(p.logoScale), setFont(p.font), setText(p.text), setSubtext(p.subtext), setInkId(p.inkId), markCustomized())} className={cn("opt !py-2 text-xs", selectedPreset === p.id && "ring-turbo")}>
+                  {p.name}
+                </button>
+              ))}
+            </div>
             <input ref={fileRef} id={`${uid}-logo`} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="sr-only" onChange={(e) => onFile(e)} />
             {logo ? (
               <div className="flex items-center gap-3">
@@ -530,6 +618,9 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
           {/* 5. Back */}
           <fieldset className="mt-4 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5">
             <legend className={cn(H2, "px-1")}>5 · Back print</legend>
+            <div className="mb-3 text-xs text-muted-foreground">
+              Front only: {money2(shirtTotal(style, false, sizes, P).total)} · Front + back: <span className="text-emerald-400">{money2(shirtTotal(style, true, sizes, P).total)}</span>
+            </div>
             <label className="flex items-center justify-between gap-3 text-sm font-semibold">
               <span>
                 {copy.backToggle} <span className="font-normal text-muted-foreground">+{money2(P.backPrintPrice)} / shirt</span>
@@ -710,6 +801,27 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
           </button>
         </div>
       </div>
+      {showExitModal && (
+        <div className="fixed inset-0 z-[100] grid place-items-center bg-black/70 p-4" onClick={() => setShowExitModal(false)}>
+          <div role="dialog" aria-modal="true" aria-label="Get 10% off" className="relative w-full max-w-md rounded-2xl bg-background p-6 ring-1 ring-white/10" onClick={(e) => e.stopPropagation()}>
+            <button type="button" aria-label="Close" onClick={() => setShowExitModal(false)} className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full hover:bg-white/10">
+              <X className="h-4 w-4" aria-hidden />
+            </button>
+            {exitDone ? (
+              <p className="py-6 text-center font-semibold">Thanks — we'll email you shortly.</p>
+            ) : (
+              <>
+                <h2 className="font-display text-2xl font-bold">Leaving already?</h2>
+                <p className="mt-2 text-sm text-muted-foreground">Drop your email and we'll send you 10% off your first shirt order.</p>
+                <form className="mt-4 flex flex-col gap-3" onSubmit={(e) => (e.preventDefault(), submitExitEmail())}>
+                  <input type="email" required autoFocus className="field" value={exitEmail} onChange={(e) => setExitEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" />
+                  <button type="submit" className="btn-ignite justify-center">Get 10% off</button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }
