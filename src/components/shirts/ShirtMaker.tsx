@@ -2,7 +2,8 @@ import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from "r
 import { AlertTriangle, Check, Crosshair, ImageUp, Loader2, Lock, Minus, Move, Phone, Plus, RotateCcw, ShieldCheck, Truck, X } from "lucide-react";
 import { SHIRT, SITE, money2, shirtSku, shirtStyleOption, shirtTotal, shirtUnitPrice, type ShirtProduct, type ShirtSize, type ShirtStyle } from "@/config/site";
 import { COMPANY_MAKER, SHIRT_PRESETS, type MakerCopy } from "@/content/company-shirts";
-import { attribution, newEventId, serverTrack, track, type Ecommerce } from "@/lib/track";
+import { attribution, newEventId, serverTrack, track, visitorId, type Ecommerce } from "@/lib/track";
+import { sendLead } from "@/lib/lead-outbox";
 import { createShirtCheckout, loadVariants, type ShirtLine } from "@/lib/shopify";
 import { cn, useDebounce } from "@/lib/utils";
 import { ShirtMockup } from "./ShirtMockup";
@@ -290,7 +291,9 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
         setShowExitModal(true);
         try {
           sessionStorage.setItem("exitIntentShown", "true");
-        } catch {}
+        } catch {
+          /* storage blocked: the modal may show again, harmless */
+        }
       }
     };
     document.addEventListener("mouseleave", onLeave);
@@ -302,13 +305,15 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
     if (!/^\S+@\S+\.\S+$/.test(email)) return;
     try {
       localStorage.setItem("shirt_exit_email", email);
-    } catch {}
+    } catch {
+      /* private mode: the lead still goes to the server */
+    }
     setExitDone(true);
-    fetch("/api/lead", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "shirt-exit-intent", name: "Shirt visitor", email, note: "shirt_exit_intent", page: window.location.pathname }),
-    }).catch(() => {});
+    const eventId = newEventId("lead");
+    const user = { email, name: "Shirt visitor", externalId: visitorId() };
+    // sendLead queues the lead in the outbox and retries on the next page load if the request fails.
+    void sendLead({ type: "shirt-exit-intent", name: user.name, email, note: "shirt_exit_intent", eventId, visitorId: user.externalId, attribution: attribution(), page: window.location.pathname });
+    track("generate_lead", { lead_source: "shirt-exit-intent", content_name: P.name }, { eventId, user });
   };
 
   const setQty = (size: ShirtSize, n: number) => setSizes((s) => ({ ...s, [size]: Math.max(0, Math.min(999, n)) }));

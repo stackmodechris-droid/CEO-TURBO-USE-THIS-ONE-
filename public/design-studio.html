@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="description" content="Design Studio: a mockup of a premium custom t-shirt design editor with live preview, layers and print-ready export.">
+<link rel="canonical" href="https://www.ceoturbo.com/design-studio">
 <title>Design Studio – T-shirt editor mockup</title>
 <style>
 :root{--bg:#0b0d14;--g1:#141826;--g2:#0e111b;--line:rgba(255,255,255,.08);--tx:#e8ebf4;--mut:#8b93a9;--acc:#6d7cff;--acc2:#b06dff;--ok:#38d996;--warn:#f5b942;--bad:#ff5d6c;--r:14px}
@@ -15,7 +17,7 @@ button{cursor:pointer;border:0;background:none}
 .app{display:grid;grid-template-columns:auto 1fr 300px;grid-template-rows:56px 1fr;height:100dvh;gap:12px;padding:12px}
 .glass{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
 header{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 14px}
-.logo{font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.logo{font-size:inherit;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
 .logo i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--acc),var(--acc2))}
 .sp{flex:1}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;background:rgba(255,255,255,.06);font-size:12px;color:var(--mut);transition:.2s}
@@ -105,7 +107,7 @@ main{position:relative;min-width:0;min-height:0;display:flex;flex-direction:colu
 <body>
 <div class="app">
 <header class="glass">
-  <div class="logo"><i></i>Design Studio</div>
+  <h1 class="logo"><i></i>Design Studio</h1>
   <span class="chip hide-m" id="doc">Untitled tee</span>
   <span class="sp"></span>
   <span class="chip" id="save"><span class="dot"></span><span id="savetxt">Saved</span></span>
