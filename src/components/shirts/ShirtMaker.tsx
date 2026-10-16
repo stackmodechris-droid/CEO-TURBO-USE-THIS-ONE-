@@ -315,7 +315,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
     <>
       <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         {/* Mockup */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className="order-2 lg:sticky lg:top-24 lg:order-none lg:self-start">
           <div className="relative overflow-hidden rounded-3xl bg-[radial-gradient(80%_70%_at_50%_35%,#ffffff,#e9ebef)] ring-1 ring-white/10">
             <div className={cn("px-[8%] pb-[4%] pt-[10%]", side !== "front" && "hidden")}>
               <ShirtMockup ref={frontSvg} style={style} color={color.hex} dark={color.dark} side="front" art={frontArt} placement={placement} guide={!hasDesign} onMove={hasDesign ? onMove : undefined} title={`${color.name} ${style === "long" ? "long" : "short"} sleeve ${copy.mockupNoun}, front`} className="mx-auto w-full max-w-[520px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.25)]" />
@@ -346,13 +346,20 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
         </div>
 
         {/* Designer + buy panel */}
-        <div>
+        <div className="contents lg:block">
+          <div className="order-1 lg:order-none">
           <p className="chip">{copy.chip}</p>
           <h1 className="mt-4 text-[34px] font-bold leading-[1.02] sm:text-5xl">
             {copy.h1} <span className="text-turbo-grad">{copy.h1Accent}</span>
           </h1>
           <p className="mt-4 text-[17px] leading-relaxed text-muted-foreground">{copy.lede}</p>
+          <button type="button" onClick={() => document.getElementById(`${uid}-logo-step`)?.scrollIntoView({ behavior: "smooth", block: "center" })} className="btn-ignite btn-shine mt-5 w-full justify-center lg:hidden">
+            <ImageUp className="h-4 w-4" aria-hidden /> Upload my {copy.artNoun} · from {money2(P.styles[0].price)}
+          </button>
+          <p className="mt-2 text-center text-xs text-muted-foreground lg:hidden">Free US shipping · prints in 2–4 days · free reprint if it's wrong</p>
+          </div>
 
+          <div className="order-3 lg:order-none">
           <ul className="mt-6 grid grid-cols-2 gap-2">
             {copy.points.map((p) => (
               <li key={p.title} className="rounded-2xl bg-white/[0.03] p-3 ring-1 ring-white/5">
@@ -390,7 +397,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
           </fieldset>
 
           {/* 3. Logo */}
-          <fieldset className="mt-6 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5">
+          <fieldset id={`${uid}-logo-step`} className="mt-6 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/5">
             <legend className={cn(H2, "px-1")}>3 · {copy.artLabel}</legend>
             <input ref={fileRef} id={`${uid}-logo`} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="sr-only" onChange={(e) => onFile(e)} />
             {logo ? (
@@ -646,6 +653,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
                 </span>
               </li>
             </ul>
+          </div>
           </div>
         </div>
       </div>
