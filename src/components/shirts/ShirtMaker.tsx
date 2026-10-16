@@ -414,8 +414,8 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
             <div className={cn("px-[8%] pb-[4%] pt-[10%]", side !== "back" && "hidden")}>
               <ShirtMockup style={style} color={color.hex} dark={color.dark} side="back" art={backArt} placement="back" guide={!back} onMove={back ? onMove : undefined} title={`${color.name} ${copy.mockupNoun}, back`} className="mx-auto w-full max-w-[520px] drop-shadow-[0_24px_30px_rgba(0,0,0,0.25)]" />
             </div>
-            <span className="absolute left-4 top-4 rounded-full bg-black/75 px-3 py-1 text-xs font-semibold text-white">Live preview</span>
-            <div className="absolute right-3 top-3 flex rounded-full bg-black/75 p-1 text-xs font-semibold text-white" role="group" aria-label="Shirt side">
+            <span className="absolute left-4 top-4 rounded-full bg-black/40 px-3 py-1 text-xs font-semibold text-white shadow-lg backdrop-blur-md transition-all">Live preview</span>
+            <div className="absolute right-3 top-3 flex rounded-full bg-black/40 p-1 shadow-lg backdrop-blur-md transition-all text-xs font-semibold text-white" role="group" aria-label="Shirt side">
               {(["front", "back"] as const).map((s) => (
                 <button key={s} type="button" onClick={() => setSide(s)} aria-pressed={side === s} className={cn("min-h-[40px] rounded-full px-4 capitalize", side === s ? "bg-white text-black" : "text-white/80")}>
                   {s}
@@ -525,7 +525,7 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
                 </button>
               </div>
             ) : (
-              <label htmlFor={`${uid}-logo`} className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed border-white/20 px-4 py-6 text-center transition hover:border-turbo hover:bg-white/[0.02]">
+              <label htmlFor={`${uid}-logo`} className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed border-white/20 px-4 py-6 text-center transition-all hover:border-turbo hover:bg-gradient-to-br hover:from-turbo/10 hover:to-transparent hover:shadow-lg">
                 <ImageUp className="h-6 w-6 text-turbo" aria-hidden />
                 <span className="text-sm font-semibold">Upload your {copy.artNoun}</span>
                 <span className="text-xs text-muted-foreground">PNG with a transparent background is best · JPG, SVG work too</span>
@@ -537,6 +537,11 @@ export function ShirtMaker({ product = SHIRT, copy = COMPANY_MAKER }: { product?
                 <input type="checkbox" checked={useClean} onChange={(e) => setUseClean(e.target.checked)} className="h-4 w-4 accent-[hsl(var(--turbo))]" />
                 Remove white background
               </label>
+            )}
+            {logo && !lowRes && (
+              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-emerald-300 shadow-lg backdrop-blur-md">
+                <span aria-hidden>✓</span> Print-ready · {logo.img.naturalWidth}px wide
+              </p>
             )}
             {lowRes && (
               <p className="mt-3 flex items-start gap-2 text-xs text-[hsl(var(--ignite-hot))]">
