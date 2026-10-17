@@ -215,6 +215,11 @@ const TABS = {
     ATTR,
     { "Form page": "page", "Event ID": "eventId" }
   ),
+  "Office Setup Leads": Object.assign(
+    { Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Job: "business", "City / timing": "note", Type: "type" },
+    ATTR,
+    { "Form page": "page", "Event ID": "eventId" }
+  ),
   "Other Leads": Object.assign({ Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Company: "business", Type: "type", Note: "note" }, ATTR, { "Form page": "page" }),
 };
 
@@ -244,6 +249,13 @@ const STATUS = {
     ["Paid", "#ffd8b3", "#7a3b00"],
     ["Shipped", "#d4edda", "#1e5631"],
   ],
+  "Office Setup Leads": [
+    ["New", "#cce0ff", "#1a3a6b"],
+    ["Contacted", "#fff2b3", "#6b5200"],
+    ["Booked", "#d4edda", "#1e5631"],
+    ["Won", "#a8e6a8", "#0f4d0f"],
+    ["Lost", "#e3e3e3", "#555555"],
+  ],
   "Call Quiz Leads": [
     ["New", "#cce0ff", "#1a3a6b"],
     ["Contacted", "#fff2b3", "#6b5200"],
@@ -261,6 +273,7 @@ function tabFor(type) {
   if (type === "shirt-design") return "Shirt Designs";
   if (type === "shirt-order") return "Shirt Orders";
   if (type === "dev-intake") return "Dev Intake Leads";
+  if (type === "office-setup") return "Office Setup Leads";
   return "Other Leads";
 }
 
