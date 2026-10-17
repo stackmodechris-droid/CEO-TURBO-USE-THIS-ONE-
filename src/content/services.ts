@@ -190,6 +190,33 @@ export const SERVICES: Service[] = [
     ],
   },
   {
+    slug: "computer-build-setup",
+    name: "Custom computer build & setup",
+    short: "Computer build",
+    icon: "layout",
+    metaTitle: "Custom Computer Build & Setup — Atlanta Metro | Call 470-502-9543",
+    metaDescription: "We assemble your PC from the parts you choose, install Windows and drivers, and get it ready to use. Labor only, Atlanta metro. Call 470-502-9543.",
+    h1: "Custom computer build — we assemble it, install it and hand it over ready to use",
+    answer: "CEO Turbo assembles custom desktop computers for homes, offices, studios and gaming setups in the Atlanta metro area. You choose the parts, or fund an order up front and we purchase them with receipts. We assemble the machine, route the cables, install the operating system and drivers, test it under load, and set up your monitors and peripherals. You pay a flat labor price confirmed in writing before we begin.",
+    outcome: "A tested, quiet, clean-built computer that is ready to use the day we hand it over.",
+    bestFor: ["Gamers and streamers who want a PC built right", "Producers and editors who need a reliable workstation", "Small offices that need several matching machines", "Anyone who bought parts and does not want to assemble them"],
+    includes: ["Parts check before we start", "Full assembly and cable routing", "Operating system and driver installation", "System updates and security software", "Stress test and temperature check", "Monitor, keyboard, mouse and peripheral setup", "Data transfer from your old computer", "Walkthrough so you know how to use it"],
+    process: [
+      { title: "Call or text", body: "Tell us the parts you have or what you need it for. We confirm a flat labor price." },
+      { title: "Build", body: "We assemble the machine and route every cable cleanly." },
+      { title: "Install", body: "Operating system, drivers and your software are installed and updated." },
+      { title: "Test", body: "We test it under load and walk you through it before we leave." },
+    ],
+    notFor: "Repairing broken computers or picking parts for you to resell. We build and set up new machines.",
+    audiences: ["local"],
+    faqs: [
+      { q: "Do you supply the parts?", a: "No, you provide them. If you fund an order up front we can purchase the parts and send receipts." },
+      { q: "How much does it cost?", a: "Labor is quoted flat by the number of machines and confirmed in writing before we begin. Call or text 470-502-9543." },
+      { q: "Can you build several computers?", a: "Yes. Offices and studios can book multiple matching builds in one visit." },
+      { q: "Do you come to me?", a: "Yes, anywhere in the Atlanta metro area." },
+    ],
+  },
+  {
     slug: "seo-aeo-geo",
     name: "SEO, AEO & GEO",
     short: "SEO · AEO · GEO",
@@ -541,4 +568,4 @@ export const SERVICES: Service[] = [
 export const serviceBySlug = (slug: string) => SERVICES.find((s) => s.slug === slug);
 
 /** Services sold by phone first: call/text hero, quote form, service-area list and a sticky mobile call bar. */
-export const CALL_FIRST_SLUGS = ["home-office-setup", "apartment-home-office-setup", "school-computer-room-setup", "dj-studio-setup", "office-transformation"];
+export const CALL_FIRST_SLUGS = ["home-office-setup", "apartment-home-office-setup", "school-computer-room-setup", "dj-studio-setup", "computer-build-setup", "office-transformation"];
