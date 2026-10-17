@@ -2,8 +2,10 @@ import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/
 import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
 import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
+import { OfficeIntake } from "@/components/blocks/OfficeIntake";
 import { BookButton } from "@/components/cta/Actions";
 import { SITE } from "@/config/site";
+import { SETUP_AREAS } from "@/content/service-areas";
 import { SCENES, SearchScene } from "@/components/visuals/Scenes";
 import { ADS } from "@/content/ads";
 import { AUDIENCES } from "@/content/audiences";
@@ -59,7 +61,7 @@ export default function ServicePage() {
                 </a>
               </div>
             </div>
-            <Scene className="h-auto w-full" />
+            {isHomeOffice ? <OfficeIntake /> : <Scene className="h-auto w-full" />}
           </div>
           <DirectAnswer label={`What is ${s.short}?`}>{s.answer}</DirectAnswer>
         </div>
@@ -172,48 +174,22 @@ export default function ServicePage() {
         <section className="section border-t border-border" aria-labelledby="areas">
           <div className="container-x">
             <SectionHeader title={<span id="areas">Areas We Serve</span>} lede="We serve the entire Atlanta metro area within a 50-mile radius, plus extended service up to 2 hours from Duluth for larger projects." />
-            <div className="mt-10 grid gap-8 md:grid-cols-3">
-              <div>
-                <h3 className="text-lg font-semibold">Atlanta Metro</h3>
-                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  <li>Atlanta</li>
-                  <li>Decatur</li>
-                  <li>Buckhead</li>
-                  <li>Sandy Springs</li>
-                  <li>Marietta</li>
-                  <li>Smyrna</li>
-                  <li>Roswell</li>
-                  <li>Alpharetta</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Gwinnett County</h3>
-                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  <li>Duluth</li>
-                  <li>Lawrenceville</li>
-                  <li>Johns Creek</li>
-                  <li>Peachtree Corners</li>
-                  <li>Snellville</li>
-                  <li>Norcross</li>
-                  <li>Sugar Hill</li>
-                  <li>Suwanee</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Extended Area</h3>
-                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  <li>Athens (60 miles)</li>
-                  <li>All cities within 50-mile radius</li>
-                  <li>Up to 2 hours from Duluth</li>
-                  <li>For larger projects only</li>
-                </ul>
-              </div>
+            <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {SETUP_AREAS.map((r) => (
+                <div key={r.region} className="panel p-5 transition hover:-translate-y-0.5 hover:border-turbo/60">
+                  <h3 className="text-lg font-semibold">{r.region}</h3>
+                  {r.note && <p className="mt-1 text-xs text-turbo">{r.note}</p>}
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {r.cities.map((c) => (
+                      <li key={c} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-            <div className="mt-8 panel p-6">
-              <p className="text-sm">
-                <strong>Service Area:</strong> Atlanta, Decatur, Buckhead, Sandy Springs, Marietta, Smyrna, Roswell, Alpharetta, Johns Creek, Duluth, Norcross, Lawrenceville, Stone Mountain, Athens, Gwinnett County, and all surrounding cities within 50 miles. Extended service available up to 2 hours from Duluth for business and school projects.
-              </p>
-            </div>
+            <p className="mt-6 text-sm text-muted-foreground">Don't see your city? If you're within about two hours of Duluth, call {SITE.phone.display} and we'll tell you the same day.</p>
           </div>
         </section>
       )}
@@ -244,14 +220,6 @@ export default function ServicePage() {
         </section>
       ) : (
         <BookingSection note={note} prefill={prefill} />
-      )}
-      {isHomeOffice && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 backdrop-blur md:hidden">
-          <a href={SITE.phone.href} data-call-location="home-office-sticky-mobile" className="btn-ignite flex min-h-12 w-full items-center justify-center gap-2">
-            <Phone className="h-5 w-5" />
-            Call {SITE.phone.display}
-          </a>
-        </div>
       )}
     </>
   );
