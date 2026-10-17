@@ -334,6 +334,7 @@ export function pricesFor(service: string): PriceItem[] {
     "apartment-home-office-setup": ["office-basic", "office-home"],
     "school-computer-room-setup": ["office-school"],
     "dj-studio-setup": ["office-home", "office-business"],
+    "computer-build-setup": ["office-basic", "office-home"],
     "office-transformation": ["office-transform-basic", "office-transform-standard", "office-transform-complete"],
     "seo-aeo-geo": ["visibility-foundation", "pkg-start", "pkg-launch", "care", "growth"],
     "website-design": ["site-artist", "site-launch", "site-growth", "site-shopify", "pkg-launch", "care"],
