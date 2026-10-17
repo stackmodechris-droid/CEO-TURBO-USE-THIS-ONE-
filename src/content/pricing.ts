@@ -97,7 +97,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-basic",
     name: "Basic computer setup",
-    price: 119,
+    price: 99,
     billing: "once",
     service: "home-office-setup",
     summary: "Get your computer ready to use with professional setup and configuration. Labor only.",
@@ -106,7 +106,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-home",
     name: "Standard home office setup",
-    price: 159,
+    price: 129,
     billing: "once",
     service: "home-office-setup",
     summary: "Desk assembly plus full computer setup. Labor only.",
@@ -116,7 +116,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-complete",
     name: "Complete home office setup",
-    price: 199,
+    price: 169,
     billing: "once",
     service: "home-office-setup",
     summary: "Desk, computer, monitor mounting, cable management and Wi-Fi configuration. Labor only.",
@@ -125,7 +125,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "school-basic",
     name: "School computer room — up to 5 stations",
-    price: 399,
+    price: 329,
     billing: "once",
     service: "school-computer-room-setup",
     summary: "Computer room setup for up to 5 stations. Labor only.",
@@ -134,7 +134,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-school",
     name: "School computer room — up to 10 stations",
-    price: 599,
+    price: 479,
     billing: "once",
     service: "school-computer-room-setup",
     summary: "Computer room setup for up to 10 stations. Labor only.",
@@ -144,7 +144,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "school-complete",
     name: "School computer room — up to 15 stations",
-    price: 799,
+    price: 649,
     billing: "once",
     service: "school-computer-room-setup",
     summary: "Computer room setup for up to 15 stations with network configuration. Labor only.",
@@ -153,7 +153,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "dj-basic",
     name: "DJ & studio — basic",
-    price: 179,
+    price: 149,
     billing: "once",
     service: "dj-studio-setup",
     summary: "Desk and gear placement. Labor only.",
@@ -162,7 +162,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "dj-standard",
     name: "DJ & studio — standard",
-    price: 239,
+    price: 199,
     billing: "once",
     service: "dj-studio-setup",
     summary: "Desk, monitors, controller, cabling and software. Labor only.",
@@ -172,7 +172,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "dj-complete",
     name: "DJ & studio — complete",
-    price: 319,
+    price: 259,
     billing: "once",
     service: "dj-studio-setup",
     summary: "Full setup with audio interface and calibration. Labor only.",
@@ -209,7 +209,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-transform-basic",
     name: "Basic office build-out",
-    price: 1999,
+    price: 1599,
     billing: "once",
     service: "office-transformation",
     summary: "Installation labor for small spaces: framing, basic network install and 1-2 workstations. Materials not included.",
@@ -218,7 +218,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-transform-standard",
     name: "Standard office build-out",
-    price: 2799,
+    price: 2299,
     billing: "once",
     service: "office-transformation",
     summary: "Installation labor for medium spaces: framing, cameras, full network and 3-5 workstations. Materials and equipment supplied by you or funded up front.",
@@ -228,7 +228,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "office-transform-complete",
     name: "Complete office build-out",
-    price: 3999,
+    price: 3199,
     billing: "once",
     service: "office-transformation",
     summary: "Installation labor for large spaces, frame to finish, 6+ workstations. Materials and equipment supplied by you or funded up front.",

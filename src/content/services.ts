@@ -32,7 +32,7 @@ export const SERVICES: Service[] = [
     icon: "layout",
     metaTitle: "Home Office & Computer Setup — Atlanta Metro Area",
     metaDescription:
-      "Home office, computer, desk, Wi-Fi and device setup in Atlanta, Gwinnett and Athens. From $119. Call 470-502-9543.",
+      "Home office, computer, desk, Wi-Fi and device setup in Atlanta, Gwinnett and Athens. From $99. Call 470-502-9543.",
     h1: "Home office and computer setup — we build your workspace so you can get to work",
     answer:
       "CEO Turbo provides complete home office and computer setup services for Atlanta metro area residents and businesses. We assemble desks and chairs, set up monitors and computers, configure internet and networks, install software, connect tablets and devices, and organize your entire workspace. Built for new home offices, business setups, school computer labs, and anyone who needs a professional tech workspace without the hassle.",
@@ -60,7 +60,7 @@ export const SERVICES: Service[] = [
     audiences: ["local"],
     faqs: [
       { q: "What areas do you serve?", a: "We serve the entire Atlanta metro area within a 50-mile radius, including Atlanta, Decatur, Buckhead, Sandy Springs, Marietta, Smyrna, Roswell, Alpharetta, Johns Creek, Duluth, Norcross, Lawrenceville, Stone Mountain, Athens, Gwinnett County, and all surrounding cities. We also travel up to 2 hours from Duluth, Georgia for larger projects." },
-      { q: "How much does home office setup cost?", a: "Our pricing is transparent and listed up front. Basic computer setup starts at $119, standard (desk plus computer) is $159, and the complete home office setup is $199. All pricing is confirmed before we begin work." },
+      { q: "How much does home office setup cost?", a: "Our pricing is transparent and listed up front. Basic computer setup starts at $99, standard (desk plus computer) is $129, and the complete home office setup is $169. All pricing is confirmed before we begin work." },
       { q: "Do you provide the equipment?", a: "We can recommend and source equipment at your request, or we set up what you already have. You provide the furniture and devices, we handle the assembly, installation, and configuration." },
       { q: "How long does setup take?", a: "Most home office setups are completed in 2-4 hours. Larger business office setups or school computer labs may take a full day. We'll give you a time estimate during our consultation." },
       { q: "Do you offer ongoing support?", a: "We focus on setup and installation. For ongoing IT support, we can refer you to trusted partners or discuss a maintenance plan for your specific needs." },
@@ -74,7 +74,7 @@ export const SERVICES: Service[] = [
     icon: "layout",
     metaTitle: "Office Build-Out & Setup Labor — Atlanta Metro Area",
     metaDescription:
-      "Office build-out, network and POS system install from $1,999. Framing, cameras, computers, cleanup. Atlanta metro. Call 470-502-9543.",
+      "Office build-out, network and POS system install from $1,599. Framing, cameras, computers, cleanup. Atlanta metro. Call 470-502-9543.",
     h1: "Office transformation — we build your entire workspace from frame to finish",
     answer:
       "We turn empty offices into ready-to-work spaces. We do the work: build walls, install cameras, install your network and POS system, set up internet, build computers, and clean up. You pay once for our labor. No monthly fees. You buy the materials, or pay us up front and we buy them for you. We serve Atlanta and nearby cities.",
@@ -103,7 +103,7 @@ export const SERVICES: Service[] = [
     audiences: ["local"],
     faqs: [
       { q: "What areas do you serve?", a: "We serve Atlanta and cities within 2 hours of Duluth. Call 470-502-9543 and we'll tell you the same day if we can help." },
-      { q: "How much does office transformation cost?", a: "Labor only, paid once: Basic from $1,999 (1-2 workstations), Standard from $2,799 (3-5 workstations), Complete from $3,999 (6+ workstations). You get a written price before we start. No monthly fees." },
+      { q: "How much does office transformation cost?", a: "Labor only, paid once: Basic from $1,599 (1-2 workstations), Standard from $2,299 (3-5 workstations), Complete from $3,199 (6+ workstations). You get a written price before we start. No monthly fees." },
       { q: "What's included in the one-time price?", a: "All our labor: walls, cameras, internet, computers, wires, and cleanup. Materials and equipment cost extra." },
       { q: "Do you provide the equipment?", a: "You buy the materials. Or pay us up front and we buy them at cost and show you the receipts." },
       { q: "How long does an office transformation take?", a: "Small offices (under 1,000 sq ft) typically take 3-5 days. Medium offices (1,000-3,000 sq ft) take 1-2 weeks. Large projects (3,000+ sq ft) are quoted with a timeline based on scope." },
@@ -116,8 +116,8 @@ export const SERVICES: Service[] = [
     name: "Apartment & home office setup",
     short: "Apartment office setup",
     icon: "layout",
-    metaTitle: "Apartment & Home Office Setup — Atlanta Metro | From $119",
-    metaDescription: "We build your desk, mount monitors, connect everything and hide the cables. Apartments and homes in the Atlanta metro. From $119. Call 470-502-9543.",
+    metaTitle: "Apartment & Home Office Setup — Atlanta Metro | From $99",
+    metaDescription: "We build your desk, mount monitors, connect everything and hide the cables. Apartments and homes in the Atlanta metro. From $99. Call 470-502-9543.",
     h1: "Apartment and home office setup — desk built, monitors up, cables hidden",
     answer: "CEO Turbo comes to your apartment or home, assembles your desk and chair, mounts and aligns monitors, connects your computer, printer and Wi-Fi, and routes every cable out of sight. You supply the furniture and equipment. We do the building and wiring, usually in 2 to 4 hours, at a flat price confirmed before we start.",
     outcome: "A clean, working desk setup finished in one visit, with nothing left in boxes.",
@@ -133,7 +133,7 @@ export const SERVICES: Service[] = [
     audiences: ["local"],
     faqs: [
       { q: "Do you bring the desk and monitors?", a: "No. You provide the furniture and equipment. We assemble and install it. If you want us to order items, we need the funds up front and we send receipts." },
-      { q: "How much does it cost?", a: "Basic computer setup is $119, standard with desk assembly is $159, and the complete setup is $199. The exact price is confirmed before we begin." },
+      { q: "How much does it cost?", a: "Basic computer setup is $99, standard with desk assembly is $129, and the complete setup is $169. The exact price is confirmed before we begin." },
       { q: "Will you come to my apartment?", a: "Yes, anywhere in the Atlanta metro area. Call 470-502-9543 to confirm your address." },
       { q: "How long does it take?", a: "Most apartment and home offices take 2 to 4 hours." },
     ],
@@ -143,8 +143,8 @@ export const SERVICES: Service[] = [
     name: "School & computer room setup",
     short: "Computer room setup",
     icon: "layout",
-    metaTitle: "School & Computer Room Setup — Atlanta Metro | From $399",
-    metaDescription: "Computer labs, classrooms and training rooms: furniture assembly, workstation setup, networking and cable management. From $399. Call 470-502-9543.",
+    metaTitle: "School & Computer Room Setup — Atlanta Metro | From $329",
+    metaDescription: "Computer labs, classrooms and training rooms: furniture assembly, workstation setup, networking and cable management. From $329. Call 470-502-9543.",
     h1: "School and computer room setup — every station built, connected and organized",
     answer: "CEO Turbo sets up computer rooms for schools, churches, nonprofits, tutoring centers and offices. We assemble tables and chairs, place and connect each workstation, configure the network and shared printers, and organize cables so the room is easy to run and easy to clean. You supply the equipment; we do the installation labor at a flat quoted price.",
     outcome: "A computer room that is ready for the first class, with every station working.",
@@ -186,7 +186,7 @@ export const SERVICES: Service[] = [
     audiences: ["artist"],
     faqs: [
       { q: "Do you sell DJ gear?", a: "No. You supply the gear, or fund an order up front and we purchase it with receipts." },
-      { q: "How much does it cost?", a: "Pricing starts at $179 for a desk and gear setup and is confirmed in writing before we begin." },
+      { q: "How much does it cost?", a: "Pricing starts at $149 for a desk and gear setup and is confirmed in writing before we begin." },
       { q: "Do you travel to venues?", a: "Yes, within the Atlanta metro area. Call 470-502-9543 to confirm." },
     ],
   },
