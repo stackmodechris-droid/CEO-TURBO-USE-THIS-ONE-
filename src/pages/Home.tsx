@@ -9,6 +9,7 @@ import { PathPicker, ServiceGrid, ReviewCardPromo, BrandBoostSteps, Founder, Boo
 import { SectionHeader, FAQList } from "@/components/blocks/Basics";
 import { HOME_FAQS } from "@/content/faqs";
 import { ADS } from "@/content/ads";
+import { CALL_FIRST_SLUGS } from "@/content/services";
 import { AD_TOTALS, money } from "@/content/results";
 import { CLIENTS } from "@/content/clients";
 import { PACKAGES, usd } from "@/content/pricing";
@@ -203,6 +204,15 @@ export default function Home() {
           <SectionHeader title={<span id="services">What do you need help with first?</span>} lede="Use one service or all of them. On the Brand Boost call we'll tell you which one moves the needle first." />
           <div className="mt-12">
             <ServiceGrid />
+          </div>
+        </div>
+      </section>
+
+      <section className="section border-t border-border" aria-labelledby="setup">
+        <div className="container-x">
+          <SectionHeader title={<span id="setup">Need a workspace built in person?</span>} lede="Office, home office, computer build and studio setup across the Atlanta metro area. Flat price confirmed before we start." />
+          <div className="mt-12">
+            <ServiceGrid cards={false} slugs={CALL_FIRST_SLUGS} />
           </div>
         </div>
       </section>
