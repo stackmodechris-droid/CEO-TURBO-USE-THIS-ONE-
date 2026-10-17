@@ -17,6 +17,8 @@ import { Check, MessageSquare, Phone, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
 
+const CAL_URL = "https://cal.com/stackmodechris/ceo-turbo-office-studio-setup";
+
 export default function ServicePage() {
   const { slug = "" } = useParams();
   const s = serviceBySlug(slug);
@@ -27,6 +29,12 @@ export default function ServicePage() {
   const isAds = ["meta-ads", "google-ads", "tiktok-ads", "x-ads"].includes(s.slug);
   const isHomeOffice = CALL_FIRST_SLUGS.includes(s.slug);
   const isOfficeTransform = s.slug === "office-transformation";
+  const showCal = isHomeOffice && s.slug !== "home-office-setup";
+  const calLink = (loc: string, cls: string) => (
+    <a href={CAL_URL} target="_blank" rel="noopener noreferrer" data-cal-location={`${s.slug}-${loc}`} className={cls}>
+      Book online
+    </a>
+  );
   const Scene = s.slug === "seo-aeo-geo" ? SearchScene : s.slug === "google-business-profile" ? SCENES.local : s.slug === "email-marketing" || s.slug === "tiktok-ads" ? SCENES.shopify : s.slug === "social-media-optimization" || s.slug === "x-ads" ? SCENES.artist : SearchScene;
   const note = `Service: ${s.name}`;
   const prefill = `Interested in ${s.name}.`;
@@ -54,6 +62,7 @@ export default function ServicePage() {
                       <MessageSquare className="h-4 w-4" />
                       Text for a quote
                     </a>
+                    {showCal && calLink("hero", "btn-chrome flex items-center justify-center gap-2")}
                   </>
                 ) : (
                   <BookButton note={note} prefill={prefill}>Book a free call about {s.short}</BookButton>
@@ -135,10 +144,13 @@ export default function ServicePage() {
                 {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Need more than one piece? A package covers it for less — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
               </p>
               {isHomeOffice || isOfficeTransform ? (
-                <a href={SITE.phone.href} data-call-location={`${s.slug}-pricing`} className="btn-ignite mt-6 inline-flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  Call for a flat quote
-                </a>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <a href={SITE.phone.href} data-call-location={`${s.slug}-pricing`} className="btn-ignite inline-flex items-center justify-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    Call for a flat quote
+                  </a>
+                  {showCal && calLink("pricing", "btn-chrome inline-flex items-center justify-center")}
+                </div>
               ) : (
                 <BookButton note={`${note} — pricing`} className="mt-6">
                   Which do I need? Get my free plan
@@ -220,6 +232,7 @@ export default function ServicePage() {
               <Phone className="h-4 w-4" />
               Call {SITE.phone.display}
             </a>
+            {showCal && calLink("footer", "btn-chrome mt-6 ml-3 inline-flex items-center gap-2")}
           </div>
         </section>
       ) : (

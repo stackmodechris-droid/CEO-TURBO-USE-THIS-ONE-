@@ -34,9 +34,15 @@ export function MobileActionBar() {
             <Phone className="h-5 w-5" aria-hidden />
             Call now
           </CallLink>
-          <a href="#quote" className="btn-chrome flex flex-1 items-center justify-center !py-3.5 !text-base">
-            Free quote
-          </a>
+          {pathname.endsWith("/home-office-setup") ? (
+            <a href="#quote" className="btn-chrome flex flex-1 items-center justify-center !py-3.5 !text-base">
+              Free quote
+            </a>
+          ) : (
+            <a href="https://cal.com/stackmodechris/ceo-turbo-office-studio-setup" target="_blank" rel="noopener noreferrer" className="btn-chrome flex flex-1 items-center justify-center !py-3.5 !text-base">
+              Book online
+            </a>
+          )}
         </div>
       </div>
     );
