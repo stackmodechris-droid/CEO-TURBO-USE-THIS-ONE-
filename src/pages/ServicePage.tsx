@@ -15,6 +15,7 @@ import { SETUP_AREAS } from "@/content/service-areas";
 import { CALL_FIRST_SLUGS, serviceBySlug, SERVICES } from "@/content/services";
 import { Calendar, Check, MessageSquare, Phone, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import NotFound from "./NotFound";
 
 export default function ServicePage() {
@@ -45,7 +46,7 @@ export default function ServicePage() {
         <div className="pointer-events-none absolute -top-32 left-0 h-[520px] w-[820px] glow-turbo" aria-hidden />
         <div className="container-x relative">
           <Breadcrumbs items={[{ name: "Services", path: "/services" }, { name: s.name, path }]} />
-          <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className={cn("grid gap-10", isHomeOffice ? "items-start lg:grid-cols-2" : "items-center lg:grid-cols-[1.2fr_0.8fr]")}>
             <div className="hero-rise">
               <p className="chip">{s.outcome}</p>
               <h1 className="mt-5 text-4xl font-bold leading-[1.02] sm:text-6xl">{s.h1}</h1>

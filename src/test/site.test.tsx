@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { PAGES } from "@/seo/pages";
 import { CLIENTS } from "@/content/clients";
@@ -21,6 +21,7 @@ import { reviewCardProduct, organization, founder } from "@/seo/schema";
 import { Footer } from "@/components/site/Footer";
 import { findVariant } from "@/lib/shopify";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { OfficeIntake } from "@/components/blocks/OfficeIntake";
 import { checkReviewLink } from "@/lib/review-link";
 import { ALL_PRICES, PRICING_FAQS, pricesFor, usd } from "@/content/pricing";
 import { HOME_FAQS, BOOK_FAQS } from "@/content/faqs";
@@ -143,6 +144,25 @@ describe("conversion buttons", () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole("link", { name: "Shop" })).toHaveAttribute("href", "/google-review-cards");
+  });
+
+  it("setup booking embed renders clean Cal.com embed with call/text and zero questionnaire questions", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <OfficeIntake service="home-office-setup" />
+        </MemoryRouter>,
+      );
+    });
+    expect(screen.getByText("Book your home office setup")).toBeInTheDocument();
+    expect(screen.getByText(/Call \(470\) 502-9543/)).toBeInTheDocument();
+    expect(screen.getByText("Text for quote")).toBeInTheDocument();
+
+    // Verify all questionnaire questions are completely removed
+    expect(screen.queryByText("What do you need set up?")).toBeNull();
+    expect(screen.queryByText("Where are you?")).toBeNull();
+    expect(screen.queryByText("How soon?")).toBeNull();
+    expect(screen.queryByText("Where do we send your quote?")).toBeNull();
   });
 });
 

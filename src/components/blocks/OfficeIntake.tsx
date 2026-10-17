@@ -1,164 +1,166 @@
-// 3-step quote intake for /services/home-office-setup: pick the job, city + timing, then contact details.
-// Mobile-first (big tap targets, one question per screen). Posts to /api/lead as type "office-setup" and fires
-// the same generate_lead event as every other lead; the success screen offers the call straight away.
-import { useId, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, Check, Loader2, Phone } from "lucide-react";
-import { SITE } from "@/config/site";
-import { ALL_SETUP_CITIES } from "@/content/service-areas";
-import { sendLead } from "@/lib/lead-outbox";
-import { attribution, newEventId, track, visitorId } from "@/lib/track";
+import { useEffect, useState } from "react";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import { Loader2, MessageSquare, Phone, ShieldCheck } from "lucide-react";
+import { INSTALL_BOOKING, SITE } from "@/config/site";
+import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
-const JOB_SETS: Record<string, { label: string; sub: string; value: number }[]> = {
-  "pos-system-setup": [
-    { label: "Single POS terminal", sub: "1 register, reader, printer · $149", value: 149 },
-    { label: "Standard 2-3 stations", sub: "Registers, kitchen printer, delivery tablets · $249", value: 249 },
-    { label: "Complete restaurant/retail", sub: "Up to 5 stations, KDS, switch, cabling · $399", value: 399 },
-  ],
-  "office-transformation": [
-    { label: "Basic office build-out", sub: "1-2 workstations · from $1,599", value: 1599 },
-    { label: "Standard office build-out", sub: "3-5 workstations · from $2,299", value: 2299 },
-    { label: "Complete office build-out", sub: "6+ workstations · from $3,199", value: 3199 },
-  ],
-  "dj-studio-setup": [
-    { label: "DJ or studio desk", sub: "Gear, monitors, cables · from $149", value: 149 },
-    { label: "Full room or booth", sub: "Monitors, interface, calibration · from $259", value: 259 },
-  ],
+const SERVICE_TITLES: Record<string, { title: string; sms: string }> = {
+  "home-office-setup": {
+    title: "Book your home office setup",
+    sms: "Hi, I'd like a quote for home office setup.",
+  },
+  "apartment-home-office-setup": {
+    title: "Book your apartment office setup",
+    sms: "Hi, I'd like a quote for apartment home office setup.",
+  },
+  "office-transformation": {
+    title: "Book your office build-out consultation",
+    sms: "Hi, I'd like a quote for an office build-out.",
+  },
+  "school-computer-room-setup": {
+    title: "Book your school computer lab setup",
+    sms: "Hi, I'd like a quote for a school computer room setup.",
+  },
+  "dj-studio-setup": {
+    title: "Book your DJ or studio desk setup",
+    sms: "Hi, I'd like a quote for DJ studio setup.",
+  },
+  "computer-build-setup": {
+    title: "Book your custom PC build & setup",
+    sms: "Hi, I'd like a quote for a custom computer build.",
+  },
+  "pos-system-setup": {
+    title: "Book your POS system installation",
+    sms: "Hi, I'd like a quote for POS system installation.",
+  },
 };
-const JOBS_DEFAULT = [
-  { label: "Computer setup", sub: "Basic · from $99", value: 99 },
-  { label: "Full home office", sub: "Desk + tech · from $129", value: 129 },
-  { label: "Complete home office", sub: "Mounting, cables, Wi-Fi · $169", value: 169 },
-  { label: "School / computer lab", sub: "Up to 5 stations · from $329", value: 329 },
-];
-const WHEN = ["ASAP", "This week", "Within 2 weeks", "Just planning"] as const;
 
-export function OfficeIntake({ id = "quote", service = "home-office-setup" }: { id?: string; service?: string }) {
-  const JOBS = JOB_SETS[service] ?? JOBS_DEFAULT;
-  const uid = useId();
-  const opened = useRef(Date.now());
-  const [step, setStep] = useState(0);
-  const [job, setJob] = useState("");
-  const [city, setCity] = useState("");
-  const [when, setWhen] = useState("");
-  const [f, setF] = useState({ name: "", phone: "", email: "", company_site: "" });
-  const [err, setErr] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
-  const value = JOBS.find((j) => j.label === job)?.value ?? JOBS[0].value;
-  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (f.name.trim().length < 2) return setErr("Enter your name.");
-    if (f.phone.replace(/\D/g, "").length < 10) return setErr("Enter a 10-digit phone number.");
-    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(f.email.trim())) return setErr("Enter a valid email so we can send your quote.");
-    setErr("");
-    setState("sending");
-    const eventId = newEventId("lead");
-    const note = `Service: ${service} | Job: ${job} | City: ${city} | When: ${when}`;
-    const ev = { lead_source: "office-setup-intake", value, currency: "USD", content_name: "Office setup quote" };
-    const user = { email: f.email, phone: f.phone, name: f.name, externalId: visitorId() };
-    const ok = await sendLead({ ...f, type: "office-setup", service, business: job, note, eventId, value, visitorId: visitorId(), attribution: attribution(), elapsedMs: Date.now() - opened.current, page: window.location.pathname });
-    track("generate_lead", ev, { eventId, user });
-    setState(ok ? "done" : "error");
+export function OfficeIntake({
+  id = "quote",
+  service = "home-office-setup",
+  className,
+}: {
+  id?: string;
+  service?: string;
+  className?: string;
+}) {
+  const [calLoaded, setCalLoaded] = useState(false);
+  const info = SERVICE_TITLES[service] ?? {
+    title: "Book your setup & installation",
+    sms: "Hi, I'd like a quote for tech setup and installation.",
   };
 
-  if (state === "done" || state === "error") {
-    return (
-      <div id={id} className="panel p-6 text-center" role="status">
-        <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-400/15">
-          <Check className="h-7 w-7 text-emerald-300" aria-hidden />
-        </span>
-        <h3 className="mt-4 text-2xl font-bold">{state === "done" ? "Got it. We'll text you." : "Saved. Call to confirm."}</h3>
-        <p className="mt-2 text-muted-foreground">
-          {job} in {city}. {state === "done" ? "Want it faster? Call now and we'll lock in a time." : "We couldn't reach our server, but your request is saved on this device. Calling is the fastest way."}
-        </p>
-        <a href={SITE.phone.href} data-call-location="home-office-intake-done" className="btn-ignite mt-5 inline-flex items-center gap-2">
-          <Phone className="h-4 w-4" />
-          Call {SITE.phone.display}
-        </a>
-      </div>
-    );
-  }
+  useEffect(() => {
+    track("booking_open", { source: `${service} — inline cal embed` });
 
-  const pill = (active: boolean) => cn("min-h-12 rounded-xl border px-4 py-3 text-left text-sm font-medium transition", active ? "border-turbo bg-turbo/15 text-foreground" : "border-border bg-card/40 hover:border-turbo/60");
+    let live = true;
+    const timeout = setTimeout(() => {
+      if (live) setCalLoaded(true);
+    }, 6000);
+
+    (async function () {
+      try {
+        const cal = await getCalApi({ namespace: INSTALL_BOOKING.namespace });
+        cal("ui", {
+          theme: "dark",
+          cssVarsPerTheme: { dark: { "cal-brand": "#00cfff" }, light: { "cal-brand": "#00cfff" } },
+          hideEventTypeDetails: false,
+          layout: "month_view",
+        });
+        if (live) setCalLoaded(true);
+      } catch (err) {
+        console.error("Failed to load Cal API", err);
+        if (live) setCalLoaded(true);
+      }
+    })();
+
+    return () => {
+      live = false;
+      clearTimeout(timeout);
+    };
+  }, [service]);
 
   return (
-    <form id={id} onSubmit={submit} noValidate className="panel scroll-mt-24 p-5 sm:p-6" aria-label="Get a setup quote">
-      <div className="flex items-center justify-between">
-        <p className="font-display text-sm font-bold text-turbo">Free quote · step {step + 1} of 3</p>
-        {step > 0 && (
-          <button type="button" onClick={() => setStep(step - 1)} className="inline-flex min-h-10 items-center gap-1 text-xs text-muted-foreground" aria-label="Back">
-            <ArrowLeft className="h-3.5 w-3.5" /> Back
-          </button>
-        )}
-      </div>
-      <div className="mt-2 h-1 overflow-hidden rounded bg-border" aria-hidden>
-        <div className="h-full bg-turbo transition-all duration-300" style={{ width: `${((step + 1) / 3) * 100}%` }} />
-      </div>
-
-      {step === 0 && (
-        <fieldset className="mt-5">
-          <legend className="text-lg font-semibold">What do you need set up?</legend>
-          <div className="mt-3 grid gap-2.5">
-            {JOBS.map((j) => (
-              <button key={j.label} type="button" className={pill(job === j.label)} onClick={() => { setJob(j.label); setStep(1); }}>
-                <span className="block">{j.label}</span>
-                <span className="block text-xs font-normal text-muted-foreground">{j.sub}</span>
-              </button>
-            ))}
-          </div>
-        </fieldset>
+    <div
+      id={id}
+      className={cn(
+        "panel relative scroll-mt-24 overflow-hidden border border-border/80 bg-card/90 p-4 shadow-2xl backdrop-blur sm:p-6",
+        className
       )}
-
-      {step === 1 && (
-        <div className="mt-5">
-          <label htmlFor={`${uid}-city`} className="text-lg font-semibold">Where are you?</label>
-          <select id={`${uid}-city`} className="field mt-3" value={city} onChange={(e) => setCity(e.target.value)}>
-            <option value="">Select your city…</option>
-            {[...ALL_SETUP_CITIES].sort().map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-            <option>Other (within 2 hours of Duluth)</option>
-          </select>
-          <p className="mt-5 text-lg font-semibold">How soon?</p>
-          <div className="mt-3 grid grid-cols-2 gap-2.5">
-            {WHEN.map((w) => (
-              <button key={w} type="button" className={pill(when === w)} onClick={() => setWhen(w)}>
-                {w}
-              </button>
-            ))}
-          </div>
-          <button type="button" className="btn-ignite mt-5 w-full !py-4" onClick={() => (city && when ? setStep(2) : setErr("Pick your city and timing."))}>
-            Continue
-          </button>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="mt-5">
-          <p className="text-lg font-semibold">Where do we send your quote?</p>
-          <div className="mt-3 space-y-3">
-            <input data-clarity-mask="true" aria-label="Your name" placeholder="Your name" autoComplete="name" className="field" value={f.name} onChange={set("name")} maxLength={100} />
-            <input data-clarity-mask="true" aria-label="Phone" placeholder="Phone" type="tel" inputMode="tel" autoComplete="tel" className="field" value={f.phone} onChange={set("phone")} maxLength={30} />
-            <input data-clarity-mask="true" aria-label="Email" placeholder="Email" type="email" inputMode="email" autoComplete="email" className="field" value={f.email} onChange={set("email")} maxLength={200} />
-          </div>
-          <label className="hidden" aria-hidden>
-            Company site
-            <input tabIndex={-1} autoComplete="off" value={f.company_site} onChange={set("company_site")} />
-          </label>
-          <button type="submit" disabled={state === "sending"} className="btn-ignite btn-shine mt-5 flex w-full items-center justify-center gap-2 !py-4">
-            {state === "sending" && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-            Get my free quote
-          </button>
-          <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">Flat price confirmed before we start. No spam; we only contact you about this job.</p>
-        </div>
-      )}
-      {err && (
-        <p className="mt-3 text-sm font-medium text-[#ff8080]" role="alert">
-          {err}
+      aria-label={info.title}
+    >
+      {/* Header with badge */}
+      <div className="border-b border-border/60 pb-4">
+        <span className="chip text-[11px] font-semibold text-turbo">
+          Direct Booking · Fast Response
+        </span>
+        <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          {info.title}
+        </h2>
+        <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+          Pick a date and time on the calendar, or call / text for immediate same-day scheduling.
         </p>
-      )}
-    </form>
+      </div>
+
+      {/* Direct Quick Action Buttons (Call & Text) */}
+      <div className="my-4 grid grid-cols-2 gap-2 sm:gap-3">
+        <a
+          href={SITE.phone.href}
+          data-call-location={`${service}-embed-call`}
+          className="btn-chrome flex items-center justify-center gap-2 !py-2.5 !px-3 text-xs font-semibold sm:text-sm"
+        >
+          <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+          <span className="truncate">Call {SITE.phone.display}</span>
+        </a>
+        <a
+          href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent(info.sms)}`}
+          data-call-location={`${service}-embed-sms`}
+          className="btn-chrome flex items-center justify-center gap-2 !py-2.5 !px-3 text-xs font-semibold sm:text-sm"
+        >
+          <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+          <span className="truncate">Text for quote</span>
+        </a>
+      </div>
+
+      {/* Clean Native Cal.com Embed */}
+      <div className="relative min-h-[580px] sm:min-h-[620px] w-full overflow-hidden rounded-xl border border-border/60 bg-black/40">
+        {!calLoaded && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-sm text-muted-foreground">
+            <Loader2 className="h-6 w-6 animate-spin text-turbo" aria-hidden />
+            <span>Loading booking calendar…</span>
+          </div>
+        )}
+        <Cal
+          namespace={INSTALL_BOOKING.namespace}
+          calLink={INSTALL_BOOKING.calLink}
+          style={{ width: "100%", height: "100%", minHeight: "580px", overflow: "auto" }}
+          config={{
+            layout: "month_view",
+            useSlotsViewOnSmallScreen: "true",
+            theme: "dark",
+          }}
+        />
+      </div>
+
+      {/* Assurance footer & direct link */}
+      <div className="mt-3 flex flex-col items-center justify-between gap-2 pt-1 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-turbo" aria-hidden />
+          <span>Flat-rate labor confirmed before start</span>
+        </div>
+        <p className="text-[11px]">
+          Calendar taking a second?{" "}
+          <a
+            href={INSTALL_BOOKING.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-turbo underline underline-offset-2 hover:text-white"
+          >
+            Direct booking page →
+          </a>
+        </p>
+      </div>
+    </div>
   );
 }
