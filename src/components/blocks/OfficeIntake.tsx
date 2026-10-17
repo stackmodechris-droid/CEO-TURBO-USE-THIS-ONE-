@@ -10,6 +10,11 @@ import { attribution, newEventId, track, visitorId } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
 const JOB_SETS: Record<string, { label: string; sub: string; value: number }[]> = {
+  "pos-system-setup": [
+    { label: "Single POS terminal", sub: "1 register, reader, printer · $149", value: 149 },
+    { label: "Standard 2-3 stations", sub: "Registers, kitchen printer, delivery tablets · $249", value: 249 },
+    { label: "Complete restaurant/retail", sub: "Up to 5 stations, KDS, switch, cabling · $399", value: 399 },
+  ],
   "office-transformation": [
     { label: "Basic office build-out", sub: "1-2 workstations · from $1,599", value: 1599 },
     { label: "Standard office build-out", sub: "3-5 workstations · from $2,299", value: 2299 },
@@ -53,7 +58,7 @@ export function OfficeIntake({ id = "quote", service = "home-office-setup" }: { 
     const note = `Service: ${service} | Job: ${job} | City: ${city} | When: ${when}`;
     const ev = { lead_source: "office-setup-intake", value, currency: "USD", content_name: "Office setup quote" };
     const user = { email: f.email, phone: f.phone, name: f.name, externalId: visitorId() };
-    const ok = await sendLead({ ...f, type: "office-setup", business: job, note, eventId, value, visitorId: visitorId(), attribution: attribution(), elapsedMs: Date.now() - opened.current, page: window.location.pathname });
+    const ok = await sendLead({ ...f, type: "office-setup", service, business: job, note, eventId, value, visitorId: visitorId(), attribution: attribution(), elapsedMs: Date.now() - opened.current, page: window.location.pathname });
     track("generate_lead", ev, { eventId, user });
     setState(ok ? "done" : "error");
   };

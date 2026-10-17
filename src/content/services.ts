@@ -218,6 +218,53 @@ export const SERVICES: Service[] = [
     ],
   },
   {
+    slug: "pos-system-setup",
+    name: "POS system setup & terminal installation",
+    short: "POS setup",
+    icon: "layout",
+    metaTitle: "POS System Installation — Atlanta Metro | Square, Toast, Clover",
+    metaDescription:
+      "We install Square, Toast, Clover, Stripe, DoorDash & UberEats POS systems, terminals, kitchen printers and cash drawers. From $149. Call 470-502-9543.",
+    h1: "POS system installation — terminals wired, printers connected, orders flowing",
+    answer:
+      "CEO Turbo installs and configures complete Point of Sale (POS) systems for restaurants, food trucks, retail stores, and salons across the Atlanta metro area. We mount card readers, wire cash drawers and receipt printers, configure network switches, integrate DoorDash and UberEats delivery tablets, and test credit card processing on Square, Toast, Clover, and Stripe. You supply the hardware; we do the installation and cabling at a transparent flat price.",
+    outcome: "A clean, tested POS setup ready to take payments and process online orders on day one.",
+    bestFor: [
+      "New restaurants, cafes, and bars opening in Atlanta",
+      "Retail shops and boutiques upgrading registers",
+      "Food businesses juggling DoorDash, UberEats, and Grubhub tablets",
+      "Salons, barbershops, and service businesses needing reliable card readers",
+      "Stores replacing messy wires with clean under-counter cabling",
+    ],
+    includes: [
+      "POS terminal and iPad stand assembly & placement",
+      "Credit card reader, chip terminal, and contactless tap setup",
+      "Kitchen printer and front-of-house receipt printer installation",
+      "Cash drawer connection and kick-out testing",
+      "DoorDash, UberEats, and online delivery tablet network integration",
+      "Network switch, router, and Ethernet cabling to terminals",
+      "Wi-Fi configuration with isolated guest network for diners",
+      "Clean under-counter cable management and labeling",
+      "Test transaction and receipt print walkthrough",
+      "Staff training on power cycles, paper changes, and basic troubleshooting",
+    ],
+    process: [
+      { title: "Call or text", body: "Tell us your POS brand (Toast, Square, Clover, Stripe), station count, and timeline. We confirm a flat labor quote." },
+      { title: "Site placement", body: "We arrive, inspect power and counters, mount stands, position terminals, and route all cables out of view." },
+      { title: "Network & hardware", body: "We connect printers, cash drawers, readers, and delivery tablets to secure high-speed internet." },
+      { title: "Live transaction test", body: "We run a live test payment, print a receipt, verify drawer kick, and train your staff before opening." },
+    ],
+    notFor: "Credit card merchant fee disputes or software licensing. We handle the physical build, cabling, and system installation.",
+    audiences: ["local"],
+    faqs: [
+      { q: "What POS systems do you support?", a: "We install and configure all major systems: Square, Toast, Clover, Stripe Terminal, Shopify POS, Lightspeed, TouchBistro, Revel, as well as delivery tablets for DoorDash, UberEats, and Grubhub." },
+      { q: "How much does POS system installation cost?", a: "Flat labor pricing: Basic (1 terminal, printer, reader) is $149; Standard (2-3 terminals, delivery tablets, kitchen printer, cash drawer) is $249; Complete multi-station restaurant/retail setup is $399. Confirmed before we start." },
+      { q: "Do you provide the POS hardware?", a: "No. You supply the hardware ordered from your processor (Square, Toast, etc.). If you need us to procure mounts, cables, or switches up front, we provide itemized receipts with zero markup." },
+      { q: "Can you install after business hours?", a: "Yes. We regularly install after closing or before opening so your business has zero downtime. Call 470-502-9543 to schedule." },
+      { q: "What areas do you serve?", a: "Atlanta, Buckhead, Midtown, Decatur, Sandy Springs, Duluth, Norcross, Alpharetta, Marietta, Gwinnett County, and all cities within 50 miles of Duluth, GA." },
+    ],
+  },
+  {
     slug: "seo-aeo-geo",
     name: "SEO, AEO & GEO",
     short: "SEO · AEO · GEO",
@@ -570,4 +617,12 @@ export const serviceBySlug = (slug: string) => SERVICES.find((s) => s.slug === s
 
 /** Services sold by phone first: call/text hero, quote form, service-area list and a sticky mobile call bar. */
 export const isInstallPath = (pathname: string) => CALL_FIRST_SLUGS.some((slug) => pathname.replace(/\/$/, "") === `/services/${slug}`);
-export const CALL_FIRST_SLUGS = ["home-office-setup", "apartment-home-office-setup", "school-computer-room-setup", "dj-studio-setup", "computer-build-setup", "office-transformation"];
+export const CALL_FIRST_SLUGS = [
+  "home-office-setup",
+  "apartment-home-office-setup",
+  "school-computer-room-setup",
+  "dj-studio-setup",
+  "computer-build-setup",
+  "office-transformation",
+  "pos-system-setup",
+];

@@ -13,7 +13,6 @@ type CalFn = ((...args: unknown[]) => void) & {
 
 declare global {
   interface Window {
-    Cal?: CalFn;
     __ctBookingModal?: boolean;
   }
 }
@@ -61,10 +60,10 @@ function bootstrap() {
  * day/time, and the meeting-info panel hidden — visitors already know why they clicked "Book a call".
  */
 const UI = {
-  theme: "dark",
-  layout: "month_view",
+  theme: "dark" as const,
+  layout: "month_view" as const,
   hideEventTypeDetails: true,
-  cssVarsPerTheme: { dark: { "cal-brand": "#0093ff" } },
+  cssVarsPerTheme: { dark: { "cal-brand": "#0093ff" }, light: { "cal-brand": "#0093ff" } },
 };
 
 /** Namespaces: the site-wide booking calendar, and the quiz's own (kept apart so their load events don't mix). */
@@ -176,9 +175,9 @@ export type Prefill = { source?: string; prefill?: string; person?: Person; fiel
 const defined = (o: Record<string, unknown> = {}) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== ""));
 
 const calConfig = ({ source, prefill, person, fields, meta }: Prefill = {}) => ({
-  layout: "month_view",
+  layout: "month_view" as const,
   useSlotsViewOnSmallScreen: "true",
-  theme: "dark",
+  theme: "dark" as const,
   ...(prefill ? { notes: prefill } : {}),
   ...(person?.name ? { name: person.name } : {}),
   ...(person?.email ? { email: person.email } : {}),

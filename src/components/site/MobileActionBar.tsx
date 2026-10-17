@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { BookButton, InstallBookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { CALL_FIRST_SLUGS } from "@/content/services";
-import { Phone } from "lucide-react";
+import { Calendar, Phone } from "lucide-react";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
 import { REVIEWS_AD_PATH, SHOP_PATH } from "@/content/review-cards";
@@ -30,11 +30,19 @@ export function MobileActionBar() {
     return (
       <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
         <div className="flex gap-2">
-          <CallLink location={`${pathname.split("/").pop()}-sticky-mobile`} className="btn-ignite flex flex-1 items-center justify-center gap-2 !py-3.5 !text-base">
-            <Phone className="h-5 w-5" aria-hidden />
+          <CallLink
+            location={`${pathname.split("/").pop()}-sticky-mobile`}
+            className="btn-ignite flex flex-1 items-center justify-center gap-2 whitespace-nowrap !py-3.5 !text-base font-bold shadow-lg"
+          >
+            <Phone className="h-4 w-4 shrink-0" aria-hidden />
             Call now
           </CallLink>
-          <InstallBookButton note={`${pathname.split("/").pop()}-sticky-mobile`} className="flex flex-1 items-center justify-center !py-3.5 !text-base">
+          <InstallBookButton
+            note={`${pathname.split("/").pop()}-sticky-mobile`}
+            variant="chrome"
+            className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap !py-3.5 !text-base"
+          >
+            <Calendar className="h-4 w-4 shrink-0" aria-hidden />
             Book online
           </InstallBookButton>
         </div>

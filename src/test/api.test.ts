@@ -404,6 +404,34 @@ describe("lead delivery to the Google Sheet", () => {
     expect((await forwardLead({ type: "x" })).stored).toBe(false);
     expect(String(err.mock.calls[0][0])).toMatch(/secret mismatch/);
   });
+
+  it("forwards office and POS setup leads with service, job and quote value", async () => {
+    vi.stubEnv("LEADS_WEBHOOK_URL", "https://sheet.test/x");
+    let sentPayload: Record<string, unknown> = {};
+    vi.stubGlobal("fetch", vi.fn(async (_url: string, opts: RequestInit) => {
+      sentPayload = JSON.parse(opts.body as string);
+      return new Response("ok", { status: 200 });
+    }));
+    const r = await forwardLead({
+      type: "office-setup",
+      name: "Sam Restaurant",
+      phone: "4045550199",
+      email: "sam@restaurant.com",
+      service: "pos-system-setup",
+      business: "Single POS terminal",
+      value: 149,
+      note: "Service: pos-system-setup | Job: Single POS terminal | City: Atlanta | When: ASAP",
+      page: "/services/pos-system-setup",
+    });
+    expect(r.stored).toBe(true);
+    expect(sentPayload).toMatchObject({
+      type: "office-setup",
+      name: "Sam Restaurant",
+      service: "pos-system-setup",
+      business: "Single POS terminal",
+      value: 149,
+    });
+  });
 });
 
 describe("form endpoint guards", () => {

@@ -216,7 +216,7 @@ const TABS = {
     { "Form page": "page", "Event ID": "eventId" }
   ),
   "Office Setup Leads": Object.assign(
-    { Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Job: "business", "City / timing": "note", Type: "type" },
+    { Received: "receivedAt", Name: "name", Phone: "phone", Email: "email", Service: "service", Job: "business", "Quote $": "value", "City / timing": "note", Type: "type" },
     ATTR,
     { "Form page": "page", "Event ID": "eventId" }
   ),

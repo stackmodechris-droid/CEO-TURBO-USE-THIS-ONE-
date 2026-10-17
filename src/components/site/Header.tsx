@@ -14,8 +14,13 @@ import { cn } from "@/lib/utils";
 type Item = { to: string; label: string; sub?: string; group?: string };
 
 const SERVICE_GROUPS: Record<string, string> = {
-  "home-office-setup": "Office & workspace", "office-transformation": "Office & workspace", "apartment-home-office-setup": "Office & workspace", "school-computer-room-setup": "Office & workspace",
-  "computer-build-setup": "Tech & equipment", "dj-studio-setup": "Tech & equipment",
+  "home-office-setup": "Office & workspace",
+  "office-transformation": "Office & workspace",
+  "apartment-home-office-setup": "Office & workspace",
+  "school-computer-room-setup": "Office & workspace",
+  "computer-build-setup": "Tech & equipment",
+  "dj-studio-setup": "Tech & equipment",
+  "pos-system-setup": "Tech & equipment",
 };
 const groupOf = (slug: string) => SERVICE_GROUPS[slug] ?? "Marketing & growth";
 const GROUP_ORDER = ["Start here", "Office & workspace", "Tech & equipment", "Marketing & growth"];
@@ -40,7 +45,13 @@ const MENUS: Menu[] = [
     label: "Services",
     to: "/services",
     wide: true,
-    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}` }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome, group: groupOf(s.slug) }))].map((i) => ({ ...i, group: i.group ?? "Start here" })).sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group)),
+    items: [
+      { to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here", group: "Start here" },
+      { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays", group: "Start here" },
+      { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}`, group: "Start here" },
+      { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS", group: "Start here" },
+      ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome, group: groupOf(s.slug) })),
+    ].sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group)),
   },
   {
     label: "Results",

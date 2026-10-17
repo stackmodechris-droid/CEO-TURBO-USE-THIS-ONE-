@@ -1,8 +1,9 @@
-import type { MouseEvent, ReactNode } from "react";
+import { useState, type MouseEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { InstallCalModal } from "@/components/booking/InstallCalModal";
 import { BOOKING, INSTALL_BOOKING, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
-import { openBooking, openInstallBooking } from "@/lib/cal";
+import { openBooking } from "@/lib/cal";
 import { track } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
@@ -55,16 +56,37 @@ export function ShopCardsButton({ children, variant = "ignite", className }: { c
   );
 }
 
-/** Books the install/setup calendar (office-studio-setup event) in an on-page Cal.com modal. Real href so it works without JS. */
-export function InstallBookButton({ children = "Book your install", note, variant = "chrome", className }: { children?: ReactNode; note?: string; variant?: Variant; className?: string }) {
+/** Books the install/setup calendar (office-studio-setup event) in native Cal.com modal. Real href so it works without JS. */
+export function InstallBookButton({
+  children = "Book your install",
+  note,
+  variant = "chrome",
+  className,
+}: {
+  children?: ReactNode;
+  note?: string;
+  variant?: Variant;
+  className?: string;
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return;
     e.preventDefault();
-    void openInstallBooking(note);
+    setModalOpen(true);
   };
+
   return (
-    <a href={INSTALL_BOOKING.url} onClick={onClick} className={cn(variantClass[variant], className)} rel="noopener">
-      {children}
-    </a>
+    <>
+      <a
+        href={INSTALL_BOOKING.url}
+        onClick={onClick}
+        className={cn(variantClass[variant], className)}
+        rel="noopener"
+      >
+        {children}
+      </a>
+      <InstallCalModal open={modalOpen} onOpenChange={setModalOpen} note={note} />
+    </>
   );
 }

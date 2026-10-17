@@ -13,7 +13,7 @@ import { clientBySlug } from "@/content/clients";
 import { priceLabel, pricesFor } from "@/content/pricing";
 import { SETUP_AREAS } from "@/content/service-areas";
 import { CALL_FIRST_SLUGS, serviceBySlug, SERVICES } from "@/content/services";
-import { Check, MessageSquare, Phone, X } from "lucide-react";
+import { Calendar, Check, MessageSquare, Phone, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
 
@@ -49,25 +49,87 @@ export default function ServicePage() {
             <div className="hero-rise">
               <p className="chip">{s.outcome}</p>
               <h1 className="mt-5 text-4xl font-bold leading-[1.02] sm:text-6xl">{s.h1}</h1>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 space-y-3">
                 {isHomeOffice || isOfficeTransform ? (
                   <>
-                    <a href={SITE.phone.href} data-call-location={`${s.slug}-hero`} className="btn-ignite flex items-center justify-center gap-2">
-                      <Phone className="h-4 w-4" />
-                      Call {SITE.phone.display}
-                    </a>
-                    <a href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent(isOfficeTransform ? "Hi, I'd like a quote for an office build-out." : `Hi, I'd like a quote for ${s.short.toLowerCase()}.`)}`} data-call-location={`${s.slug}-hero-text`} className="btn-chrome flex items-center justify-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
-                      Text for a quote
-                    </a>
-                    {showCal && calLink("hero", "btn-chrome flex items-center justify-center gap-2")}
+                    {/* DESKTOP (sm+): Primary = Book Online (ignite), Secondary = Call (chrome) */}
+                    <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+                      {showCal && (
+                        <InstallBookButton
+                          note={`${s.slug}-hero`}
+                          variant="ignite"
+                          className="flex items-center justify-center gap-2 shadow-lg"
+                        >
+                          <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                          <span>Book online</span>
+                        </InstallBookButton>
+                      )}
+                      <a
+                        href={SITE.phone.href}
+                        data-call-location={`${s.slug}-hero`}
+                        className="btn-chrome flex items-center justify-center gap-2"
+                      >
+                        <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                        <span>Call {SITE.phone.display}</span>
+                      </a>
+                    </div>
+
+                    {/* MOBILE (<sm): Primary = Call (ignite), Secondary = Book Online (chrome) */}
+                    <div className="flex flex-col gap-2.5 sm:hidden">
+                      <a
+                        href={SITE.phone.href}
+                        data-call-location={`${s.slug}-hero`}
+                        className="btn-ignite flex w-full items-center justify-center gap-2 text-base font-bold shadow-lg"
+                      >
+                        <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                        <span>Call {SITE.phone.display}</span>
+                      </a>
+                      {showCal && (
+                        <InstallBookButton
+                          note={`${s.slug}-hero`}
+                          variant="chrome"
+                          className="flex w-full items-center justify-center gap-2"
+                        >
+                          <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                          <span>Book online</span>
+                        </InstallBookButton>
+                      )}
+                    </div>
+
+                    {/* SUB-ACTIONS: Clean text links */}
+                    <div className="flex flex-wrap items-center gap-4 pt-1 text-sm text-muted-foreground">
+                      <a
+                        href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent(
+                          isOfficeTransform
+                            ? "Hi, I'd like a quote for an office build-out."
+                            : `Hi, I'd like a quote for ${s.short.toLowerCase()}.`
+                        )}`}
+                        data-call-location={`${s.slug}-hero-text`}
+                        className="inline-flex items-center gap-1.5 transition hover:text-turbo"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5 text-turbo" aria-hidden />
+                        <span>Text for a quote</span>
+                      </a>
+                      <span className="text-border" aria-hidden>•</span>
+                      <a href="#included" className="transition hover:text-foreground">
+                        What's included
+                      </a>
+                      <span className="text-border" aria-hidden>•</span>
+                      <a href="#areas" className="transition hover:text-foreground">
+                        Atlanta & Gwinnett
+                      </a>
+                    </div>
                   </>
                 ) : (
-                  <BookButton note={note} prefill={prefill}>Book a free call about {s.short}</BookButton>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <BookButton note={note} prefill={prefill}>
+                      Book a free call about {s.short}
+                    </BookButton>
+                    <a href="#included" className="btn-chrome">
+                      What's included
+                    </a>
+                  </div>
                 )}
-                <a href="#included" className="btn-chrome">
-                  What's included
-                </a>
               </div>
             </div>
             {isHomeOffice ? <OfficeIntake service={s.slug} /> : <Scene className="h-auto w-full" />}
@@ -142,12 +204,39 @@ export default function ServicePage() {
                 {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Need more than one piece? A package covers it for less — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
               </p>
               {isHomeOffice || isOfficeTransform ? (
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <a href={SITE.phone.href} data-call-location={`${s.slug}-pricing`} className="btn-ignite inline-flex items-center justify-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    Call for a flat quote
-                  </a>
-                  {showCal && calLink("pricing", "btn-chrome inline-flex items-center justify-center")}
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="hidden sm:flex sm:items-center sm:gap-3">
+                    {showCal && (
+                      <InstallBookButton note={`${s.slug}-pricing`} variant="ignite">
+                        <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                        Book your setup
+                      </InstallBookButton>
+                    )}
+                    <a
+                      href={SITE.phone.href}
+                      data-call-location={`${s.slug}-pricing`}
+                      className="btn-chrome inline-flex items-center justify-center gap-2"
+                    >
+                      <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                      Call for a flat quote
+                    </a>
+                  </div>
+                  <div className="flex flex-col gap-2.5 sm:hidden">
+                    <a
+                      href={SITE.phone.href}
+                      data-call-location={`${s.slug}-pricing`}
+                      className="btn-ignite inline-flex w-full items-center justify-center gap-2"
+                    >
+                      <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                      Call for a flat quote
+                    </a>
+                    {showCal && (
+                      <InstallBookButton note={`${s.slug}-pricing`} variant="chrome" className="w-full">
+                        <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                        Book online
+                      </InstallBookButton>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <BookButton note={`${note} — pricing`} className="mt-6">
@@ -224,13 +313,50 @@ export default function ServicePage() {
       {isHomeOffice || isOfficeTransform ? (
         <section className="section border-t border-border pb-28 md:pb-16" aria-labelledby="call-now">
           <div className="container-x text-center">
-            <h2 id="call-now" className="h-section">{isOfficeTransform ? "Ready to transform your office space?" : "Ready to get your workspace set up?"}</h2>
-            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{isOfficeTransform ? "Call or text for a free consultation and quote. We'll assess your space, discuss your needs, and give you a transparent one-time price." : "Call or text and we'll confirm your price and a time that works. Seniors and accessibility needs welcome."}</p>
-            <a href={SITE.phone.href} data-call-location={`${s.slug}-footer`} className="btn-ignite mt-6 inline-flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              Call {SITE.phone.display}
-            </a>
-            {showCal && calLink("footer", "btn-chrome mt-6 ml-3 inline-flex items-center gap-2")}
+            <h2 id="call-now" className="h-section">
+              {isOfficeTransform ? "Ready to transform your office space?" : `Ready to get your ${s.short.toLowerCase()} done?`}
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              {isOfficeTransform
+                ? "Call or text for a free consultation and quote. We'll assess your space, discuss your needs, and give you a transparent one-time price."
+                : "Call or text and we'll confirm your price and a time that works. Seniors and accessibility needs welcome."}
+            </p>
+
+            {/* Desktop buttons */}
+            <div className="mt-6 hidden items-center justify-center gap-3 sm:flex">
+              {showCal && (
+                <InstallBookButton note={`${s.slug}-footer`} variant="ignite" className="inline-flex items-center gap-2">
+                  <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                  Book online
+                </InstallBookButton>
+              )}
+              <a
+                href={SITE.phone.href}
+                data-call-location={`${s.slug}-footer`}
+                className="btn-chrome inline-flex items-center gap-2"
+              >
+                <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                Call {SITE.phone.display}
+              </a>
+            </div>
+
+            {/* Mobile buttons */}
+            <div className="mt-6 flex flex-col gap-2.5 sm:hidden">
+              <a
+                href={SITE.phone.href}
+                data-call-location={`${s.slug}-footer`}
+                className="btn-ignite inline-flex w-full items-center justify-center gap-2"
+              >
+                <Phone className="h-4 w-4 shrink-0" aria-hidden />
+                Call {SITE.phone.display}
+              </a>
+              {showCal && (
+                <InstallBookButton note={`${s.slug}-footer`} variant="chrome" className="w-full inline-flex items-center justify-center gap-2">
+                  <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                  Book online
+                </InstallBookButton>
+              )}
+            </div>
           </div>
         </section>
       ) : (

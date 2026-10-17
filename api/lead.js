@@ -86,6 +86,8 @@ export default async function handler(req, res) {
     ...(dev ? { business: lead.business || dev.appUrl, appUrl: dev.appUrl, platform: dev.platform, stage: dev.stage, budget: dev.budget, blocker: dev.blocker } : {}),
     ...(quiz ?? {}),
     ...(quiz ? scoreLead(quiz) : {}),
+    service: text(body.service, 80),
+    value: value || undefined,
     product: text(body.product, 120),
     style: text(body.style, 40),
     pack: text(body.pack, 40),
