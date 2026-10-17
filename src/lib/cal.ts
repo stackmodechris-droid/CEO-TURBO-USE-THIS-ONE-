@@ -279,3 +279,18 @@ export async function openInstallBooking(source?: string) {
   getCal()!.ns[ns]("modal", { calLink: INSTALL_BOOKING.calLink, config: calConfig({ source }) });
   if ((await shown) === "failed") goToBookingPage(url, source);
 }
+
+/** Install/setup calendar mounted inline into an element by id, through the same loader as the page's other calendars. */
+export async function mountInstallBooking(elementId: string, source?: string, instance = "modal"): Promise<LinkResult> {
+  // One namespace per mounted calendar: Cal keeps a single embed per namespace, so sharing one leaves the second empty.
+  const ns = `${INSTALL_BOOKING.namespace}-${instance}`;
+  const ok = await loadCalWithin(ns);
+  if (!ok || !getCal()?.ns[ns]) return "failed";
+  const shown = waitForLink(ns, 12000);
+  getCal()!.ns[ns]("inline", {
+    elementOrSelector: `#${elementId}`,
+    calLink: INSTALL_BOOKING.calLink,
+    config: calConfig({ source }),
+  });
+  return shown;
+}

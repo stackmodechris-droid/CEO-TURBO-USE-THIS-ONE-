@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import Cal, { getCalApi } from "@calcom/embed-react";
+import { useEffect, useId, useState } from "react";
 import { ExternalLink, Loader2, MessageSquare, ShieldCheck } from "lucide-react";
 import { INSTALL_BOOKING, SITE } from "@/config/site";
-import { trackBooked } from "@/lib/cal";
+import { mountInstallBooking } from "@/lib/cal";
 import { track } from "@/lib/track";
 
 export function InstallCalEmbed({
@@ -14,6 +13,8 @@ export function InstallCalEmbed({
   minHeight?: string;
   note?: string;
 }) {
+  const uid = useId().replace(/:/g, "");
+  const calId = `install-cal-${uid}`;
   const [calReady, setCalReady] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
 
@@ -21,25 +22,11 @@ export function InstallCalEmbed({
     track("booking_open", { source: `${note} — native cal embed` });
     let active = true;
 
-    (async () => {
-      try {
-        const cal = await getCalApi({ namespace: INSTALL_BOOKING.namespace });
-        if (!active) return;
-        cal("ui", {
-          theme: "dark",
-          cssVarsPerTheme: { dark: { "cal-brand": "#00cfff" }, light: { "cal-brand": "#00cfff" } },
-          hideEventTypeDetails: false,
-          layout: "month_view",
-        });
-        cal("on", {
-          action: "bookingSuccessful",
-          callback: (e) => trackBooked("embed", (e.detail.data as { uid?: string }).uid),
-        });
-        setCalReady(true);
-      } catch (err) {
-        console.error("Cal.com API init error", err);
-      }
-    })();
+    mountInstallBooking(calId, note, uid).then((r) => {
+      if (!active) return;
+      setCalReady(true);
+      if (r !== "ready") setShowFallback(true);
+    });
 
     // Ad blockers or slow networks: stop blocking the view and surface text/open-in-tab shortcuts.
     const timer = setTimeout(() => {
@@ -52,7 +39,7 @@ export function InstallCalEmbed({
       active = false;
       clearTimeout(timer);
     };
-  }, [note]);
+  }, [note, calId, uid]);
 
   return (
     <div className={`relative flex h-full min-h-[520px] w-full flex-col overflow-hidden rounded-xl border border-border/80 bg-black/40 ${className}`}>
@@ -76,12 +63,7 @@ export function InstallCalEmbed({
       )}
 
       <div className="relative min-h-0 w-full flex-1 overflow-y-auto">
-        <Cal
-          namespace={INSTALL_BOOKING.namespace}
-          calLink={INSTALL_BOOKING.calLink}
-          style={{ width: "100%", height: "100%", minHeight: "540px", overflow: "auto" }}
-          config={{ layout: "month_view", theme: "dark" }}
-        />
+        <div id={calId} style={{ width: "100%", height: "100%", minHeight: "540px", overflow: "auto" }} />
       </div>
 
       {showFallback && (
