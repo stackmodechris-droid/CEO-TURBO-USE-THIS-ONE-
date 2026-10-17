@@ -25,14 +25,13 @@ export function InstallCalEmbed({
     mountInstallBooking(calId, note, uid).then((r) => {
       if (!active) return;
       setCalReady(true);
-      if (r !== "ready") setShowFallback(true);
+      setShowFallback(r !== "ready");
     });
 
     // Ad blockers or slow networks: stop blocking the view and surface text/open-in-tab shortcuts.
     const timer = setTimeout(() => {
       if (!active) return;
       setCalReady(true);
-      setShowFallback(true);
     }, 2500);
 
     return () => {
@@ -42,7 +41,7 @@ export function InstallCalEmbed({
   }, [note, calId, uid]);
 
   return (
-    <div className={`relative flex h-full min-h-[520px] w-full flex-col overflow-hidden rounded-xl border border-border/80 bg-black/40 ${className}`}>
+    <div className={`relative flex min-h-[460px] w-full flex-col overflow-hidden rounded-xl border border-border/80 bg-black/40 ${className}`}>
       {!calReady && (
         <div
           className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-card/95 p-6 text-center backdrop-blur-md"
@@ -62,8 +61,9 @@ export function InstallCalEmbed({
         </div>
       )}
 
-      <div className="relative min-h-0 w-full flex-1 overflow-y-auto">
-        <div id={calId} style={{ width: "100%", height: "100%", minHeight: "540px", overflow: "auto" }} />
+      {/* color-scheme: dark matches Cal's dark theme, so the iframe is transparent instead of painting a white box around the calendar. */}
+      <div className="relative min-h-0 w-full flex-1 overflow-y-auto" style={{ colorScheme: "dark" }}>
+        <div id={calId} style={{ width: "100%", colorScheme: "dark" }} />
       </div>
 
       {showFallback && (

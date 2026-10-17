@@ -16,7 +16,7 @@ export function InstallCalModal({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md transition-opacity data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-50 flex h-[92vh] max-h-[850px] w-[95vw] max-w-[1020px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl border border-border bg-card shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 overflow-hidden">
+        <Dialog.Content className="fixed left-[50%] top-[50%] z-50 flex max-h-[92vh] w-[95vw] max-w-[820px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl border border-border bg-card shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 sm:px-6 shrink-0">
             <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ export function InstallCalModal({
           </div>
 
           {/* Calendar Embed Body */}
-          <div className="relative flex-1 overflow-hidden p-2 sm:p-4 bg-black/40">
+          <div className="relative flex-1 overflow-y-auto p-2 sm:p-3 bg-black/40">
             <InstallCalEmbed note={note} className="h-full border-0" />
           </div>
 
