@@ -77,7 +77,7 @@ export const SERVICES: Service[] = [
       "Office build-out labor: framing, cameras, network, computers and cleanup at flat one-time prices from $1,499. Atlanta metro. Call 470-502-9543.",
     h1: "Office transformation — we build your entire workspace from frame to finish",
     answer:
-      "CEO Turbo transforms empty spaces into fully operational offices. We handle the labor: office framing and build-out, security camera installation, network setup, computer building and configuration, and cleanup. Pricing is a flat one-time labor quote with no monthly contract. You supply the materials and equipment, or fund them up front and we order them for you. Serving the Atlanta metro area and up to two hours from Duluth, GA.",
+      "We turn empty offices into ready-to-work spaces. We do the work: build walls, install cameras, set up internet, build computers, and clean up. You pay once for our labor. No monthly fees. You buy the materials, or pay us up front and we buy them for you. We serve Atlanta and nearby cities.",
     outcome: "A turnkey office space ready for day-one operations — cameras watching, internet running, computers working, and everything clean.",
     bestFor: ["New businesses moving into their first office", "Companies relocating or expanding in Georgia", "Office renovations requiring tech infrastructure", "Medical practices needing secure camera and network setups", "Warehouses needing camera systems and workstation builds", "Schools and educational facilities requiring computer labs"],
     includes: [
@@ -101,12 +101,12 @@ export const SERVICES: Service[] = [
     notFor: "Ongoing IT maintenance contracts — we specialize in one-time transformation projects. For monthly managed services, we can refer trusted partners.",
     audiences: ["local"],
     faqs: [
-      { q: "What areas do you serve?", a: "We serve the Atlanta metro area and travel up to two hours from Duluth, GA for larger projects. Call 470-502-9543 and we will confirm your address the same day." },
-      { q: "How much does office transformation cost?", a: "Prices are for installation labor and are one-time: Basic starts at $1,499, Standard at $2,999, and Complete at $4,999. Your final price is confirmed in a written quote before work begins. There is no monthly fee for this work." },
-      { q: "What's included in the one-time price?", a: "All the installation labor: framing, camera mounting, network configuration, computer building, software installation, cable management and final cleaning. Materials and equipment are separate unless you fund them up front." },
-      { q: "Do you provide the equipment?", a: "We do not supply materials ourselves. You buy them, or you give us a deposit up front and we order what is needed at cost, with receipts. Hardware and lumber are always itemized separately from labor." },
+      { q: "What areas do you serve?", a: "We serve Atlanta and cities within 2 hours of Duluth. Call 470-502-9543 and we'll tell you the same day if we can help." },
+      { q: "How much does office transformation cost?", a: "Labor only, paid once: Basic from $1,499, Standard from $2,999, Complete from $4,999. You get a written price before we start. No monthly fees." },
+      { q: "What's included in the one-time price?", a: "All our labor: walls, cameras, internet, computers, wires, and cleanup. Materials and equipment cost extra." },
+      { q: "Do you provide the equipment?", a: "You buy the materials. Or pay us up front and we buy them at cost and show you the receipts." },
       { q: "How long does an office transformation take?", a: "Small offices (under 1,000 sq ft) typically take 3-5 days. Medium offices (1,000-3,000 sq ft) take 1-2 weeks. Large projects (3,000+ sq ft) are quoted with a timeline based on scope." },
-      { q: "Do you offer warranties?", a: "Yes. All installation work includes a 90-day warranty. Equipment warranties depend on the manufacturer. We provide documentation for all installed systems." },
+      { q: "Do you offer warranties?", a: "Yes. Our installation work comes with a 30-day warranty. If something we installed fails, we fix it. Equipment is covered by its maker's warranty." },
       { q: "Can you work with my existing IT provider?", a: "Absolutely. We coordinate with existing IT teams or can hand off to a managed service provider after the transformation is complete." },
     ],
   },

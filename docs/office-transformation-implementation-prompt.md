@@ -231,7 +231,7 @@ Execute tasks in this exact order:
 
 - All pricing is one-time with no monthly fees
 - Service area: Atlanta metro and up to 2 hours from Duluth, GA
-- 90-day installation warranty on all work
+- 30-day installation warranty on all work
 - Professional cleaning included in every package
 
 Begin implementation now.

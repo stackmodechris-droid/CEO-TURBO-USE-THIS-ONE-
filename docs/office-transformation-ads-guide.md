@@ -210,7 +210,7 @@ Call 470-502-9543 | ceoturbo.com/office-transformation
 ### Ad Extensions
 - **Call extensions:** Prominent phone number with call tracking
 - **Sitelinks:** Pricing, Services, Areas Served, About Us
-- **Callouts:** One-time pricing, No monthly contract, 90-day warranty, Atlanta metro
+- **Callouts:** One-time pricing, No monthly contract, 30-day warranty, Atlanta metro
 - **Location assets:** Link to Google Business Profile
 - **Image extensions:** Before/after office transformation photos
 
@@ -455,5 +455,5 @@ Same as Google Ads: Georgia state with priority on major cities.
 - Do not name or price competitors in ad copy.
 - Say "labor" and "materials not included" on the landing page and in ads where price is shown.
 - Only list cities actually served: Atlanta metro and up to 2 hours from Duluth, GA.
-- "90-day warranty" and "free quote" only if honored exactly as stated.
+- "30-day warranty" and "free quote" only if honored exactly as stated.
 - No "best", "#1" or "guaranteed" claims.
