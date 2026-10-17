@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import { Logo } from "./Logo";
@@ -11,7 +11,14 @@ import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
 import { ARTIST_MERCH_PATH, artistFromLabel } from "@/content/artist-merch";
 import { cn } from "@/lib/utils";
 
-type Item = { to: string; label: string; sub?: string };
+type Item = { to: string; label: string; sub?: string; group?: string };
+
+const SERVICE_GROUPS: Record<string, string> = {
+  "home-office-setup": "Office & workspace", "office-transformation": "Office & workspace", "apartment-home-office-setup": "Office & workspace", "school-computer-room-setup": "Office & workspace",
+  "computer-build-setup": "Tech & equipment", "dj-studio-setup": "Tech & equipment",
+};
+const groupOf = (slug: string) => SERVICE_GROUPS[slug] ?? "Marketing & growth";
+const GROUP_ORDER = ["Start here", "Office & workspace", "Tech & equipment", "Marketing & growth"];
 type Menu = { label: string; to: string; items: Item[]; wide?: boolean };
 
 // Home first, then three dropdowns, then the two money links. Fewer choices = more clicks on the ones that pay.
@@ -33,7 +40,7 @@ const MENUS: Menu[] = [
     label: "Services",
     to: "/services",
     wide: true,
-    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}` }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome }))],
+    items: [{ to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here" }, { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays" }, { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}` }, { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS" }, ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome, group: groupOf(s.slug) }))].map((i) => ({ ...i, group: i.group ?? "Start here" })).sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group)),
   },
   {
     label: "Results",
@@ -160,10 +167,13 @@ export function Header({ focus = false }: { focus?: boolean }) {
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
               </summary>
               <div className="grid gap-1 pb-3">
-                {m.items.map((i) => (
-                  <Link key={i.to} to={i.to} className="rounded-xl bg-white/[0.03] px-3 py-3.5 text-sm font-medium">
+                {m.items.map((i, idx) => (
+                  <Fragment key={i.to + i.label}>
+                  {i.group && i.group !== m.items[idx - 1]?.group && <p className="px-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-turbo">{i.group}</p>}
+                  <Link to={i.to} className="rounded-xl bg-white/[0.03] px-3 py-3.5 text-sm font-medium">
                     {i.label}
                   </Link>
+                  </Fragment>
                 ))}
               </div>
             </details>
@@ -182,11 +192,14 @@ function Dropdown({ menu, active }: { menu: Menu; active: boolean }) {
       </Link>
       <div className={cn("invisible absolute left-1/2 top-full -translate-x-1/2 pt-2 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100", menu.wide ? "w-[560px] max-w-[calc(100vw-2rem)]" : "w-[300px]")}>
         <div className={cn("grid gap-1 rounded-2xl border border-white/10 bg-[hsl(218_33%_7%)] p-2 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)]", menu.wide && "grid-cols-2")}>
-          {menu.items.map((i) => (
-            <Link key={i.to} to={i.to} className="rounded-xl px-3 py-2.5 transition-colors hover:bg-white/10 focus-visible:bg-white/10">
-              <span className="block text-sm font-semibold text-foreground">{i.label}</span>
-              {i.sub && <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{i.sub}</span>}
-            </Link>
+          {menu.items.map((i, idx) => (
+            <Fragment key={i.to + i.label}>
+              {i.group && i.group !== menu.items[idx - 1]?.group && <p className="col-span-2 px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-turbo">{i.group}</p>}
+              <Link to={i.to} className="rounded-xl px-3 py-2.5 transition-colors hover:bg-white/10 focus-visible:bg-white/10">
+                <span className="block text-sm font-semibold text-foreground">{i.label}</span>
+                {i.sub && <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{i.sub}</span>}
+              </Link>
+            </Fragment>
           ))}
         </div>
       </div>
