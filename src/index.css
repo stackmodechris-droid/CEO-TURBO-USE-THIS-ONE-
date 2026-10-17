@@ -667,3 +667,16 @@
   .meter-fill { transform: scaleX(1); }
   [data-play="false"] .bot { opacity: 1; }
 }
+
+/* Wide nav dropdown (Services): scrolls instead of running off the bottom of the screen. */
+.dropdown-scroll {
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+.dropdown-scroll::-webkit-scrollbar { width: 6px; }
+.dropdown-scroll::-webkit-scrollbar-track { background: transparent; }
+.dropdown-scroll::-webkit-scrollbar-thumb { background-color: hsl(var(--border)); border-radius: 3px; }
+.dropdown-scroll::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--muted-foreground)); }

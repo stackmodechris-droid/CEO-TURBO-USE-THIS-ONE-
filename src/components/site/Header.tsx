@@ -191,7 +191,7 @@ function Dropdown({ menu, active }: { menu: Menu; active: boolean }) {
         {menu.label} <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" aria-hidden />
       </Link>
       <div className={cn("invisible absolute left-1/2 top-full -translate-x-1/2 pt-2 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100", menu.wide ? "w-[560px] max-w-[calc(100vw-2rem)]" : "w-[300px]")}>
-        <div className={cn("grid gap-1 rounded-2xl border border-white/10 bg-[hsl(218_33%_7%)] p-2 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)]", menu.wide && "grid-cols-2")}>
+        <div className={cn("grid gap-1 rounded-2xl border border-white/10 bg-[hsl(218_33%_7%)] p-2 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)]", menu.wide && "dropdown-scroll grid-cols-2")}>
           {menu.items.map((i, idx) => (
             <Fragment key={i.to + i.label}>
               {i.group && i.group !== menu.items[idx - 1]?.group && <p className="col-span-2 px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-turbo">{i.group}</p>}
