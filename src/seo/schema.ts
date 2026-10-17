@@ -5,7 +5,7 @@ import { SHIRTS_PATH } from "@/content/company-shirts";
 import { ARTIST_MERCH_PATH } from "@/content/artist-merch";
 import { SHOP_PATH } from "@/content/review-cards";
 import { ALL_SETUP_CITIES } from "@/content/service-areas";
-import type { FAQ, Service } from "@/content/services";
+import { CALL_FIRST_SLUGS, type FAQ, type Service } from "@/content/services";
 import type { Client } from "@/content/clients";
 import type { Guide } from "@/content/guides";
 import { guideImage, guidePath } from "@/content/guides";
@@ -132,7 +132,7 @@ export const service = (s: Service): JsonLd => ({
   serviceType: s.name,
   description: s.answer,
   provider: { "@id": ORG_ID },
-  areaServed: s.slug === "home-office-setup" ? ALL_SETUP_CITIES.map((name) => ({ "@type": "City", name, containedInPlace: { "@type": "State", name: "Georgia" } })) : { "@type": "Country", name: "United States" },
+  areaServed: CALL_FIRST_SLUGS.includes(s.slug) ? ALL_SETUP_CITIES.map((name) => ({ "@type": "City", name, containedInPlace: { "@type": "State", name: "Georgia" } })) : { "@type": "Country", name: "United States" },
   url: abs(`/services/${s.slug}`),
   ...(pricesFor(s.slug).length ? { offers: pricesFor(s.slug).map(priceOffer) } : {}),
   hasOfferCatalog: {

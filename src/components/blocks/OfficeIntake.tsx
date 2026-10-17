@@ -9,15 +9,27 @@ import { sendLead } from "@/lib/lead-outbox";
 import { attribution, newEventId, track, visitorId } from "@/lib/track";
 import { cn } from "@/lib/utils";
 
-const JOBS = [
+const JOB_SETS: Record<string, { label: string; sub: string; value: number }[]> = {
+  "office-transformation": [
+    { label: "Basic office build-out", sub: "Small space · from $1,499", value: 1499 },
+    { label: "Standard office build-out", sub: "Medium space · from $2,999", value: 2999 },
+    { label: "Complete office build-out", sub: "Large space · from $4,999", value: 4999 },
+  ],
+  "dj-studio-setup": [
+    { label: "DJ or studio desk", sub: "Gear, monitors, cables · from $149", value: 149 },
+    { label: "Full room or booth", sub: "Multiple stations · from $249", value: 249 },
+  ],
+};
+const JOBS_DEFAULT = [
   { label: "Computer setup", sub: "Basic · from $89", value: 89 },
   { label: "Full home office", sub: "Furniture + tech · $149", value: 149 },
   { label: "Business office", sub: "Up to 3 workstations · $249", value: 249 },
   { label: "School / computer lab", sub: "Up to 10 stations · $349", value: 349 },
-] as const;
+];
 const WHEN = ["ASAP", "This week", "Within 2 weeks", "Just planning"] as const;
 
-export function OfficeIntake({ id = "quote" }: { id?: string }) {
+export function OfficeIntake({ id = "quote", service = "home-office-setup" }: { id?: string; service?: string }) {
+  const JOBS = JOB_SETS[service] ?? JOBS_DEFAULT;
   const uid = useId();
   const opened = useRef(Date.now());
   const [step, setStep] = useState(0);
@@ -27,7 +39,7 @@ export function OfficeIntake({ id = "quote" }: { id?: string }) {
   const [f, setF] = useState({ name: "", phone: "", email: "", company_site: "" });
   const [err, setErr] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
-  const value = JOBS.find((j) => j.label === job)?.value ?? 89;
+  const value = JOBS.find((j) => j.label === job)?.value ?? JOBS[0].value;
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
 
   const submit = async (e: FormEvent) => {
@@ -38,7 +50,7 @@ export function OfficeIntake({ id = "quote" }: { id?: string }) {
     setErr("");
     setState("sending");
     const eventId = newEventId("lead");
-    const note = `Job: ${job} | City: ${city} | When: ${when}`;
+    const note = `Service: ${service} | Job: ${job} | City: ${city} | When: ${when}`;
     const ev = { lead_source: "office-setup-intake", value, currency: "USD", content_name: "Office setup quote" };
     const user = { email: f.email, phone: f.phone, name: f.name, externalId: visitorId() };
     const ok = await sendLead({ ...f, type: "office-setup", business: job, note, eventId, value, visitorId: visitorId(), attribution: attribution(), elapsedMs: Date.now() - opened.current, page: window.location.pathname });

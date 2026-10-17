@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { CALL_FIRST_SLUGS } from "@/content/services";
 import { Phone } from "lucide-react";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
@@ -25,11 +26,11 @@ export function MobileActionBar() {
         </div>
       </div>
     );
-  if (pathname === "/services/home-office-setup")
+  if (CALL_FIRST_SLUGS.some((slug) => pathname === `/services/${slug}`))
     return (
       <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
         <div className="flex gap-2">
-          <CallLink location="home-office-sticky-mobile" className="btn-ignite flex flex-1 items-center justify-center gap-2 !py-3.5 !text-base">
+          <CallLink location={`${pathname.split("/").pop()}-sticky-mobile`} className="btn-ignite flex flex-1 items-center justify-center gap-2 !py-3.5 !text-base">
             <Phone className="h-5 w-5" aria-hidden />
             Call now
           </CallLink>

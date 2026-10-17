@@ -1,18 +1,18 @@
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
+import { OfficeIntake } from "@/components/blocks/OfficeIntake";
 import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
-import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
 import { Reveal } from "@/components/blocks/Reveal";
-import { OfficeIntake } from "@/components/blocks/OfficeIntake";
+import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
 import { BookButton } from "@/components/cta/Actions";
-import { SITE } from "@/config/site";
-import { SETUP_AREAS } from "@/content/service-areas";
 import { SCENES, SearchScene } from "@/components/visuals/Scenes";
+import { SITE } from "@/config/site";
 import { ADS } from "@/content/ads";
 import { AUDIENCES } from "@/content/audiences";
 import { clientBySlug } from "@/content/clients";
 import { priceLabel, pricesFor } from "@/content/pricing";
-import { serviceBySlug, SERVICES } from "@/content/services";
+import { SETUP_AREAS } from "@/content/service-areas";
+import { CALL_FIRST_SLUGS, serviceBySlug, SERVICES } from "@/content/services";
 import { Check, MessageSquare, Phone, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
@@ -25,7 +25,8 @@ export default function ServicePage() {
   const path = `/services/${s.slug}`;
   const work = (s.proof?.clientSlugs ?? []).map(clientBySlug).filter((c): c is NonNullable<typeof c> => Boolean(c));
   const isAds = ["meta-ads", "google-ads", "tiktok-ads", "x-ads"].includes(s.slug);
-  const isHomeOffice = s.slug === "home-office-setup";
+  const isHomeOffice = CALL_FIRST_SLUGS.includes(s.slug);
+  const isOfficeTransform = s.slug === "office-transformation";
   const Scene = s.slug === "seo-aeo-geo" ? SearchScene : s.slug === "google-business-profile" ? SCENES.local : s.slug === "email-marketing" || s.slug === "tiktok-ads" ? SCENES.shopify : s.slug === "social-media-optimization" || s.slug === "x-ads" ? SCENES.artist : SearchScene;
   const note = `Service: ${s.name}`;
   const prefill = `Interested in ${s.name}.`;
@@ -43,13 +44,13 @@ export default function ServicePage() {
               <p className="chip">{s.outcome}</p>
               <h1 className="mt-5 text-4xl font-bold leading-[1.02] sm:text-6xl">{s.h1}</h1>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                {isHomeOffice ? (
+                {isHomeOffice || isOfficeTransform ? (
                   <>
-                    <a href={SITE.phone.href} data-call-location="home-office-hero" className="btn-ignite flex items-center justify-center gap-2">
+                    <a href={SITE.phone.href} data-call-location={`${s.slug}-hero`} className="btn-ignite flex items-center justify-center gap-2">
                       <Phone className="h-4 w-4" />
                       Call {SITE.phone.display}
                     </a>
-                    <a href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent("Hi, I'd like a quote for office setup.")}`} data-call-location="home-office-hero-text" className="btn-chrome flex items-center justify-center gap-2">
+                    <a href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent(isOfficeTransform ? "Hi, I'd like a quote for an office build-out." : `Hi, I'd like a quote for ${s.short.toLowerCase()}.`)}`} data-call-location={`${s.slug}-hero-text`} className="btn-chrome flex items-center justify-center gap-2">
                       <MessageSquare className="h-4 w-4" />
                       Text for a quote
                     </a>
@@ -62,7 +63,7 @@ export default function ServicePage() {
                 </a>
               </div>
             </div>
-            {isHomeOffice ? <OfficeIntake /> : <Scene className="h-auto w-full" />}
+            {isHomeOffice ? <OfficeIntake service={s.slug} /> : <Scene className="h-auto w-full" />}
           </div>
           <DirectAnswer label={`What is ${s.short}?`}>{s.answer}</DirectAnswer>
         </div>
@@ -133,8 +134,8 @@ export default function ServicePage() {
               <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
                 {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Need more than one piece? A package covers it for less — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
               </p>
-              {isHomeOffice ? (
-                <a href={SITE.phone.href} data-call-location="home-office-pricing" className="btn-ignite mt-6 inline-flex items-center gap-2">
+              {isHomeOffice || isOfficeTransform ? (
+                <a href={SITE.phone.href} data-call-location={`${s.slug}-pricing`} className="btn-ignite mt-6 inline-flex items-center gap-2">
                   <Phone className="h-4 w-4" />
                   Call for a flat quote
                 </a>
@@ -210,12 +211,12 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {isHomeOffice ? (
+      {isHomeOffice || isOfficeTransform ? (
         <section className="section border-t border-border pb-28 md:pb-16" aria-labelledby="call-now">
           <div className="container-x text-center">
-            <h2 id="call-now" className="h-section">Ready to get your workspace set up?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">Call or text and we'll confirm your price and a time that works. Seniors and accessibility needs welcome.</p>
-            <a href={SITE.phone.href} data-call-location="home-office-footer" className="btn-ignite mt-6 inline-flex items-center gap-2">
+            <h2 id="call-now" className="h-section">{isOfficeTransform ? "Ready to transform your office space?" : "Ready to get your workspace set up?"}</h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">{isOfficeTransform ? "Call or text for a free consultation and quote. We'll assess your space, discuss your needs, and give you a transparent one-time price." : "Call or text and we'll confirm your price and a time that works. Seniors and accessibility needs welcome."}</p>
+            <a href={SITE.phone.href} data-call-location={`${s.slug}-footer`} className="btn-ignite mt-6 inline-flex items-center gap-2">
               <Phone className="h-4 w-4" />
               Call {SITE.phone.display}
             </a>
