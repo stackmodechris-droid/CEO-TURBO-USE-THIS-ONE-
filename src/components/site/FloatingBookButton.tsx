@@ -2,7 +2,8 @@
 // the same tracked Cal.com inline calendar dialog as every other booking button.
 import { useLocation } from "react-router-dom";
 import { CalendarDays } from "lucide-react";
-import { BookButton } from "@/components/cta/Actions";
+import { BookButton, InstallBookButton } from "@/components/cta/Actions";
+import { isInstallPath } from "@/content/services";
 import { SHOP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH } from "@/content/company-shirts";
 import { ARTIST_MERCH_PATH } from "@/content/artist-merch";
@@ -12,6 +13,15 @@ const HIDDEN = new Set(["/book", "/booked", SHOP_PATH, SHIRTS_PATH, ARTIST_MERCH
 export function FloatingBookButton() {
   const { pathname } = useLocation();
   if (HIDDEN.has(pathname.replace(/\/$/, ""))) return null;
+  if (isInstallPath(pathname))
+    return (
+      <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
+        <InstallBookButton variant="ignite" note="Floating install button" className="!rounded-full !px-5 !py-3 !text-sm">
+          <CalendarDays className="h-4 w-4" aria-hidden />
+          Chat With Us
+        </InstallBookButton>
+      </div>
+    );
   return (
     <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
       <BookButton note="Floating chat button" className="!rounded-full !px-5 !py-3 !text-sm">

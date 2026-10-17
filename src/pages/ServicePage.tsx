@@ -4,7 +4,7 @@ import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
 import { Reveal } from "@/components/blocks/Reveal";
 import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
-import { BookButton } from "@/components/cta/Actions";
+import { BookButton, InstallBookButton } from "@/components/cta/Actions";
 import { SCENES, SearchScene } from "@/components/visuals/Scenes";
 import { SITE } from "@/config/site";
 import { ADS } from "@/content/ads";
@@ -17,8 +17,6 @@ import { Check, MessageSquare, Phone, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
 
-const CAL_URL = "https://cal.com/stackmodechris/ceo-turbo-office-studio-setup";
-
 export default function ServicePage() {
   const { slug = "" } = useParams();
   const s = serviceBySlug(slug);
@@ -29,11 +27,11 @@ export default function ServicePage() {
   const isAds = ["meta-ads", "google-ads", "tiktok-ads", "x-ads"].includes(s.slug);
   const isHomeOffice = CALL_FIRST_SLUGS.includes(s.slug);
   const isOfficeTransform = s.slug === "office-transformation";
-  const showCal = isHomeOffice && s.slug !== "home-office-setup";
+  const showCal = isHomeOffice;
   const calLink = (loc: string, cls: string) => (
-    <a href={CAL_URL} target="_blank" rel="noopener noreferrer" data-cal-location={`${s.slug}-${loc}`} className={cls}>
+    <InstallBookButton note={`${s.slug}-${loc}`} className={cls}>
       Book online
-    </a>
+    </InstallBookButton>
   );
   const Scene = s.slug === "seo-aeo-geo" ? SearchScene : s.slug === "google-business-profile" ? SCENES.local : s.slug === "email-marketing" || s.slug === "tiktok-ads" ? SCENES.shopify : s.slug === "social-media-optimization" || s.slug === "x-ads" ? SCENES.artist : SearchScene;
   const note = `Service: ${s.name}`;

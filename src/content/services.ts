@@ -212,7 +212,7 @@ export const SERVICES: Service[] = [
     audiences: ["local"],
     faqs: [
       { q: "Do you supply the parts?", a: "No, you provide them. If you fund an order up front we can purchase the parts and send receipts." },
-      { q: "How much does it cost?", a: "Labor is $159 basic, $199 standard and $279 complete per machine, confirmed in writing before we begin." },
+      { q: "How much does it cost?", a: "Labor is $119 basic, $159 standard and $219 complete per machine, confirmed in writing before we begin." },
       { q: "Can you build several computers?", a: "Yes. Offices and studios can book multiple matching builds in one visit." },
       { q: "Do you come to me?", a: "Yes, anywhere in the Atlanta metro area." },
     ],
@@ -569,4 +569,5 @@ export const SERVICES: Service[] = [
 export const serviceBySlug = (slug: string) => SERVICES.find((s) => s.slug === slug);
 
 /** Services sold by phone first: call/text hero, quote form, service-area list and a sticky mobile call bar. */
+export const isInstallPath = (pathname: string) => CALL_FIRST_SLUGS.some((slug) => pathname.replace(/\/$/, "") === `/services/${slug}`);
 export const CALL_FIRST_SLUGS = ["home-office-setup", "apartment-home-office-setup", "school-computer-room-setup", "dj-studio-setup", "computer-build-setup", "office-transformation"];

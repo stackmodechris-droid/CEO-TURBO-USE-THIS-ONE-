@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { BookButton, InstallBookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { CALL_FIRST_SLUGS } from "@/content/services";
 import { Phone } from "lucide-react";
 import { SITE, fromPriceLabel } from "@/config/site";
@@ -34,15 +34,9 @@ export function MobileActionBar() {
             <Phone className="h-5 w-5" aria-hidden />
             Call now
           </CallLink>
-          {pathname.endsWith("/home-office-setup") ? (
-            <a href="#quote" className="btn-chrome flex flex-1 items-center justify-center !py-3.5 !text-base">
-              Free quote
-            </a>
-          ) : (
-            <a href="https://cal.com/stackmodechris/ceo-turbo-office-studio-setup" target="_blank" rel="noopener noreferrer" className="btn-chrome flex flex-1 items-center justify-center !py-3.5 !text-base">
-              Book online
-            </a>
-          )}
+          <InstallBookButton note={`${pathname.split("/").pop()}-sticky-mobile`} className="flex flex-1 items-center justify-center !py-3.5 !text-base">
+            Book online
+          </InstallBookButton>
         </div>
       </div>
     );

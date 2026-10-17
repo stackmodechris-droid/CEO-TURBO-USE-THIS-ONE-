@@ -181,7 +181,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "build-basic",
     name: "Computer build — basic",
-    price: 159,
+    price: 119,
     billing: "once",
     service: "computer-build-setup",
     summary: "Assembly and cable management. Labor only; parts supplied by you.",
@@ -190,7 +190,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "build-standard",
     name: "Computer build — standard",
-    price: 199,
+    price: 159,
     billing: "once",
     service: "computer-build-setup",
     summary: "Assembly, cable management, operating system and drivers. Labor only.",
@@ -200,7 +200,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "build-complete",
     name: "Computer build — complete",
-    price: 279,
+    price: 219,
     billing: "once",
     service: "computer-build-setup",
     summary: "Full build, testing, peripherals and data transfer. Labor only.",

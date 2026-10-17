@@ -1,6 +1,6 @@
 // Cal.com embed loader. The script loads on idle (or on first click) so it never
 // competes with the page's first paint, and every booking shows as an inline calendar on the page.
-import { BOOKING } from "@/config/site";
+import { BOOKING, INSTALL_BOOKING } from "@/config/site";
 import { attribution, track, trackBooked } from "@/lib/track";
 
 export { track, trackBooked };
@@ -265,4 +265,16 @@ function bookerFrom(d: Record<string, unknown>) {
   const name = a?.name ?? (typeof responses.name === "string" ? responses.name : undefined);
   const phone = a?.phoneNumber ?? (typeof responses.attendeePhoneNumber === "string" ? responses.attendeePhoneNumber : undefined);
   return email || phone ? { email, name, phone } : undefined;
+}
+
+/** Install/build pages: opens the office-studio-setup calendar in Cal's modal, falling back to its booking page. */
+export async function openInstallBooking(source?: string) {
+  track("booking_open", { source: `${source ?? "install"} — install calendar` });
+  const ns = INSTALL_BOOKING.namespace;
+  const url = `${INSTALL_BOOKING.url}?${new URLSearchParams({ "metadata[source]": source ?? "install", "metadata[page]": window.location.pathname })}`;
+  const ok = await loadCalWithin(ns);
+  if (!ok || !window.Cal?.ns[ns]) return goToBookingPage(url, source);
+  const shown = waitForLink(ns, 20000);
+  window.Cal.ns[ns]("modal", { calLink: INSTALL_BOOKING.calLink, config: calConfig({ source }) });
+  if ((await shown) === "failed") goToBookingPage(url, source);
 }

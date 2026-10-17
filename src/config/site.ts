@@ -75,6 +75,13 @@ export const BOOKING = {
   length: "30 min",
 } as const;
 
+/** Install/build jobs (office, home office, school, DJ studio, PC build) book on their own Cal.com event. */
+export const INSTALL_BOOKING = {
+  calLink: "stackmodechris/ceo-turbo-office-studio-setup",
+  url: "https://cal.com/stackmodechris/ceo-turbo-office-studio-setup",
+  namespace: "ceo-turbo-office-studio-setup",
+} as const;
+
 /** Founder video used on the homepage, Brand Boost and ad landing pages. */
 export const PITCH_VIDEO = {
   src: "/media/brand-boost.mp4",
