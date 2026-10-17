@@ -2,6 +2,7 @@ import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/
 import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
 import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
+import { Reveal } from "@/components/blocks/Reveal";
 import { OfficeIntake } from "@/components/blocks/OfficeIntake";
 import { BookButton } from "@/components/cta/Actions";
 import { SITE } from "@/config/site";
@@ -119,7 +120,7 @@ export default function ServicePage() {
           <SectionHeader title={<span id="process">How it works</span>} />
           <ol className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {s.process.map((p, i) => (
-              <li key={p.title} className="panel p-6">
+              <li key={p.title} className="panel p-6 transition duration-300 hover:-translate-y-1 hover:border-turbo/60">
                 <span className="font-display text-sm font-bold text-turbo">Step {i + 1}</span>
                 <h3 className="mt-2 text-xl font-semibold">{p.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
@@ -175,8 +176,9 @@ export default function ServicePage() {
           <div className="container-x">
             <SectionHeader title={<span id="areas">Areas We Serve</span>} lede="We serve the entire Atlanta metro area within a 50-mile radius, plus extended service up to 2 hours from Duluth for larger projects." />
             <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {SETUP_AREAS.map((r) => (
-                <div key={r.region} className="panel p-5 transition hover:-translate-y-0.5 hover:border-turbo/60">
+              {SETUP_AREAS.map((r, i) => (
+                <Reveal key={r.region} delay={i * 70}>
+                <div className="panel p-5 transition hover:-translate-y-0.5 hover:border-turbo/60">
                   <h3 className="text-lg font-semibold">{r.region}</h3>
                   {r.note && <p className="mt-1 text-xs text-turbo">{r.note}</p>}
                   <ul className="mt-3 flex flex-wrap gap-2">
@@ -187,6 +189,7 @@ export default function ServicePage() {
                     ))}
                   </ul>
                 </div>
+                </Reveal>
               ))}
             </div>
             <p className="mt-6 text-sm text-muted-foreground">Don't see your city? If you're within about two hours of Duluth, call {SITE.phone.display} and we'll tell you the same day.</p>
