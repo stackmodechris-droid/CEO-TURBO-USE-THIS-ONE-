@@ -17,6 +17,8 @@ declare global {
   }
 }
 
+const getCal = () => (window as unknown as { Cal?: CalFn }).Cal;
+
 const EMBED_SRC = "https://app.cal.com/embed/embed.js";
 let ready: Promise<boolean> | null = null;
 
@@ -105,7 +107,7 @@ function waitForLink(ns: string, ms: number) {
 }
 
 function initNamespace(ns: string) {
-  const Cal = window.Cal!;
+  const Cal = getCal()!;
   if (inited.has(ns)) return;
   inited.add(ns);
   Cal("init", ns, { origin: CAL_ORIGIN });
@@ -155,7 +157,7 @@ export function loadCal(ns: string = BOOKING.namespace): Promise<boolean> {
     });
   }
   const current = ready;
-  if (window.Cal) initNamespace(ns);
+  if (getCal()) initNamespace(ns);
   return current;
 }
 
@@ -230,9 +232,9 @@ export async function openBooking(source?: string, prefill?: string, person?: Pe
   const ns = BOOKING.namespace;
   const url = bookingPageUrl(prefill, person, extra.fields, { source, meta: extra.meta });
   const ok = await loadCalWithin(ns);
-  if (!ok || !window.Cal?.ns[ns]) return goToBookingPage(url, source);
+  if (!ok || !getCal()?.ns[ns]) return goToBookingPage(url, source);
   const shown = waitForLink(ns, 20000);
-  window.Cal.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
+  getCal()!.ns[ns]("modal", { calLink: BOOKING.calLink, config: calConfig({ source, prefill, person, ...extra }) });
   // Cal.com's own loader shows while the calendar loads; only a real error from the booking page sends the visitor to it.
   if ((await shown) === "failed") goToBookingPage(url, source);
 }
@@ -245,9 +247,9 @@ export async function openBooking(source?: string, prefill?: string, person?: Pe
 export async function mountInlineBooking(elementId: string, source?: string, prefill?: string, opts: { ns?: string } & Omit<Prefill, "source" | "prefill"> = {}): Promise<LinkResult> {
   const { ns = BOOKING.namespace, ...rest } = opts;
   const ok = await loadCalWithin(ns);
-  if (!ok || !window.Cal?.ns[ns]) return "failed";
+  if (!ok || !getCal()?.ns[ns]) return "failed";
   const shown = waitForLink(ns, 12000);
-  window.Cal.ns[ns]("inline", {
+  getCal()!.ns[ns]("inline", {
     elementOrSelector: `#${elementId}`,
     calLink: BOOKING.calLink,
     config: calConfig({ source, prefill, ...rest }),
@@ -272,8 +274,8 @@ export async function openInstallBooking(source?: string) {
   const ns = INSTALL_BOOKING.namespace;
   const url = `${INSTALL_BOOKING.url}?${new URLSearchParams({ "metadata[source]": source ?? "install", "metadata[page]": window.location.pathname })}`;
   const ok = await loadCalWithin(ns);
-  if (!ok || !window.Cal?.ns[ns]) return goToBookingPage(url, source);
+  if (!ok || !getCal()?.ns[ns]) return goToBookingPage(url, source);
   const shown = waitForLink(ns, 20000);
-  window.Cal.ns[ns]("modal", { calLink: INSTALL_BOOKING.calLink, config: calConfig({ source }) });
+  getCal()!.ns[ns]("modal", { calLink: INSTALL_BOOKING.calLink, config: calConfig({ source }) });
   if ((await shown) === "failed") goToBookingPage(url, source);
 }

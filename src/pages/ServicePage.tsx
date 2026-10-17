@@ -4,7 +4,7 @@ import { PriceBox } from "@/components/blocks/PriceBlocks";
 import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
 import { Reveal } from "@/components/blocks/Reveal";
 import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
-import { BookButton, InstallBookButton } from "@/components/cta/Actions";
+import { BookButton, InstallBookButton, TextQuoteButton } from "@/components/cta/Actions";
 import { SCENES, SearchScene } from "@/components/visuals/Scenes";
 import { SITE } from "@/config/site";
 import { ADS } from "@/content/ads";
@@ -38,6 +38,9 @@ export default function ServicePage() {
   const note = `Service: ${s.name}`;
   const prefill = `Interested in ${s.name}.`;
   const prices = pricesFor(s.slug);
+  const smsQuoteBody = isOfficeTransform
+    ? "Hi, I'd like a quote for an office build-out. My city is: "
+    : `Hi, I'd like a quote for ${s.short.toLowerCase()}. My city is: `;
 
   return (
     <>
@@ -53,7 +56,7 @@ export default function ServicePage() {
               <div className="mt-8 space-y-3">
                 {isHomeOffice || isOfficeTransform ? (
                   <>
-                    {/* DESKTOP (sm+): Primary = Book Online (ignite), Secondary = Call (chrome) */}
+                    {/* DESKTOP (sm+): Primary = Book Online (ignite), Secondary = Call (chrome), Tertiary = Text Quote (chrome) */}
                     <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
                       {showCal && (
                         <InstallBookButton
@@ -73,9 +76,17 @@ export default function ServicePage() {
                         <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
                         <span>Call {SITE.phone.display}</span>
                       </a>
+                      <TextQuoteButton
+                        service={s.short}
+                        smsText={smsQuoteBody}
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                        <span>Text for quote</span>
+                      </TextQuoteButton>
                     </div>
 
-                    {/* MOBILE (<sm): Primary = Call (ignite), Secondary = Book Online (chrome) */}
+                    {/* MOBILE (<sm): Primary = Call (ignite), Grid = Text quote + Book online */}
                     <div className="flex flex-col gap-2.5 sm:hidden">
                       <a
                         href={SITE.phone.href}
@@ -85,26 +96,32 @@ export default function ServicePage() {
                         <Phone className="h-4 w-4 shrink-0" aria-hidden />
                         <span>Call {SITE.phone.display}</span>
                       </a>
-                      {showCal && (
-                        <InstallBookButton
-                          note={`${s.slug}-hero`}
-                          variant="chrome"
-                          className="flex w-full items-center justify-center gap-2"
+                      <div className="grid grid-cols-2 gap-2">
+                        <TextQuoteButton
+                          service={s.short}
+                          smsText={smsQuoteBody}
+                          className="flex w-full items-center justify-center gap-1.5 !px-3"
                         >
-                          <Calendar className="h-4 w-4 shrink-0" aria-hidden />
-                          <span>Book online</span>
-                        </InstallBookButton>
-                      )}
+                          <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                          <span>Text quote</span>
+                        </TextQuoteButton>
+                        {showCal && (
+                          <InstallBookButton
+                            note={`${s.slug}-hero`}
+                            variant="chrome"
+                            className="flex w-full items-center justify-center gap-1.5 !px-3"
+                          >
+                            <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                            <span>Book online</span>
+                          </InstallBookButton>
+                        )}
+                      </div>
                     </div>
 
                     {/* SUB-ACTIONS: Clean text links */}
                     <div className="flex flex-wrap items-center gap-4 pt-1 text-sm text-muted-foreground">
                       <a
-                        href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent(
-                          isOfficeTransform
-                            ? "Hi, I'd like a quote for an office build-out."
-                            : `Hi, I'd like a quote for ${s.short.toLowerCase()}.`
-                        )}`}
+                        href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent(smsQuoteBody)}`}
                         data-call-location={`${s.slug}-hero-text`}
                         className="inline-flex items-center gap-1.5 transition hover:text-turbo"
                       >
@@ -205,8 +222,9 @@ export default function ServicePage() {
                 {prices.length ? `${prices.map((p) => `${p.name}: ${priceLabel(p)}`).join(". ")}.` : "Priced by scope."} Need more than one piece? A package covers it for less — pay once for setup, and monthly only where the work keeps paying off.{isAds ? " Ad spend is paid directly to the platform from your own ad account, never marked up." : ""}
               </p>
               {isHomeOffice || isOfficeTransform ? (
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="hidden sm:flex sm:items-center sm:gap-3">
+                <div className="mt-6 flex flex-col gap-3">
+                  {/* Desktop pricing CTAs */}
+                  <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
                     {showCal && (
                       <InstallBookButton note={`${s.slug}-pricing`} variant="ignite">
                         <Calendar className="h-4 w-4 shrink-0" aria-hidden />
@@ -221,22 +239,42 @@ export default function ServicePage() {
                       <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
                       Call for a flat quote
                     </a>
+                    <TextQuoteButton
+                      service={s.short}
+                      smsText={smsQuoteBody}
+                      className="inline-flex items-center justify-center gap-2"
+                    >
+                      <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                      Text for quote
+                    </TextQuoteButton>
                   </div>
+
+                  {/* Mobile pricing CTAs */}
                   <div className="flex flex-col gap-2.5 sm:hidden">
                     <a
                       href={SITE.phone.href}
                       data-call-location={`${s.slug}-pricing`}
-                      className="btn-ignite inline-flex w-full items-center justify-center gap-2"
+                      className="btn-ignite inline-flex w-full items-center justify-center gap-2 text-base font-bold shadow-lg"
                     >
                       <Phone className="h-4 w-4 shrink-0" aria-hidden />
                       Call for a flat quote
                     </a>
-                    {showCal && (
-                      <InstallBookButton note={`${s.slug}-pricing`} variant="chrome" className="w-full">
-                        <Calendar className="h-4 w-4 shrink-0" aria-hidden />
-                        Book online
-                      </InstallBookButton>
-                    )}
+                    <div className="grid grid-cols-2 gap-2">
+                      <TextQuoteButton
+                        service={s.short}
+                        smsText={smsQuoteBody}
+                        className="w-full inline-flex items-center justify-center gap-1.5 !px-3"
+                      >
+                        <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                        Text quote
+                      </TextQuoteButton>
+                      {showCal && (
+                        <InstallBookButton note={`${s.slug}-pricing`} variant="chrome" className="w-full inline-flex items-center justify-center gap-1.5 !px-3">
+                          <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                          Book online
+                        </InstallBookButton>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -339,6 +377,14 @@ export default function ServicePage() {
                 <Phone className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
                 Call {SITE.phone.display}
               </a>
+              <TextQuoteButton
+                service={s.short}
+                smsText={smsQuoteBody}
+                className="inline-flex items-center gap-2"
+              >
+                <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                Text for quote
+              </TextQuoteButton>
             </div>
 
             {/* Mobile buttons */}
@@ -346,17 +392,27 @@ export default function ServicePage() {
               <a
                 href={SITE.phone.href}
                 data-call-location={`${s.slug}-footer`}
-                className="btn-ignite inline-flex w-full items-center justify-center gap-2"
+                className="btn-ignite inline-flex w-full items-center justify-center gap-2 text-base font-bold shadow-lg"
               >
                 <Phone className="h-4 w-4 shrink-0" aria-hidden />
                 Call {SITE.phone.display}
               </a>
-              {showCal && (
-                <InstallBookButton note={`${s.slug}-footer`} variant="chrome" className="w-full inline-flex items-center justify-center gap-2">
-                  <Calendar className="h-4 w-4 shrink-0" aria-hidden />
-                  Book online
-                </InstallBookButton>
-              )}
+              <div className="grid grid-cols-2 gap-2">
+                <TextQuoteButton
+                  service={s.short}
+                  smsText={smsQuoteBody}
+                  className="w-full inline-flex items-center justify-center gap-1.5 !px-3"
+                >
+                  <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                  Text quote
+                </TextQuoteButton>
+                {showCal && (
+                  <InstallBookButton note={`${s.slug}-footer`} variant="chrome" className="w-full inline-flex items-center justify-center gap-1.5 !px-3">
+                    <Calendar className="h-4 w-4 shrink-0" aria-hidden />
+                    Book online
+                  </InstallBookButton>
+                )}
+              </div>
             </div>
           </div>
         </section>

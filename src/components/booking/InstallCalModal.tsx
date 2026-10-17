@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import Cal, { getCalApi } from "@calcom/embed-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X, Calendar as CalendarIcon, Loader2 } from "lucide-react";
-import { INSTALL_BOOKING } from "@/config/site";
-import { track } from "@/lib/track";
+import { X, Calendar as CalendarIcon, Phone, MessageSquare } from "lucide-react";
+import { SITE, INSTALL_BOOKING } from "@/config/site";
+import { InstallCalEmbed } from "./InstallCalEmbed";
 
 export function InstallCalModal({
   open,
@@ -14,37 +12,15 @@ export function InstallCalModal({
   onOpenChange: (open: boolean) => void;
   note?: string;
 }) {
-  const [calLoaded, setCalLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    track("booking_open", { source: `${note} — native cal embed` });
-
-    (async function () {
-      try {
-        const cal = await getCalApi({ namespace: INSTALL_BOOKING.namespace });
-        cal("ui", {
-          theme: "dark",
-          cssVarsPerTheme: { dark: { "cal-brand": "#00cfff" }, light: { "cal-brand": "#00cfff" } },
-          hideEventTypeDetails: false,
-          layout: "month_view",
-        });
-        setCalLoaded(true);
-      } catch (err) {
-        console.error("Failed to load Cal API", err);
-        setCalLoaded(true);
-      }
-    })();
-  }, [open, note]);
-
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md transition-opacity data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-[50%] top-[50%] z-50 flex h-[90vh] max-h-[850px] w-[95vw] max-w-[1000px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl border border-border bg-card shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-          <div className="flex items-center justify-between border-b border-border px-5 py-4 sm:px-6">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-turbo/15 text-turbo">
+        <Dialog.Content className="fixed left-[50%] top-[50%] z-50 flex h-[92vh] max-h-[850px] w-[95vw] max-w-[1020px] translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl border border-border bg-card shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 sm:px-6 shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-turbo/15 text-turbo">
                 <CalendarIcon className="h-4 w-4" aria-hidden />
               </span>
               <div>
@@ -62,23 +38,31 @@ export function InstallCalModal({
             </Dialog.Close>
           </div>
 
-          <div className="relative flex-1 overflow-hidden p-2 sm:p-4">
-            {!calLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin text-turbo" />
-                Loading booking calendar...
-              </div>
-            )}
-            <Cal
-              namespace={INSTALL_BOOKING.namespace}
-              calLink={INSTALL_BOOKING.calLink}
-              style={{ width: "100%", height: "100%", overflow: "auto" }}
-              config={{
-                layout: "month_view",
-                useSlotsViewOnSmallScreen: "true",
-                theme: "dark",
-              }}
-            />
+          {/* Calendar Embed Body */}
+          <div className="relative flex-1 overflow-hidden p-2 sm:p-4 bg-black/40">
+            <InstallCalEmbed note={note} className="h-full border-0" />
+          </div>
+
+          {/* Direct Assistance Bar */}
+          <div className="border-t border-border/80 bg-background/95 px-5 py-3 text-xs text-muted-foreground sm:flex sm:items-center sm:justify-between shrink-0">
+            <span className="hidden sm:inline">Need an immediate answer or same-day quote?</span>
+            <div className="flex items-center justify-center gap-4">
+              <a
+                href={SITE.phone.href}
+                className="inline-flex items-center gap-1.5 font-semibold text-turbo hover:underline"
+              >
+                <Phone className="h-3.5 w-3.5" aria-hidden />
+                <span>Call {SITE.phone.display}</span>
+              </a>
+              <span className="text-border" aria-hidden>•</span>
+              <a
+                href={`sms:${SITE.phone.e164}?&body=${encodeURIComponent("Hi! I'd like a quote for office setup.")}`}
+                className="inline-flex items-center gap-1.5 font-semibold text-turbo hover:underline"
+              >
+                <MessageSquare className="h-3.5 w-3.5" aria-hidden />
+                <span>Text for quote</span>
+              </a>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
-import Cal, { getCalApi } from "@calcom/embed-react";
-import { Loader2, MessageSquare, Phone, ShieldCheck } from "lucide-react";
+import { MessageSquare, Phone, ShieldCheck } from "lucide-react";
 import { INSTALL_BOOKING, SITE } from "@/config/site";
-import { track } from "@/lib/track";
+import { InstallCalEmbed } from "@/components/booking/InstallCalEmbed";
 import { cn } from "@/lib/utils";
 
 const SERVICE_TITLES: Record<string, { title: string; sms: string }> = {
@@ -45,41 +43,10 @@ export function OfficeIntake({
   service?: string;
   className?: string;
 }) {
-  const [calLoaded, setCalLoaded] = useState(false);
   const info = SERVICE_TITLES[service] ?? {
     title: "Book your setup & installation",
     sms: "Hi, I'd like a quote for tech setup and installation.",
   };
-
-  useEffect(() => {
-    track("booking_open", { source: `${service} — inline cal embed` });
-
-    let live = true;
-    const timeout = setTimeout(() => {
-      if (live) setCalLoaded(true);
-    }, 6000);
-
-    (async function () {
-      try {
-        const cal = await getCalApi({ namespace: INSTALL_BOOKING.namespace });
-        cal("ui", {
-          theme: "dark",
-          cssVarsPerTheme: { dark: { "cal-brand": "#00cfff" }, light: { "cal-brand": "#00cfff" } },
-          hideEventTypeDetails: false,
-          layout: "month_view",
-        });
-        if (live) setCalLoaded(true);
-      } catch (err) {
-        console.error("Failed to load Cal API", err);
-        if (live) setCalLoaded(true);
-      }
-    })();
-
-    return () => {
-      live = false;
-      clearTimeout(timeout);
-    };
-  }, [service]);
 
   return (
     <div
@@ -123,25 +90,8 @@ export function OfficeIntake({
         </a>
       </div>
 
-      {/* Clean Native Cal.com Embed */}
-      <div className="relative min-h-[580px] sm:min-h-[620px] w-full overflow-hidden rounded-xl border border-border/60 bg-black/40">
-        {!calLoaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 text-sm text-muted-foreground">
-            <Loader2 className="h-6 w-6 animate-spin text-turbo" aria-hidden />
-            <span>Loading booking calendar…</span>
-          </div>
-        )}
-        <Cal
-          namespace={INSTALL_BOOKING.namespace}
-          calLink={INSTALL_BOOKING.calLink}
-          style={{ width: "100%", height: "100%", minHeight: "580px", overflow: "auto" }}
-          config={{
-            layout: "month_view",
-            useSlotsViewOnSmallScreen: "true",
-            theme: "dark",
-          }}
-        />
-      </div>
+      {/* Direct Bulletproof Cal.com Embed */}
+      <InstallCalEmbed note={`${service}-inline`} minHeight="580px" />
 
       {/* Assurance footer & direct link */}
       <div className="mt-3 flex flex-col items-center justify-between gap-2 pt-1 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">

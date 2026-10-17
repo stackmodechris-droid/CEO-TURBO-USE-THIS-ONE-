@@ -1,14 +1,14 @@
 import { useLocation } from "react-router-dom";
 import { BookButton, InstallBookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { CALL_FIRST_SLUGS } from "@/content/services";
-import { Calendar, Phone } from "lucide-react";
+import { Calendar, MessageSquare, Phone } from "lucide-react";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
 import { REVIEWS_AD_PATH, SHOP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH } from "@/content/company-shirts";
 import { ARTIST_MERCH_PATH } from "@/content/artist-merch";
 
-/** Sticky bottom bar on phones: the two money actions are always one tap away. The shop pages have their own buy bars. */
+/** Sticky bottom bar on phones: the money actions are always one tap away. The shop pages have their own buy bars. */
 export function MobileActionBar() {
   const { pathname } = useLocation();
   if (pathname === SHOP_PATH || pathname === SHIRTS_PATH || pathname === ARTIST_MERCH_PATH) return null;
@@ -26,28 +26,38 @@ export function MobileActionBar() {
         </div>
       </div>
     );
-  if (CALL_FIRST_SLUGS.some((slug) => pathname === `/services/${slug}`))
+  if (CALL_FIRST_SLUGS.some((slug) => pathname === `/services/${slug}`)) {
+    const slug = pathname.split("/").pop() || "setup";
+    const smsText = encodeURIComponent(`Hi, I'd like a quote for ${slug.replace(/-/g, " ")}. My city is: `);
     return (
-      <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
-        <div className="flex gap-2">
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-2.5 pt-2.5 backdrop-blur-xl sm:hidden">
+        <div className="flex items-center gap-1.5">
           <CallLink
-            location={`${pathname.split("/").pop()}-sticky-mobile`}
-            className="btn-ignite flex flex-1 items-center justify-center gap-2 whitespace-nowrap !py-3.5 !text-base font-bold shadow-lg"
+            location={`${slug}-sticky-mobile`}
+            className="btn-ignite flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap !py-3.5 !px-2 !text-sm font-bold shadow-lg"
           >
             <Phone className="h-4 w-4 shrink-0" aria-hidden />
-            Call now
+            <span>Call</span>
           </CallLink>
+          <a
+            href={`sms:${SITE.phone.e164}?&body=${smsText}`}
+            className="btn-chrome flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap !py-3.5 !px-2 !text-sm font-bold text-foreground"
+          >
+            <MessageSquare className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+            <span>Text</span>
+          </a>
           <InstallBookButton
-            note={`${pathname.split("/").pop()}-sticky-mobile`}
+            note={`${slug}-sticky-mobile`}
             variant="chrome"
-            className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap !py-3.5 !text-base"
+            className="flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap !py-3.5 !px-2 !text-sm"
           >
             <Calendar className="h-4 w-4 shrink-0" aria-hidden />
-            Book online
+            <span>Book</span>
           </InstallBookButton>
         </div>
       </div>
     );
+  }
   if (pathname === "/app-marketing")
     return (
       <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">

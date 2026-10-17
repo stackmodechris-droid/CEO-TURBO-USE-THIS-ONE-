@@ -1,7 +1,8 @@
 import { useState, type MouseEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { InstallCalModal } from "@/components/booking/InstallCalModal";
-import { BOOKING, INSTALL_BOOKING, fromPriceLabel } from "@/config/site";
+import { TextQuoteModal } from "@/components/cta/TextQuoteModal";
+import { BOOKING, INSTALL_BOOKING, SITE, fromPriceLabel } from "@/config/site";
 import { SHOP_PATH } from "@/content/review-cards";
 import { openBooking } from "@/lib/cal";
 import { track } from "@/lib/track";
@@ -87,6 +88,60 @@ export function InstallBookButton({
         {children}
       </a>
       <InstallCalModal open={modalOpen} onOpenChange={setModalOpen} note={note} />
+    </>
+  );
+}
+
+/**
+ * Text for a quote button.
+ * On mobile devices, 1-tap opens the native SMS app with pre-filled text.
+ * On desktop computers, opens TextQuoteModal with QR code, phone number copying and computer message link.
+ */
+export function TextQuoteButton({
+  children = "Text for quote",
+  service = "office setup",
+  smsText,
+  variant = "chrome",
+  className,
+}: {
+  children?: ReactNode;
+  service?: string;
+  smsText?: string;
+  variant?: Variant;
+  className?: string;
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const defaultText = smsText ?? `Hi, I'd like a quote for ${service}. My city is: `;
+  const smsUrl = `sms:${SITE.phone.e164}?&body=${encodeURIComponent(defaultText)}`;
+
+  const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const isMobile =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 640 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+    if (!isMobile) {
+      e.preventDefault();
+      setModalOpen(true);
+    }
+    track("sms_button_click", { service, platform: isMobile ? "mobile" : "desktop" });
+  };
+
+  return (
+    <>
+      <a
+        href={smsUrl}
+        onClick={onClick}
+        className={cn(variantClass[variant], className)}
+        rel="noopener"
+      >
+        {children}
+      </a>
+      <TextQuoteModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        service={service}
+        smsText={defaultText}
+      />
     </>
   );
 }
