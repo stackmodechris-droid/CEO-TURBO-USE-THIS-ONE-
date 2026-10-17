@@ -11,20 +11,20 @@ import { cn } from "@/lib/utils";
 
 const JOB_SETS: Record<string, { label: string; sub: string; value: number }[]> = {
   "office-transformation": [
-    { label: "Basic office build-out", sub: "Small space · from $1,499", value: 1499 },
-    { label: "Standard office build-out", sub: "Medium space · from $2,999", value: 2999 },
-    { label: "Complete office build-out", sub: "Large space · from $4,999", value: 4999 },
+    { label: "Basic office build-out", sub: "1-2 workstations · from $1,999", value: 1999 },
+    { label: "Standard office build-out", sub: "3-5 workstations · from $2,799", value: 2799 },
+    { label: "Complete office build-out", sub: "6+ workstations · from $3,999", value: 3999 },
   ],
   "dj-studio-setup": [
-    { label: "DJ or studio desk", sub: "Gear, monitors, cables · from $149", value: 149 },
-    { label: "Full room or booth", sub: "Multiple stations · from $249", value: 249 },
+    { label: "DJ or studio desk", sub: "Gear, monitors, cables · from $179", value: 179 },
+    { label: "Full room or booth", sub: "Monitors, interface, calibration · from $319", value: 319 },
   ],
 };
 const JOBS_DEFAULT = [
-  { label: "Computer setup", sub: "Basic · from $89", value: 89 },
-  { label: "Full home office", sub: "Furniture + tech · $149", value: 149 },
-  { label: "Business office", sub: "Up to 3 workstations · $249", value: 249 },
-  { label: "School / computer lab", sub: "Up to 10 stations · $349", value: 349 },
+  { label: "Computer setup", sub: "Basic · from $119", value: 119 },
+  { label: "Full home office", sub: "Desk + tech · from $159", value: 159 },
+  { label: "Complete home office", sub: "Mounting, cables, Wi-Fi · $199", value: 199 },
+  { label: "School / computer lab", sub: "Up to 5 stations · from $399", value: 399 },
 ];
 const WHEN = ["ASAP", "This week", "Within 2 weeks", "Just planning"] as const;
 
