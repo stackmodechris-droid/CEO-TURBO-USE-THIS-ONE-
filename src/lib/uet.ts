@@ -45,6 +45,7 @@ const ACTIONS: Record<string, string> = {
   view_item: "view_item",
   customize_product: "customize_product",
   click_to_call: "contact",
+  click_to_text: "contact",
 };
 
 /** Microsoft wants phones in E.164 (+14045550123). */
@@ -60,7 +61,7 @@ export function uetEvent(event: string, params: { value?: unknown; currency?: un
   // Enhanced conversions: UET hashes these before sending.
   if (user?.email || user?.phone) uetq.push("set", { pid: { ...(user.email ? { em: user.email.trim().toLowerCase() } : {}), ...(user.phone ? { ph: e164Phone(user.phone) } : {}) } });
   uetq.push("event", action, {
-    event_category: event === "click_to_call" ? "phone" : event === "book_call" || event === "generate_lead" ? "lead" : "ecommerce",
+    event_category: event === "click_to_call" || event === "click_to_text" ? "phone" : event === "book_call" || event === "generate_lead" ? "lead" : "ecommerce",
     ...(typeof params.lead_source === "string" ? { event_label: params.lead_source } : {}),
     ...(typeof params.value === "number" && params.value > 0 ? { revenue_value: params.value, currency: params.currency || "USD" } : {}),
   });

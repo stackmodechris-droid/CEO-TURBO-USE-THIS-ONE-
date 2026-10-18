@@ -31,6 +31,7 @@ const META: Record<string, { name: string; custom?: boolean }> = {
   generate_lead: { name: "Lead" },
   book_call: { name: "Schedule" },
   click_to_call: { name: "Contact" },
+  click_to_text: { name: "Contact" },
   booking_open: { name: "BookingOpen", custom: true },
   audit_start: { name: "AuditStart", custom: true },
   audit_complete: { name: "AuditComplete", custom: true },
@@ -42,7 +43,7 @@ export const DEFAULT_PIXEL_ID = "3232222473609236";
 export const PIXEL_ID = () => (import.meta.env.VITE_META_PIXEL_ID as string | undefined) || DEFAULT_PIXEL_ID;
 
 /** Conversions worth filtering session recordings by in Clarity. */
-const CLARITY_EVENTS = new Set(["generate_lead", "book_call", "click_to_call", "add_to_cart", "begin_checkout"]);
+const CLARITY_EVENTS = new Set(["generate_lead", "book_call", "click_to_call", "click_to_text", "add_to_cart", "begin_checkout"]);
 
 export const newEventId = (prefix: string) => `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
@@ -320,7 +321,7 @@ export function attribution(): Attribution {
 }
 
 /** Events the server also sends to the Conversions API (same event_id, so Meta de-duplicates). */
-const SERVER_COPY = new Set(["page_view", "view_item", "customize_product", "add_to_cart", "begin_checkout", "click_to_call"]);
+const SERVER_COPY = new Set(["page_view", "view_item", "customize_product", "add_to_cart", "begin_checkout", "click_to_call", "click_to_text"]);
 
 /** Server-side copy of a browser event (api/track.js). Fire-and-forget; never throws. */
 export function serverTrack(event: string, eventId: string, data: { value?: number; currency?: string; contentName?: string; contentIds?: string[]; numItems?: number; user?: UserData } = {}) {
@@ -341,7 +342,7 @@ export function serverTrack(event: string, eventId: string, data: { value?: numb
 }
 
 /**
- * Every tel: link on the site counts as a phone lead: GA4/Google Ads (click_to_call), Meta "Contact"
+ * Every tel: link counts as a phone lead and every sms: link as a text lead (click_to_text, no Google Ads call conversion): GA4/Google Ads (click_to_call), Meta "Contact"
  * (browser + Conversions API), Microsoft and TikTok. One delegated listener covers every page.
  */
 export function installCallTracking() {
@@ -351,11 +352,14 @@ export function installCallTracking() {
   document.addEventListener(
     "click",
     (e) => {
-      const a = (e.target as Element | null)?.closest?.('a[href^="tel:"]') as HTMLAnchorElement | null;
+      const a = (e.target as Element | null)?.closest?.('a[href^="tel:"], a[href^="sms:"]') as HTMLAnchorElement | null;
       if (!a) return;
       const location = a.dataset.callLocation || "link";
-      const id = track("click_to_call", { location, content_name: "Phone call" });
-      serverTrack("click_to_call", id, { contentName: "Phone call" });
+      const text = a.getAttribute("href")?.startsWith("sms:");
+      const event = text ? "click_to_text" : "click_to_call";
+      const contentName = text ? "Text message" : "Phone call";
+      const id = track(event, { location, content_name: contentName });
+      serverTrack(event, id, { contentName });
     },
     { capture: true },
   );

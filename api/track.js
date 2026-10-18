@@ -5,7 +5,7 @@
 import { readJson, send, clientIp, rateLimited, sameOrigin, isJson } from "./_lib/http.js";
 import { buildEvent, cleanAttribution, requestSignals, sendMetaEvents, withSignals } from "./_lib/meta-capi.js";
 
-const EVENTS = { page_view: "PageView", view_item: "ViewContent", add_to_cart: "AddToCart", begin_checkout: "InitiateCheckout", customize_product: "CustomizeProduct", click_to_call: "Contact" };
+const EVENTS = { page_view: "PageView", view_item: "ViewContent", add_to_cart: "AddToCart", begin_checkout: "InitiateCheckout", customize_product: "CustomizeProduct", click_to_call: "Contact", click_to_text: "Contact" };
 const text = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f<>]/g, " ").trim().slice(0, max) : "");
 
 /** Validated CAPI custom_data for an allowed event, or null (exported for tests). */
