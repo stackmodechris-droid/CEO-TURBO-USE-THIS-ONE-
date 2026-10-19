@@ -3,15 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import { CompareTable } from "@/components/blocks/CompareTable";
 import { GUIDES, guideBySlug, guideImage, guidePath, type Guide } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
-import { SITE, fromPriceLabel } from "@/config/site";
+import { SITE, REVIEW_CARD, fromPriceLabel, money2 } from "@/config/site";
+import { GUIDE_OFFERS, DEFAULT_OFFER } from "@/content/guide-offers";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { BookingSection } from "@/components/blocks/Sales";
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
 import NotFound from "./NotFound";
 
-/** Review-card offer shown inside every guide: the animated tap card plus a straight path to checkout. */
-function CardOffer({ className = "" }: { className?: string }) {
+/** Mid-article offer: the animated tap card with a pitch written for this guide's topic. */
+function CardOffer({ slug, className = "" }: { slug: string; className?: string }) {
+  const o = GUIDE_OFFERS[slug] ?? DEFAULT_OFFER;
   return (
     <aside className={`cta-glow grid items-center gap-6 rounded-3xl p-6 sm:grid-cols-[0.8fr_1.2fr] sm:p-8 ${className}`} aria-label="Google review cards">
       <div className="relative mx-auto w-full max-w-[220px]">
@@ -19,13 +21,40 @@ function CardOffer({ className = "" }: { className?: string }) {
         <ReviewCard3D tap className="w-full" />
       </div>
       <div>
-        <p className="text-sm font-semibold text-ignite">Google review cards · from {fromPriceLabel}</p>
-        <p className="mt-2 text-2xl font-bold leading-snug">One tap opens your Google review form. More reviews, higher in Maps.</p>
-        <p className="mt-2 text-sm text-muted-foreground">No app for customers, no subscription. Free US shipping, ships in 1–2 days from Atlanta.</p>
-        <div className="mt-5">
-          <ShopCardsButton className="btn-shine">Get my review cards — from {fromPriceLabel}</ShopCardsButton>
+        <p className="text-sm font-semibold text-ignite">{o.kicker}</p>
+        <p className="mt-2 text-2xl font-bold leading-snug">{o.head}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{o.body}</p>
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <ShopCardsButton className="btn-shine">{o.cta} — from {fromPriceLabel}</ShopCardsButton>
+          <span className="text-xs text-muted-foreground">Free US shipping · {REVIEW_CARD.returnDays}-day returns</span>
         </div>
       </div>
+    </aside>
+  );
+}
+
+/** End-of-article closer: a different angle per guide (speed, risk, price) so it never repeats the mid-article block. */
+function CardCloser({ index, className = "" }: { index: number; className?: string }) {
+  const angle = index % 3;
+  const lines = [
+    { t: "Order tonight, collecting reviews by the weekend.", s: `${REVIEW_CARD.shipping.processing}.` },
+    { t: "Try it risk-free.", s: REVIEW_CARD.guarantee },
+    { t: "Pick the pack that fits your counter.", s: "One card per register, chair or truck. Bigger packs cost less per card." },
+  ][angle];
+  return (
+    <aside className={`rounded-3xl border border-turbo/30 bg-turbo/[0.06] p-6 sm:p-8 ${className}`} aria-label="Order Google review cards">
+      <p className="text-2xl font-bold leading-snug">{lines.t}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{lines.s}</p>
+      <ul className="mt-5 grid gap-3 sm:grid-cols-3">
+        {REVIEW_CARD.packs.map((p) => (
+          <li key={p.id}>
+            <ShopCardsButton variant={p.popular ? "ignite" : "chrome"} className="w-full justify-between !px-4">
+              <span>{p.label}</span>
+              <span className="font-bold">{money2(p.price)}</span>
+            </ShopCardsButton>
+          </li>
+        ))}
+      </ul>
     </aside>
   );
 }
@@ -105,7 +134,7 @@ function GuideArticle({ g }: { g: Guide }) {
         <div className="container-x max-w-[860px] pb-8">
           {g.sections.map((s, i) => (
             <Fragment key={s.h2}>
-            {i === Math.min(2, g.sections.length - 1) && <CardOffer className="mt-14" />}
+            {i === Math.min(2, g.sections.length - 1) && <CardOffer slug={g.slug} className="mt-14" />}
             <section id={anchor(s.h2)} className="mt-14 scroll-mt-24">
               <h2 className="text-2xl font-bold leading-tight sm:text-3xl">{s.h2}</h2>
               <p className="prose-answer mt-4">{s.answer}</p>
@@ -131,7 +160,7 @@ function GuideArticle({ g }: { g: Guide }) {
             </Fragment>
           ))}
 
-          <CardOffer className="mt-16" />
+          <CardCloser index={GUIDES.indexOf(g)} className="mt-16" />
 
           <aside className="panel mt-10 p-6 sm:p-8">
             <p className="text-sm font-medium text-turbo">Want this done for you?</p>
