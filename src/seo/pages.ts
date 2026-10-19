@@ -45,7 +45,7 @@ function build(): PageMeta[] {
     priority: 1,
     changefreq: "weekly",
     group: "Core",
-    schema: [...base(), S.webPage("/", "CEO Turbo", SITE.description), S.brandBoost(), S.video("/"), S.auditTool(), S.faqPage(HOME_FAQS, "/")],
+    schema: [...base(), S.webPage("/", "CEO Turbo", SITE.description), S.brandBoost(), S.video("/"), S.faqPage(HOME_FAQS, "/")],
   });
 
   for (const a of [...AUDIENCES, PRODUCERS, VISUAL_ARTISTS]) {

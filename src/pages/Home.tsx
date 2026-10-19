@@ -6,7 +6,7 @@ import { ProofStats, GSCProof, WorkGrid, StripeProof, FeaturedResult, AdResultsG
 import { SiteWall } from "@/components/visuals/SiteWall";
 import { ADS } from "@/content/ads";
 import { AD_TOTALS, money } from "@/content/results";
-import { Founder, BookingSection, ServiceGrid } from "@/components/blocks/Sales";
+import { Founder, BookingSection, ServiceGrid, VideoPitch } from "@/components/blocks/Sales";
 import { SectionHeader, FAQList } from "@/components/blocks/Basics";
 import { HOME_FAQS } from "@/content/faqs";
 import { CALL_FIRST_SLUGS } from "@/content/services";
@@ -143,6 +143,19 @@ export default function Home() {
               Or run the free 60-second check
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* VIDEO — also the VideoObject the homepage declares in its schema. */}
+      <section className="section border-t border-border" aria-labelledby="why">
+        <div className="container-x grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <SectionHeader kicker="Watch first · 82 seconds" title={<span id="why">Why aren't more customers finding you?</span>} lede="People search, compare and decide before they ever call. If your Google profile, reviews and site don't win that moment, the business down the street does. Christopher explains how to fix it." />
+            <div className="mt-8">
+              <BookButton note="Home video section">Get my free setup &amp; growth call</BookButton>
+            </div>
+          </div>
+          <VideoPitch note="Home video" />
         </div>
       </section>
 

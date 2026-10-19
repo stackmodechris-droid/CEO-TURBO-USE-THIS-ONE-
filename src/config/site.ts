@@ -89,6 +89,7 @@ export const PITCH_VIDEO = {
   title: "How to get more customers for your business in 2026",
   description: "Christopher Robinson of CEO Turbo explains how businesses get found on Google, Maps and AI assistants — and turn that attention into customers.",
   duration: "PT1M22S",
+  seconds: 82,
   width: 540,
   height: 960,
 } as const;

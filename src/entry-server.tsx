@@ -9,6 +9,7 @@ import { PAGES, pageFor, NOT_FOUND_META } from "./seo/pages";
 import { renderHead } from "./seo/head";
 import { GUIDES, guidePath } from "./content/guides";
 export { merchantFeed } from "./seo/feed";
+export { PITCH_VIDEO as pitchVideo } from "./config/site";
 
 export function render(url: string): Promise<string> {
   return new Promise((resolve, reject) => {

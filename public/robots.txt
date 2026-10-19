@@ -42,3 +42,4 @@ User-agent: Googlebot
 Allow: /
 
 Sitemap: https://www.ceoturbo.com/sitemap.xml
+Sitemap: https://www.ceoturbo.com/video-sitemap.xml

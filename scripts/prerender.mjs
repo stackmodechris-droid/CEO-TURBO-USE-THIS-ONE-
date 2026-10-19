@@ -56,6 +56,17 @@ await writeFile(
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
 );
 
+// video-sitemap.xml — Google video indexing: one entry per watch page, with the video file, poster and duration.
+const WATCH = pages.find((p) => p.path === "/watch");
+if (WATCH) {
+  const v = (await import(pathToFileURL(SSR).href)).pitchVideo;
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  await writeFile(
+    path.join(DIST, "video-sitemap.xml"),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n  <url>\n    <loc>${SITE}/watch</loc>\n    <video:video>\n      <video:thumbnail_loc>${SITE}${v.poster}</video:thumbnail_loc>\n      <video:title>${esc(v.title)}</video:title>\n      <video:description>${esc(v.description)}</video:description>\n      <video:content_loc>${SITE}${v.src}</video:content_loc>\n      <video:duration>${v.seconds}</video:duration>\n      <video:publication_date>2026-10-10</video:publication_date>\n      <video:family_friendly>yes</video:family_friendly>\n    </video:video>\n  </url>\n</urlset>\n`,
+  );
+}
+
 // Merchant Center feed (Google + Microsoft Shopping): /feeds/products.xml
 await mkdir(path.join(DIST, "feeds"), { recursive: true });
 await writeFile(path.join(DIST, "feeds", "products.xml"), merchantFeed());

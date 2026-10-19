@@ -4,7 +4,8 @@
 import { readFile } from "node:fs/promises";
 
 const KEY = "e46cbbfd6a1fe7d283a53bbc1282109d";
-const HOST = "ceoturbo.com";
+// Must match the host in the sitemap URLs exactly (www), or IndexNow rejects the batch.
+const HOST = "www.ceoturbo.com";
 
 const xml = await readFile("dist/sitemap.xml", "utf8");
 const urlList = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
