@@ -8,6 +8,7 @@ import { ADS } from "@/content/ads";
 import { AD_TOTALS, money } from "@/content/results";
 import { Founder, BookingSection, ServiceGrid, VideoPitch } from "@/components/blocks/Sales";
 import { SectionHeader, FAQList } from "@/components/blocks/Basics";
+import { ReviewStats } from "@/components/blocks/ReviewStats";
 import { HOME_FAQS } from "@/content/faqs";
 import { CALL_FIRST_SLUGS } from "@/content/services";
 import { SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
@@ -64,6 +65,12 @@ export default function Home() {
       <section className="pt-14 pb-8" aria-label="Results at a glance">
         <div className="container-x">
           <ProofStats />
+        </div>
+      </section>
+
+      <section className="section border-t border-border" aria-labelledby="why-reviews">
+        <div className="container-x">
+          <ReviewStats id="why-reviews" />
         </div>
       </section>
 

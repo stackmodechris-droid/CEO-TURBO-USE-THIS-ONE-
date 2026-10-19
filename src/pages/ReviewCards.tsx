@@ -5,6 +5,7 @@ import { ArrowRight, Check, MapPin, Smartphone, Star, X } from "lucide-react";
 import { BuyBox } from "@/components/shop/BuyBox";
 import { TapDemo } from "@/components/visuals/ReviewVisuals";
 import { Breadcrumbs, FAQList, SectionHeader } from "@/components/blocks/Basics";
+import { ReviewStats } from "@/components/blocks/ReviewStats";
 import { BookButton } from "@/components/cta/Actions";
 import { COMPARE, RULES, SETUP_PATH, SHOP_FAQS, SHOP_PATH, USES } from "@/content/review-cards";
 import { NFC_APP, fromPriceLabel } from "@/config/site";
@@ -70,7 +71,8 @@ export default function ReviewCards() {
               review count and score factor into local ranking. The problem isn't that customers won't review you. It's that nobody makes it easy at the right moment.
             </p>
           </div>
-          <div className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(3n+1)]:col-span-3 lg:[&>*:last-child:nth-child(3n+2)]:col-span-2">
+          <ReviewStats id="why-reviews" className="mt-14" />
+          <div className="mt-14 grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(3n+1)]:col-span-3 lg:[&>*:last-child:nth-child(3n+2)]:col-span-2">
             {USES.map((u) => (
               <div key={u.where} className="group bg-background p-6 transition-colors hover:bg-white/[0.025]">
                 <p className="font-semibold">{u.where}</p>
