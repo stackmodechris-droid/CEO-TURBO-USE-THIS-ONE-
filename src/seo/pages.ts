@@ -39,7 +39,7 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/",
-    title: "Google Review Cards & Local Growth | CEO Turbo",
+    title: "Google Review Cards & Business Growth | CEO Turbo",
     description:
       "NFC Google review cards from $24.99 — one tap opens your review form. Then a free setup call: Google profile, SEO, AEO, GEO and ads to get you found.",
     priority: 1,

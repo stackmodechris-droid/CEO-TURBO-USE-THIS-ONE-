@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, MapPin, Search, Star, Megaphone, Globe } from "lucide-react";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
-import { ProofStats, GSCProof, WorkGrid } from "@/components/blocks/Proof";
+import { ProofStats, GSCProof, WorkGrid, StripeProof, FeaturedResult, AdResultsGrid, AdGallery } from "@/components/blocks/Proof";
+import { SiteWall } from "@/components/visuals/SiteWall";
+import { ADS } from "@/content/ads";
+import { AD_TOTALS, money } from "@/content/results";
 import { Founder, BookingSection, ServiceGrid } from "@/components/blocks/Sales";
 import { SectionHeader, FAQList } from "@/components/blocks/Basics";
 import { HOME_FAQS } from "@/content/faqs";
@@ -145,16 +148,44 @@ export default function Home() {
       {/* PROOF — only real numbers and real work. */}
       <section className="section border-t border-border" aria-labelledby="proof">
         <div className="container-x">
-          <SectionHeader title={<span id="proof">Real search results. Real client sites.</span>} lede={`Unedited Google Search Console data and ${CLIENTS.length} live sites we built.`} />
+          <SectionHeader title={<span id="proof">Real payments. Real ad results. Real sites.</span>} lede={`Unedited Stripe, ad-account and Search Console screenshots, and ${CLIENTS.length} live sites we built.`} />
           <div className="mt-10">
+            <StripeProof compact />
+          </div>
+          <div className="mt-12">
+            <FeaturedResult />
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-16" aria-label="Client websites we built">
+        <SiteWall eagerCount={0} />
+      </section>
+
+      <section className="section border-t border-border" aria-labelledby="ads">
+        <div className="container-x">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <SectionHeader
+              title={<span id="ads">{AD_TOTALS.leads} leads at about {money(AD_TOTALS.avgCpl)} each.</span>}
+              lede={`${AD_TOTALS.campaigns} Meta campaigns, ${money(AD_TOTALS.leadSpend)} total spend. These are the unedited dashboards.`}
+            />
+            <Link to="/results" className="btn-chrome shrink-0">
+              All results <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+          <div className="mt-12">
+            <AdResultsGrid keys={["ryan-pool", "stackmode-repair", "bigzo"]} />
+          </div>
+          <h3 className="mt-16 text-2xl font-bold">The creatives behind them</h3>
+          <div className="mt-6">
+            <AdGallery ads={ADS.slice(0, 8)} />
+          </div>
+          <div className="mt-16">
             <GSCProof />
           </div>
           <div className="mt-12">
-            <WorkGrid limit={3} clients={[...CLIENTS].sort((a, b) => order(a.slug) - order(b.slug))} />
+            <WorkGrid limit={6} clients={[...CLIENTS].sort((a, b) => order(a.slug) - order(b.slug))} />
           </div>
-          <Link to="/results" className="btn-chrome mt-8">
-            See every result <ArrowRight className="h-4 w-4" aria-hidden />
-          </Link>
         </div>
       </section>
 
