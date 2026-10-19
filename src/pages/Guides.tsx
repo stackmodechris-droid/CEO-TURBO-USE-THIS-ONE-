@@ -1,12 +1,34 @@
+import { Fragment } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CompareTable } from "@/components/blocks/CompareTable";
 import { GUIDES, guideBySlug, guideImage, guidePath, type Guide } from "@/content/guides";
 import { AUDIENCES } from "@/content/audiences";
-import { SITE } from "@/config/site";
-import { BookButton } from "@/components/cta/Actions";
+import { SITE, fromPriceLabel } from "@/config/site";
+import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { BookingSection } from "@/components/blocks/Sales";
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
 import NotFound from "./NotFound";
+
+/** Review-card offer shown inside every guide: the animated tap card plus a straight path to checkout. */
+function CardOffer({ className = "" }: { className?: string }) {
+  return (
+    <aside className={`cta-glow grid items-center gap-6 rounded-3xl p-6 sm:grid-cols-[0.8fr_1.2fr] sm:p-8 ${className}`} aria-label="Google review cards">
+      <div className="relative mx-auto w-full max-w-[220px]">
+        <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-turbo/20 blur-3xl" aria-hidden />
+        <ReviewCard3D tap className="w-full" />
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-ignite">Google review cards · from {fromPriceLabel}</p>
+        <p className="mt-2 text-2xl font-bold leading-snug">One tap opens your Google review form. More reviews, higher in Maps.</p>
+        <p className="mt-2 text-sm text-muted-foreground">No app for customers, no subscription. Free US shipping, ships in 1–2 days from Atlanta.</p>
+        <div className="mt-5">
+          <ShopCardsButton className="btn-shine">Get my review cards — from {fromPriceLabel}</ShopCardsButton>
+        </div>
+      </div>
+    </aside>
+  );
+}
 
 const anchor = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const fmt = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
@@ -81,8 +103,10 @@ function GuideArticle({ g }: { g: Guide }) {
         </header>
 
         <div className="container-x max-w-[860px] pb-8">
-          {g.sections.map((s) => (
-            <section key={s.h2} id={anchor(s.h2)} className="mt-14 scroll-mt-24">
+          {g.sections.map((s, i) => (
+            <Fragment key={s.h2}>
+            {i === Math.min(2, g.sections.length - 1) && <CardOffer className="mt-14" />}
+            <section id={anchor(s.h2)} className="mt-14 scroll-mt-24">
               <h2 className="text-2xl font-bold leading-tight sm:text-3xl">{s.h2}</h2>
               <p className="prose-answer mt-4">{s.answer}</p>
               {s.body?.map((p) => (
@@ -104,9 +128,12 @@ function GuideArticle({ g }: { g: Guide }) {
                 <CompareTable className="mt-6" head={s.table.head} rows={s.table.rows} />
               )}
             </section>
+            </Fragment>
           ))}
 
-          <aside className="panel mt-16 p-6 sm:p-8">
+          <CardOffer className="mt-16" />
+
+          <aside className="panel mt-10 p-6 sm:p-8">
             <p className="text-sm font-medium text-turbo">Want this done for you?</p>
             <p className="mt-2 text-2xl font-bold leading-snug">We'll look at your business on a free 30-minute call and tell you what to fix first.</p>
             <div className="mt-6 flex flex-wrap gap-3">
