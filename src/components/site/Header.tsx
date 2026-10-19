@@ -77,7 +77,7 @@ const MENUS: Menu[] = [
 ];
 
 const linkCls = ({ isActive }: { isActive: boolean }) =>
-  cn("whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-white/5 hover:text-foreground xl:px-3", isActive ? "text-foreground" : "text-muted-foreground");
+  cn("whitespace-nowrap rounded-lg px-2 py-2 text-[13px] font-medium transition-colors hover:bg-white/5 hover:text-foreground xl:px-2.5 xl:text-sm", isActive ? "text-foreground" : "text-muted-foreground");
 
 export function Header({ focus = false }: { focus?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -107,9 +107,6 @@ export function Header({ focus = false }: { focus?: boolean }) {
 
         {!focus && (
           <nav aria-label="Main" className="hidden items-center gap-0.5 lg:flex">
-            <NavLink to="/" end className={linkCls}>
-              Home
-            </NavLink>
             {MENUS.map((m) => (
               <Dropdown key={m.label} menu={m} active={m.items.some((i) => i.to === pathname)} />
             ))}
@@ -155,20 +152,20 @@ export function Header({ focus = false }: { focus?: boolean }) {
       {open && !focus && (
         <div id="mobile-menu" className="container-x h-[calc(100dvh-4rem)] overflow-y-auto pb-32 pt-2 lg:hidden">
           <div className="grid gap-2">
-            <Link to="/brand-boost" className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
+            <Link to="/brand-boost" onClick={() => setOpen(false)} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
               Book a free Brand Boost call
               <span className="text-turbo" aria-hidden>›</span>
             </Link>
-            <Link to="/free-audit" className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
+            <Link to="/free-audit" onClick={() => setOpen(false)} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
               Free Brand Visibility Check
               <span className="text-turbo" aria-hidden>›</span>
             </Link>
-            <Link to={SHOP_PATH} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
+            <Link to={SHOP_PATH} onClick={() => setOpen(false)} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
               Google review cards — {fromPriceLabel}
               <span className="text-turbo" aria-hidden>›</span>
             </Link>
           </div>
-          <Link to="/" className="mt-6 block px-1 py-2 text-base font-medium">
+          <Link to="/" onClick={() => { setOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="mt-6 block px-1 py-2 text-base font-medium">
             Home
           </Link>
           {MENUS.map((m) => (
@@ -181,7 +178,7 @@ export function Header({ focus = false }: { focus?: boolean }) {
                 {m.items.map((i, idx) => (
                   <Fragment key={i.to + i.label}>
                   {i.group && i.group !== m.items[idx - 1]?.group && <p className="px-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-turbo">{i.group}</p>}
-                  <Link to={i.to} className="rounded-xl bg-white/[0.03] px-3 py-3.5 text-sm font-medium">
+                  <Link to={i.to} onClick={() => setOpen(false)} className="rounded-xl bg-white/[0.03] px-3 py-3.5 text-sm font-medium">
                     {i.label}
                   </Link>
                   </Fragment>
@@ -198,11 +195,11 @@ export function Header({ focus = false }: { focus?: boolean }) {
 function Dropdown({ menu, active }: { menu: Menu; active: boolean }) {
   return (
     <div className="group relative">
-      <Link to={menu.to} className={cn("flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors hover:bg-white/5 hover:text-foreground xl:px-3", active ? "text-foreground" : "text-muted-foreground")}>
+      <Link to={menu.to} className={cn("flex items-center gap-1 whitespace-nowrap rounded-lg px-2 py-2 text-[13px] font-medium transition-colors hover:bg-white/5 hover:text-foreground xl:px-2.5 xl:text-sm", active ? "text-foreground" : "text-muted-foreground")}>
         {menu.label} <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" aria-hidden />
       </Link>
       <div className={cn("invisible absolute left-1/2 top-full -translate-x-1/2 pt-2 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100", menu.wide ? "w-[560px] max-w-[calc(100vw-2rem)]" : "w-[300px]")}>
-        <div className={cn("grid gap-1 rounded-2xl border border-white/10 bg-[hsl(218_33%_7%)] p-2 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)]", menu.wide && "dropdown-scroll grid-cols-2")}>
+        <div className={cn("grid max-h-[75vh] gap-1 overflow-y-auto rounded-2xl border border-white/10 bg-[hsl(218_33%_7%)] p-2 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.8)]", menu.wide && "dropdown-scroll grid-cols-2")}>
           {menu.items.map((i, idx) => (
             <Fragment key={i.to + i.label}>
               {i.group && i.group !== menu.items[idx - 1]?.group && <p className="col-span-2 px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-turbo">{i.group}</p>}

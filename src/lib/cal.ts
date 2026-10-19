@@ -115,14 +115,16 @@ function initNamespace(ns: string) {
   for (const [action, status] of [["linkReady", "ready"], ["linkFailed", "failed"]] as const)
     Cal.ns[ns]("on", { action, callback: () => linkListeners.get(ns)?.forEach((fn) => fn(status)) });
   // Real bookings (not just calendar opens) are the conversion the ad platforms should optimize for.
-  Cal.ns[ns]("on", {
-    action: "bookingSuccessfulV2",
-    callback: (e: { detail?: { data?: Record<string, unknown> } }) => {
-      const d = e?.detail?.data ?? {};
-      const uid = typeof d.uid === "string" ? d.uid : undefined;
-      trackBooked("embed", uid, bookerFrom(d));
-    },
-  });
+  for (const action of ["bookingSuccessful", "bookingSuccessfulV2"] as const) {
+    Cal.ns[ns]("on", {
+      action,
+      callback: (e: { detail?: { data?: Record<string, unknown> } }) => {
+        const d = e?.detail?.data ?? {};
+        const uid = typeof d.uid === "string" ? d.uid : undefined;
+        trackBooked("embed", uid, bookerFrom(d));
+      },
+    });
+  }
 }
 
 /** Forgets a failed embed load (blocked request, offline blip) so the next attempt starts clean instead of staying broken until a page refresh. */

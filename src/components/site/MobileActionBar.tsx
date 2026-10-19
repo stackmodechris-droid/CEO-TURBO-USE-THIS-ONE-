@@ -72,6 +72,18 @@ export function MobileActionBar() {
         </div>
       </div>
     );
+  // Homepage sells the card first; the call is the step after.
+  if (pathname === "/")
+    return (
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
+        <div className="flex gap-2">
+          <ShopCardsButton className="flex-1 !py-3.5 !text-base">Get review cards · {fromPriceLabel}</ShopCardsButton>
+          <BookButton note="Home mobile bar" variant="chrome" className="!px-3 !py-3.5 !text-sm">
+            Free call
+          </BookButton>
+        </div>
+      </div>
+    );
   return (
     <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
       <div className="flex gap-2">

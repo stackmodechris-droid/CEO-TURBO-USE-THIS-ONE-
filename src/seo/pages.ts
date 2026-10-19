@@ -39,9 +39,9 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/",
-    title: "CEO Turbo — Get More Customers, Reviews & Listeners",
+    title: "Google Review Cards & Local Growth | CEO Turbo",
     description:
-      "CEO Turbo helps businesses and artists get more customers, reviews and listeners: websites, ads, Google profiles, review cards and a free Brand Boost call.",
+      "NFC Google review cards from $24.99 — one tap opens your review form. Then a free setup call: Google profile, SEO, AEO, GEO and ads to get you found.",
     priority: 1,
     changefreq: "weekly",
     group: "Core",

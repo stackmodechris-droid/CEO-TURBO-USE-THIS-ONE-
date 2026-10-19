@@ -18,9 +18,9 @@ export function Logo({ className = "", onNavigate }: { className?: string; onNav
   };
 
   return (
-    <Link to="/" onClick={onClick} className={`inline-flex min-h-[44px] items-center gap-2.5 ${className}`} aria-label="CEO Turbo home">
-      <img src="/img/brand/ceo-turbo-logo-sm.webp" alt="" width={56} height={32} decoding="async" className="h-8 w-auto" />
-      <span className="font-display text-[15px] font-bold tracking-tight">
+    <Link to="/" onClick={onClick} className={`group inline-flex min-h-[44px] select-none items-center gap-2.5 whitespace-nowrap ${className}`} aria-label="CEO Turbo home">
+      <img src="/img/brand/ceo-turbo-logo-sm.webp" alt="CEO Turbo" width={56} height={32} decoding="async" className="h-8 w-auto object-contain transition-transform group-hover:scale-105" />
+      <span className="font-display text-[16px] font-bold tracking-tight text-foreground">
         CEO <span className="text-turbo">Turbo</span>
       </span>
     </Link>
