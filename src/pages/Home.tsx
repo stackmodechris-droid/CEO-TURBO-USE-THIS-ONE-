@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, MapPin, Search, Star, Megaphone, Globe } from "lucide-react";
+import { ArrowRight, Check, MapPin, Search, Star, Megaphone, Globe, TrendingUp } from "lucide-react";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { ProofStats, GSCProof, WorkGrid, StripeProof, FeaturedResult, AdResultsGrid, AdGallery } from "@/components/blocks/Proof";
@@ -117,14 +117,15 @@ export default function Home() {
           <SectionHeader
             kicker="Free setup & growth call"
             title={<span id="ladder">Reviews get you chosen. We make sure you get found.</span>}
-            lede="Reviews are one of the biggest signals Google uses to rank local businesses in Maps. On a free 30-minute call we set up your card with you, then show you exactly what's keeping you off page one — and fix it for you if you want."
+            lede="Reviews are one of the biggest signals Google uses to rank local businesses in Maps. On a free 30-minute call we set up your card with you, then show you what's keeping you off page one, and what would get you more followers and views — and we do it for you if you want."
           />
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { icon: MapPin, t: "Google Business Profile", b: "Set up, verified and optimized: categories, services, photos and posts so you show up in the Maps pack." },
               { icon: Search, t: "Indexing + SEO, AEO & GEO", b: "Your site indexed on Google and Bing, and written so ChatGPT, Perplexity and AI Overviews name you." },
               { icon: Megaphone, t: "Local ads that ring the phone", b: "Google, Meta and Microsoft ads with every call, form and booking tracked back to the dollar." },
               { icon: Globe, t: "A website that converts", b: "Fast, mobile-first and built to turn a Maps click into a call or a booking." },
+              { icon: TrendingUp, t: "More followers & views", b: "Profile and content optimization plus ads that put your Instagram, TikTok, YouTube and Facebook in front of the right people." },
             ].map((x) => (
               <li key={x.t} className="panel p-5">
                 <x.icon className="h-5 w-5 text-turbo" aria-hidden />
