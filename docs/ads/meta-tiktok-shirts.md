@@ -36,7 +36,7 @@ These live in `ads/hyperframes/`. `npm run ads:build` writes them and `npm run a
 
 - **Concept:** an event is two weeks out and there are no shirts. The fast, easy order saves it (panic, then relief).
 - **Target:** event planners, marketing managers, small-business owners, party and team organizers.
-- **Voice:** woman, 25–35, conversational, like a TikTok creator telling a friend. Script and direction are in `ads/hyperframes/event-last-minute/voice-script.txt`. This is the one ad meant to run **with** a voice-over; put the trending sound under it at low volume.
+- **Voice:** woman, 25–35, conversational, like a TikTok creator telling a friend. Script and direction are in `ads/hyperframes/event-last-minute/voice-script.txt`. This is the one ad meant to run **with** a voice-over. Upload `ads/hyperframes/out/event-last-minute-vo.mp4` (18 s, Kokoro `af_heart` voice plus a generated music bed), which `videos/ceoturbo-ads/mix-audio-event.sh` builds after the render. If you add a trending sound, keep it very low.
 - **Placements:** TikTok, Reels, Stories.
 - **Angle:** urgency, then relief. It only uses the real timeline (prints in 2–4 business days, arrives 3–6 days after shipping), so don't edit it to "overnight" or "tomorrow".
 - **CTA:** Design yours → ceoturbo.com/custom-company-t-shirts.
