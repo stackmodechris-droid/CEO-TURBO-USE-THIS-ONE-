@@ -1,0 +1,36 @@
+EVENT LAST MINUTE — voice-over script (15.0 s, 9:16)
+Ad: ads/hyperframes/build.mjs → id "event-last-minute" → ceoturbo.com/custom-company-t-shirts
+
+Timeline is real, not "overnight": company shirts print in 2–4 business days and arrive
+3–6 business days after they ship (src/config/site.ts). Don't promise faster in the voice.
+
+VOICE
+- Woman, 25–35, American, warm. A TikTok creator telling a friend what happened, not an announcer.
+- Talk, don't read: run-on phrasing, a breath before the punchline, slight laugh on "oh my god".
+- Imperfect is good: let "like" and "seriously" land loose. No studio-perfect diction.
+- Arc: panic → embarrassed → surprised → relieved/proud → genuine recommendation.
+- Pace: fast at the top, slows in scene 4, steady and warm at the end.
+
+[SCENE 1 — 0.0–3.0s — on screen: "EVENT IS IN 2 WEEKS" / sticker "and i have ZERO shirts"]
+(Panic, fast, a little breathless. Hit "two weeks" and "zero".)
+"Okay so my event is in two weeks… and I have zero shirts. Like, zero."
+
+[SCENE 2 — 3.0–5.8s — on screen: "SPONSOR ASKED: 'WHERE'S THE MERCH?'"]
+(Storytelling, embarrassed. Quote the sponsor in a slightly prim voice, then drop to a whisper-laugh.)
+"And then the sponsor goes, 'where's the merch?' And I'm like… oh my god."
+
+[SCENE 3 — 5.8–8.4s — on screen: "UPLOADED LOGO. DONE IN 2 MIN." / sticker "no minimum"]
+(Surprised, picking up speed, a bit giddy. Lean on "two minutes".)
+"So I just uploaded our logo — like, two minutes. Done. Actually so easy."
+
+[SCENE 4 — 8.4–11.8s — on screen: "SHOWED UP WITH DAYS TO SPARE." / sticker "prints in 2–4 days"]
+(Slower, relieved, proud. Smile you can hear.)
+"They printed in a few days, showed up with time to spare… and they look so good."
+
+[SCENE 5 — 11.8–15.0s — end card: "NEVER PANIC AGAIN" / "Design yours"]
+(Warm, sincere, not salesy. "Seriously" is a friend talking, not a pitch.)
+"Seriously, save yourself the panic. Go design yours."
+
+TIMING
+~2.6–3 words per second. If a take runs long, cut fillers ("Actually so easy", "Like, zero")
+before speeding the voice up. Place each line at its scene start + 0.15s.

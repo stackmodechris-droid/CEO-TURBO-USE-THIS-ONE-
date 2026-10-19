@@ -271,6 +271,19 @@ export const ADS = [
       { kind: "cta", dur: 3, bg: ORANGE, lines: ["look like", "*a real company*"], button: "Design your shirts", url: TEE_URL },
     ],
   },
+  {
+    // Real timeline only: company shirts print in 2–4 business days, then 3–6 to arrive (src/config/site.ts).
+    // Voice-over script and direction: event-last-minute/voice-script.txt.
+    id: "event-last-minute",
+    title: "Event shirts — 'event is in 2 weeks'",
+    scenes: [
+      { kind: "hook", dur: 3, bg: PINK, lines: ["event is in", "*2 weeks*"], sticker: "and i have ZERO shirts" },
+      { kind: "caption", dur: 2.8, bg: NAVY, lines: ["sponsor asked:", "*“where's the merch?”*"], small: "me: internal screaming" },
+      { kind: "image", dur: 2.6, bg: "#f1f2f5", fg: "#111", lines: ["uploaded logo.", "*done in 2 min.*"], src: "shirt-front.jpg", sticker: "no minimum" },
+      { kind: "image", dur: 3.4, bg: "#f1f2f5", fg: "#111", lines: ["showed up with", "*days to spare.*"], src: "shirt-colors.jpg", sticker: "prints in 2–4 days" },
+      { kind: "cta", dur: 3.2, bg: ORANGE, lines: ["never panic", "*again*"], button: "Design yours", url: TEE_URL, small: "From $27.99 · free US shipping" },
+    ],
+  },
 ];
 
 for (const ad of ADS) {

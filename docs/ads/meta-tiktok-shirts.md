@@ -30,6 +30,16 @@ These live in `ads/hyperframes/`. `npm run ads:build` writes them and `npm run a
 | `biz-group-project.mp4` | Business | "Your crew showing up to a job like a group project". Six mismatched shirts snap into matching logo shirts |
 | `biz-minimum-24.mp4` | Business | Print shop: "minimum is 24 shirts", then "Me with 3 employees" |
 | `biz-new-hire.mp4` | Business | "New hire showing up in a Minions tee, day 1" |
+| `event-last-minute.mp4` | Business / events | "Event is in 2 weeks" — sticker: and i have ZERO shirts. The sponsor asks for merch, logo upload, shirts show up with days to spare |
+
+### Event Last Minute
+
+- **Concept:** an event is two weeks out and there are no shirts. The fast, easy order saves it (panic, then relief).
+- **Target:** event planners, marketing managers, small-business owners, party and team organizers.
+- **Voice:** woman, 25–35, conversational, like a TikTok creator telling a friend. Script and direction are in `ads/hyperframes/event-last-minute/voice-script.txt`. This is the one ad meant to run **with** a voice-over; put the trending sound under it at low volume.
+- **Placements:** TikTok, Reels, Stories.
+- **Angle:** urgency, then relief. It only uses the real timeline (prints in 2–4 business days, arrives 3–6 days after shipping), so don't edit it to "overnight" or "tomorrow".
+- **CTA:** Design yours → ceoturbo.com/custom-company-t-shirts.
 
 Every ad ends on the price, "no minimum", free shipping and the URL. Add a trending sound inside TikTok or Meta when you upload: the videos are silent on purpose, so you can pick the sound that's trending that week. **Turn captions on.**
 
