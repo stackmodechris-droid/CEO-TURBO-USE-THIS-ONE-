@@ -11,6 +11,7 @@ import { SHIRT_FAQS, SHIRTS_PATH } from "@/content/company-shirts";
 import { MERCH_FAQS, ARTIST_MERCH_PATH } from "@/content/artist-merch";
 import { PRICING_FAQS, price } from "@/content/pricing";
 import { RESTAURANT_FAQS, RESTAURANTS_PATH } from "@/content/restaurants";
+import { NICHES } from "@/content/niches";
 import * as S from "./schema";
 
 export type PageMeta = {
@@ -324,6 +325,34 @@ function build(): PageMeta[] {
         S.webPage(RESTAURANTS_PATH, "Restaurant marketing: delivery apps, TV menus, Maps and review cards", "Delivery app setup on DoorDash, Uber Eats and Grubhub, digital TV menus and printed menus, Google and Apple Maps listings, and NFC Google review cards for every table."),
         S.breadcrumbs([{ name: "Restaurants", path: RESTAURANTS_PATH }]),
         S.faqPage(RESTAURANT_FAQS, RESTAURANTS_PATH),
+      ],
+    },
+    {
+      path: NICHES.salons.path,
+      title: "Salon Marketing: Google Reviews & Bookings | CEO Turbo",
+      description: "More bookings and 5-star Google reviews for salons. Google profile setup, booking link and tap-to-review cards at every station. Free call.",
+      priority: 0.9,
+      changefreq: "monthly",
+      group: "Audiences",
+      schema: [
+        ...base(),
+        S.webPage(NICHES.salons.path, "Salon marketing: Google reviews and bookings", "Google Business Profile setup, booking links and NFC review cards for salon stations and the front desk."),
+        S.breadcrumbs([{ name: "Salons", path: NICHES.salons.path }]),
+        S.faqPage(NICHES.salons.faqs, NICHES.salons.path),
+      ],
+    },
+    {
+      path: NICHES.barbershops.path,
+      title: "Barbershop Marketing: Walk-ins & Google Reviews | CEO Turbo",
+      description: "More walk-ins and 5-star Google reviews for barbershops. Google profile setup, barber-by-barber review cards and a free call.",
+      priority: 0.9,
+      changefreq: "monthly",
+      group: "Audiences",
+      schema: [
+        ...base(),
+        S.webPage(NICHES.barbershops.path, "Barbershop marketing: walk-ins and Google reviews", "Google Business Profile setup and NFC review cards for chairs, the waiting area and checkout."),
+        S.breadcrumbs([{ name: "Barbershops", path: NICHES.barbershops.path }]),
+        S.faqPage(NICHES.barbershops.faqs, NICHES.barbershops.path),
       ],
     },
     { path: "/app-marketing", title: "Software & App Marketing for Developers — CEO Turbo", description: "You built the code. We engineer the distribution. High-converting landing pages, Reddit & Meta ads, telemetry and ASO for software developers.", noindex: true, priority: 0.1, changefreq: "monthly", group: "Core", schema: [...base(), S.webPage("/app-marketing", "Software & app marketing for developers", "Landing pages, ASO, Reddit ads, telemetry and launch strategy for software developers.")] },
