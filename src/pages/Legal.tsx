@@ -37,7 +37,7 @@ export function PrivacyPolicy() {
       </section>
       <section>
         <h2>Calls and text messages</h2>
-        <p>If you give us your phone number, we may call you about your audit, order or inquiry. We only send text messages if you tick the box agreeing to them. Message and data rates may apply; message frequency varies. Reply STOP to opt out or HELP for help. Agreeing to texts is never a condition of buying anything. We don't share your phone number or text-message consent with third parties for their marketing.</p>
+        <p>If you give us your phone number, we may call you about your audit, order or inquiry. We only send text messages if you tick the box agreeing to them. Message and data rates may apply; message frequency varies. Reply STOP to opt out or HELP for help. Agreeing to texts is never a condition of buying anything. We do not sell or share your SMS opt-in data or personal information with third parties for marketing purposes. CEO Turbo does not share your phone number or text-message consent with anyone for their marketing.</p>
       </section>
       <section>
         <h2>Who we share it with</h2>
@@ -121,7 +121,7 @@ export function Terms() {
         <p>These terms are governed by the laws of the State of Georgia, USA.</p>
       </section>
       <section>
-        <h2>10. Text message (SMS) program terms</h2>
+        <h2>10. SMS Terms</h2>
         <p>CEO Turbo sends text messages only to people who opt in by ticking an unchecked consent box on our forms. Program: follow-up about your free audit, a review-card order, or a booked call, plus call reminders you asked for. Message frequency varies. Message and data rates may apply. Reply STOP to cancel at any time; you will receive one confirmation message and no more texts after that. Reply HELP for help or email {SITE.email}. Consent is not a condition of buying anything. Carriers are not liable for delayed or undelivered messages. Your mobile information is never sold or shared with third parties for their marketing. See our <Link to="/privacy-policy" className="text-foreground underline underline-offset-4">Privacy Policy</Link> for details.</p>
       </section>
     </LegalShell>
