@@ -475,7 +475,7 @@ export const GUIDES: Guide[] = [
       {
         h2: "Examples from real local sites",
         answer:
-          "BAM Sprinklers puts two phone lines and business hours in its hero. Phoenix Freedom Firearms leads with a flat $15 transfer price. ClearDump uses a $150 launch special because a new company has no reviews yet. Each answers the buyer's biggest hesitation first.",
+          "BAM Sprinklers puts two phone lines and business hours in its hero. ClearDump uses a $150 launch special because a new company has no reviews yet. Each answers the buyer's biggest hesitation first.",
       },
     ],
     faqs: [

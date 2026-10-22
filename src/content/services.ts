@@ -310,7 +310,7 @@ export const SERVICES: Service[] = [
     icon: "layout",
     metaTitle: "Website Design That Converts — Calls, Bookings & Sales",
     metaDescription:
-      "Fast, mobile-first websites for local businesses, artists and Shopify stores, with SEO, schema and booking built in. 20 live client sites to see.",
+      "Fast, mobile-first websites for local businesses, artists and Shopify stores, with SEO, schema and booking built in. 19 live client sites to see.",
     h1: "Website design built to turn visitors into calls, bookings and sales",
     answer:
       "CEO Turbo designs and builds conversion-focused websites for local service businesses, artists and online stores. Every site is mobile-first, loads fast, ships with SEO and schema already in place, and is organised around one clear next step — a call, a booking or a checkout. Twenty client sites are live today.",
@@ -331,7 +331,7 @@ export const SERVICES: Service[] = [
       { title: "Design and build", body: "We build, you review on a live preview link, we revise." },
       { title: "Launch and index", body: "Domain, analytics, Search Console, Bing and sitemap submission on launch day." },
     ],
-    proof: { clientSlugs: ["mor-handy", "phoenix-freedom-firearms", "beyond-labels-gifts", "7uvhavin", "cleardump", "kingstone-landscaping"] },
+    proof: { clientSlugs: ["mor-handy", "beyond-labels-gifts", "7uvhavin", "cleardump", "kingstone-landscaping"] },
     audiences: ["local", "shopify", "artist", "brand"],
     faqs: [
       { q: "How long does a website take?", a: "Most single-business sites go from kickoff call to launch in two to four weeks, depending on how quickly content and feedback come back. Stores with many products take longer." },

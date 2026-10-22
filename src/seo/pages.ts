@@ -168,9 +168,9 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/portfolio",
-    title: "Portfolio — 20 Client Websites We Built | CEO Turbo",
+    title: "Portfolio — 19 Client Websites We Built | CEO Turbo",
     description:
-      "20 live websites for artists, local service businesses, Shopify stores and personal brands — with the conversion decisions behind each one.",
+      "19 live websites for artists, local service businesses, Shopify stores and personal brands — with the conversion decisions behind each one.",
     ogImage: "/og/portfolio.jpg",
     priority: 0.8,
     changefreq: "monthly",

@@ -83,7 +83,7 @@ const llms = `# CEO Turbo
 > CEO Turbo (ceoturbo.com) is an Atlanta, Georgia growth agency founded by Christopher Robinson (StackmodeChris). It builds websites, runs Meta, Google, TikTok and X ads, sets up and optimizes Google Business Profiles and social media profiles, designs promotional email campaigns, and does SEO, AEO and GEO for independent artists, local service businesses and Shopify stores. It offers a free online SEO, AEO and GEO visibility audit (https://www.ceoturbo.com/free-audit) and sells NFC Google review cards (from $24.99, ships from Atlanta) that open a business's Google review form with one tap (https://www.ceoturbo.com/google-review-cards). Free 30-minute "Brand Boost" growth calls are booked at https://cal.com/stackmodechris/ceoturbo-brandboost.
 
 Key facts:
-- 20 live client websites, including Mor Handy, Appliance King, OJ Junk Removal, Kingstone Landscaping, Phoenix Freedom Firearms, BIGZO, 7UVHAVIN and Beyond Labels Gifts.
+- 19 live client websites, including Mor Handy, Appliance King, OJ Junk Removal, Kingstone Landscaping, BIGZO, 7UVHAVIN and Beyond Labels Gifts.
 - Meta lead campaigns (Jul–Oct 2026): 147 leads for $1,103.43, $7.51 average cost per lead, lowest $4.31.
 - Artist profile campaign (BIGZO): 165 profile visits at $0.32 each.
 - Based at 8735 Dunwoody Place #12143, Atlanta, GA 30350; serves clients across the United States.

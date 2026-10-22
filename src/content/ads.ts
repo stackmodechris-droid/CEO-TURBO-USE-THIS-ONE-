@@ -11,7 +11,6 @@ export type AdCreative = {
 
 export const ADS: AdCreative[] = [
   { slug: "mor-handy-electrical-panel", client: "Mor Handy", clientSlug: "mor-handy", hook: "One spark away from disaster — before/after panel swap", format: "Square", vertical: "local" },
-  { slug: "phoenix-ffl-transfer", client: "Phoenix Freedom Firearms", clientSlug: "phoenix-freedom-firearms", hook: "$15 FFL transfers vs $30–$75 elsewhere", format: "Square", vertical: "local" },
   { slug: "1stikk-mock-kit", client: "1 Stikk Mobile", clientSlug: "1stikk-mobile", hook: "$75 all-in-one drug-screen mock kit", format: "Square", vertical: "local" },
   { slug: "ryan-pool-kangen-water", client: "Ryan Pool Enagic", clientSlug: "ryan-pool", hook: "What's really in your water?", format: "Square", vertical: "brand" },
   { slug: "appliance-king-washer-dryer", client: "Appliance King", clientSlug: "appliance-king", hook: "Your washer & dryer called out today", format: "Portrait", vertical: "local" },
@@ -22,13 +21,11 @@ export const ADS: AdCreative[] = [
   { slug: "beyond-labels-necklace", client: "Beyond Labels Gifts", clientSlug: "beyond-labels-gifts", hook: "Is there someone you love and appreciate?", format: "Square", vertical: "shopify" },
   { slug: "xilly-pc-fps", client: "Xilly.net", hook: "118 FPS to 567 FPS — free PC checkup", format: "Square", vertical: "shopify" },
   { slug: "mor-handy-carpet", client: "Mor Handy", clientSlug: "mor-handy", hook: "Don't replace yet — stains, odor & worn spots", format: "Square", vertical: "local" },
-  { slug: "phoenix-custom-builds", client: "Phoenix Freedom Firearms", clientSlug: "phoenix-freedom-firearms", hook: "Custom builds — your vision, our hands", format: "Landscape", vertical: "local" },
   { slug: "layne-fitness-muscle", client: "Layne Fitness", clientSlug: "layne-fitness", hook: "I will help you build muscle fast", format: "Portrait", vertical: "brand" },
   { slug: "ryan-pool-bottled-water", client: "Ryan Pool Enagic", clientSlug: "ryan-pool", hook: "Stop drinking bottled water", format: "Square", vertical: "brand" },
   { slug: "1stikk-text-message", client: "1 Stikk Mobile", clientSlug: "1stikk-mobile", hook: "Text-thread style recruiting ad", format: "Square", vertical: "local" },
   { slug: "kava-construction-decks", client: "Kava Construction", hook: "Turn your backyard into your favorite place", format: "Square", vertical: "local" },
   { slug: "uprise-electric", client: "Uprise Electric", hook: "Powering Chicago with precision — 10% off", format: "Square", vertical: "local" },
-  { slug: "phoenix-suppressor", client: "Phoenix Freedom Firearms", clientSlug: "phoenix-freedom-firearms", hook: "Suppressor fingerprinting, done right", format: "Landscape", vertical: "local" },
   { slug: "loner-studio-rich-alone", client: "Loner Studio", hook: "It's lonely at the top — $55 tee drop", format: "Square", vertical: "shopify" },
   { slug: "ntg-sold-listing", client: "NTG Sold", hook: "Just listed: Flowery Branch oasis", format: "Square", vertical: "local" },
   { slug: "jarrett-bmw", client: "Jarrett the Dealmaker", hook: "Your ultimate BMW is here", format: "Square", vertical: "local" },

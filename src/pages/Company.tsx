@@ -127,7 +127,7 @@ export function Contact() {
 }
 
 export function Atlanta() {
-  const georgia = ["oj-junk-removal", "kingstone-landscaping", "cleardump", "phoenix-freedom-firearms", "appliance-king", "7uvhavin", "yari-beats"]
+  const georgia = ["oj-junk-removal", "kingstone-landscaping", "cleardump", "appliance-king", "7uvhavin", "yari-beats"]
     .map(clientBySlug)
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
   return (

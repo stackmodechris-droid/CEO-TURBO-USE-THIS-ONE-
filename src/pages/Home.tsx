@@ -250,7 +250,7 @@ export default function Home() {
 }
 
 // Lead the homepage grid with the strongest, most varied work.
-const FEATURED = ["mor-handy", "7uvhavin", "beyond-labels-gifts", "phoenix-freedom-firearms", "bigzo", "kingstone-landscaping"];
+const FEATURED = ["mor-handy", "7uvhavin", "beyond-labels-gifts", "oj-junk-removal", "bigzo", "kingstone-landscaping"];
 const order = (slug: string) => {
   const i = FEATURED.indexOf(slug);
   return i === -1 ? 99 : i;

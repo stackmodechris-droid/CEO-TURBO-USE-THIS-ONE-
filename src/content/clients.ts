@@ -1,4 +1,4 @@
-// The 20 client websites CEO Turbo built. Screenshots: /public/img/work/{slug}.webp
+// The 19 client websites CEO Turbo built. Screenshots: /public/img/work/{slug}.webp
 // Copy describes what is visibly on each live site — no invented metrics.
 
 export type Category = "artist" | "local" | "shopify" | "brand";
@@ -161,23 +161,6 @@ export const CLIENTS: Client[] = [
       { title: "Service area in the eyebrow", body: "Driveway cleaning · soft house washing · Gwinnett County — the three facts a local searcher checks first." },
     ],
     delivered: ["Website design & build", "Ad creative", "Local SEO structure"],
-  },
-  {
-    slug: "phoenix-freedom-firearms",
-    name: "Phoenix Freedom Firearms",
-    url: "https://www.phoenixfreedomfirearms.com",
-    category: "local",
-    industry: "Firearms store & FFL transfers",
-    location: "Barnesville, Georgia",
-    promise: "Barnesville's local firearms store — guns, ammo, accessories, transfers and install work.",
-    overview:
-      "Phoenix Freedom Firearms is an independent dealer in Barnesville. Its strongest offer is price transparency — a flat $15 FFL transfer and $50 suppressor transfer support — so that's what the site and the ads lead with.",
-    decisions: [
-      { title: "Prices as the headline proof", body: "$15 and $50 are shown in large type, each with one line on what's included." },
-      { title: "Three paths: shop, services, book a call", body: "Inventory browsers, transfer customers and build clients each get a direct button." },
-      { title: "Compliance stated plainly", body: "Every sale follows federal, Georgia and local law — said once, clearly, to build trust." },
-    ],
-    delivered: ["Website design & build", "Ad creative (3 sets)", "Local SEO structure"],
   },
   {
     slug: "1stikk-mobile",
