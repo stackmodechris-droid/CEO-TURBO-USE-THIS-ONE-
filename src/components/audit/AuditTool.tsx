@@ -332,7 +332,7 @@ export function AuditTool({ source = "audit", onStageChange, compact = false }: 
             </label>
             <label className="flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-muted-foreground">
               <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-[hsl(var(--turbo))]" checked={form.smsOptIn} onChange={(e) => set("smsOptIn", e.target.checked)} />
-              <span>OK to text me about my report. Msg &amp; data rates may apply. Reply STOP to opt out. Not required.</span>
+              <span>I agree to receive text messages from CEO Turbo about my audit report and follow-up. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. <Link to="/terms" className="underline underline-offset-2 hover:text-foreground">Terms</Link> &amp; <Link to="/privacy-policy" className="underline underline-offset-2 hover:text-foreground">Privacy</Link>.</span>
             </label>
           </div>
           <div className="mt-5 flex items-center gap-3">

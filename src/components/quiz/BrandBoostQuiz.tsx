@@ -462,7 +462,7 @@ export function BrandBoostQuiz({
                 </label>
                 <label className="flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-muted-foreground">
                   <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-[hsl(var(--turbo))]" checked={answers.smsOptIn} onChange={(e) => set("smsOptIn", e.target.checked)} />
-                  Text me a reminder before my call. Message &amp; data rates may apply; reply STOP to opt out.
+                  I agree to receive text messages from CEO Turbo about my call (reminders and follow-up). Message frequency varies. Message &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase. <Link to="/terms" className="underline underline-offset-2">Terms</Link> &amp; <Link to="/privacy-policy" className="underline underline-offset-2">Privacy</Link>.
                 </label>
                 <button type="submit" disabled={sending} className="btn-ignite btn-shine w-full !py-4 !text-base">
                   {sending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : <>See my plan &amp; pick a time <ArrowRight className="h-4 w-4" aria-hidden /></>}

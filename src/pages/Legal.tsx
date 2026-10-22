@@ -120,6 +120,10 @@ export function Terms() {
         <h2>9. Governing law</h2>
         <p>These terms are governed by the laws of the State of Georgia, USA.</p>
       </section>
+      <section>
+        <h2>10. Text message (SMS) program terms</h2>
+        <p>CEO Turbo sends text messages only to people who opt in by ticking an unchecked consent box on our forms. Program: follow-up about your free audit, a review-card order, or a booked call, plus call reminders you asked for. Message frequency varies. Message and data rates may apply. Reply STOP to cancel at any time; you will receive one confirmation message and no more texts after that. Reply HELP for help or email {SITE.email}. Consent is not a condition of buying anything. Carriers are not liable for delayed or undelivered messages. Your mobile information is never sold or shared with third parties for their marketing. See our <Link to="/privacy-policy" className="text-foreground underline underline-offset-4">Privacy Policy</Link> for details.</p>
+      </section>
     </LegalShell>
   );
 }
