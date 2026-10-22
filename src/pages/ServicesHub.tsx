@@ -20,6 +20,14 @@ export default function ServicesHub() {
           <div className="mt-8">
             <BookButton note="Services hub">Not sure where to start? Book a free call</BookButton>
           </div>
+          <Link to="/restaurants" className="panel group mt-10 flex flex-col gap-4 p-6 transition-colors hover:ring-1 hover:ring-turbo/40 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-turbo">New · For restaurants</span>
+              <span className="mt-1 block text-xl font-bold sm:text-2xl">Restaurant growth: get found, ordered from and packed out</span>
+              <span className="mt-1 block text-[15px] text-muted-foreground">DoorDash, Uber Eats &amp; Grubhub setup, menus on your TVs, Google &amp; Apple Maps, and a review card on every table.</span>
+            </span>
+            <span className="btn-chrome shrink-0">See restaurant services →</span>
+          </Link>
           <div className="mt-14">
             <ServiceGrid />
           </div>
