@@ -32,6 +32,7 @@ const MENUS: Menu[] = [
     label: "Who we help",
     to: "/local-business",
     items: [
+      { to: "/restaurants", label: "Restaurants", sub: "DoorDash, TV menus, Maps & table review cards" },
       { to: "/local-business", label: "Local businesses", sub: "More calls, more 5-star reviews" },
       { to: "/artist", label: "Artists", sub: "More listeners, shows, features and merch" },
       { to: "/producers", label: "Producers & beatmakers", sub: "Sell more beats, custom tracks and sessions" },

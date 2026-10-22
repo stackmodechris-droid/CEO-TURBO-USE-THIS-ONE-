@@ -10,6 +10,7 @@ import { SHOP_FAQS, SETUP_FAQS, SHOP_PATH, SETUP_PATH } from "@/content/review-c
 import { SHIRT_FAQS, SHIRTS_PATH } from "@/content/company-shirts";
 import { MERCH_FAQS, ARTIST_MERCH_PATH } from "@/content/artist-merch";
 import { PRICING_FAQS, price } from "@/content/pricing";
+import { RESTAURANT_FAQS, RESTAURANTS_PATH } from "@/content/restaurants";
 import * as S from "./schema";
 
 export type PageMeta = {
@@ -310,6 +311,21 @@ function build(): PageMeta[] {
     { path: "/get-more-reviews", title: "How to Get More Google Reviews (One Tap) | CEO Turbo", description: `Why reviews decide who gets the call on Google, Maps and ChatGPT — and the NFC card that turns “I'll review you later” into a review. From ${fromPriceLabel}.`, ogImage: "/og/get-more-reviews.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
+    {
+      path: RESTAURANTS_PATH,
+      title: "Restaurant Marketing: DoorDash, TV Menus & Reviews | CEO Turbo",
+      description: "We get restaurants on DoorDash, Uber Eats & Grubhub, design TV menus, fix Google & Apple Maps and put tap-to-review cards on every table. Free call.",
+      ogImage: "/og/restaurants.jpg",
+      priority: 0.9,
+      changefreq: "monthly",
+      group: "Audiences",
+      schema: [
+        ...base(),
+        S.webPage(RESTAURANTS_PATH, "Restaurant marketing: delivery apps, TV menus, Maps and review cards", "Delivery app setup on DoorDash, Uber Eats and Grubhub, digital TV menus and printed menus, Google and Apple Maps listings, and NFC Google review cards for every table."),
+        S.breadcrumbs([{ name: "Restaurants", path: RESTAURANTS_PATH }]),
+        S.faqPage(RESTAURANT_FAQS, RESTAURANTS_PATH),
+      ],
+    },
     { path: "/app-marketing", title: "Software & App Marketing for Developers — CEO Turbo", description: "You built the code. We engineer the distribution. High-converting landing pages, Reddit & Meta ads, telemetry and ASO for software developers.", noindex: true, priority: 0.1, changefreq: "monthly", group: "Core", schema: [...base(), S.webPage("/app-marketing", "Software & app marketing for developers", "Landing pages, ASO, Reddit ads, telemetry and launch strategy for software developers.")] },
     { path: "/promptshop", title: "Prompt Shop — Coming Soon | CEO Turbo", description: "AI prompts, scanners and templates from CEO Turbo — coming soon.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Company", schema: base() },
   );

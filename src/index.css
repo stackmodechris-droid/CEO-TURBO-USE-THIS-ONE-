@@ -649,6 +649,12 @@
 .meter-fill { transform-origin: left; transform: scaleX(0); transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1); }
 [data-play="true"] .meter-fill { transform: scaleX(1); }
 
+/* Restaurant dining room: the "+1 review" pop over a table and the count bump in the listing */
+@keyframes dr-pop { 0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); } 18% { opacity: 1; transform: translate(-50%, 0) scale(1); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -18px) scale(1); } }
+.dr-pop { animation: dr-pop 1.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes dr-count { 0% { transform: scale(1.35); color: #137333; } 100% { transform: scale(1); } }
+.dr-count { display: inline-block; animation: dr-count 0.6s ease-out both; }
+
 @media (prefers-reduced-motion: reduce) {
   .confetti-bit { display: none; }
   .animate-logos { animation: none !important; }

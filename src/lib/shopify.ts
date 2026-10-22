@@ -124,6 +124,18 @@ export async function createCheckout(pack: ReviewPack, business: string) {
   return { url, variantId: numericId(found.variant.id), price: Number(found.variant.price.amount) * found.quantity, available: found.variant.availableForSale };
 }
 
+/** One cart with several review card packs (e.g. a card for every table): one line per pack. */
+export async function createPacksCheckout(items: { pack: ReviewPack; count: number }[], business: string) {
+  const variants = await loadVariants();
+  const lines = items.map(({ pack, count }) => {
+    const found = findVariant(variants, pack);
+    if (!found) throw new Error(`No Shopify variant for ${pack.label}`);
+    return { merchandiseId: found.variant.id, quantity: found.quantity * count };
+  });
+  const summary = items.map(({ pack, count }) => `${count} × ${pack.label}`).join(", ");
+  return cartCheckout(lines, attributionAttributes({ "Business name": business.trim(), Pack: summary }));
+}
+
 /** The variant whose options match every given option value (Style, Color, Size). */
 export function findOptionVariant(variants: Variant[], options: Record<string, string>) {
   return variants.find((v) => Object.entries(options).every(([name, value]) => v.selectedOptions.some((o) => norm(o.name) === norm(name) && norm(o.value) === norm(value)))) ?? null;

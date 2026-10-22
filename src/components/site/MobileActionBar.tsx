@@ -72,6 +72,20 @@ export function MobileActionBar() {
         </div>
       </div>
     );
+  // Restaurants: the call first, table cards one tap away.
+  if (pathname === "/restaurants")
+    return (
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
+        <div className="flex gap-2">
+          <BookButton note="Restaurants mobile bar" prefill="Restaurant: I want more customers — help with delivery apps, menus/TV menus, Google & Apple Maps and review cards." className="flex-1 !py-3.5 !text-base">
+            Free restaurant call
+          </BookButton>
+          <a href="#tables" className="btn-chrome !px-3 !py-3.5 !text-sm">
+            Table cards
+          </a>
+        </div>
+      </div>
+    );
   // Homepage and guides sell the card first; the call is the step after.
   if (pathname === "/" || pathname.startsWith("/guides/"))
     return (
