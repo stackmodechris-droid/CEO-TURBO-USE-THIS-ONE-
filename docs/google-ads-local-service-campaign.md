@@ -43,6 +43,8 @@ Every headline, description, sitelink and callout below is within Google's limit
 
 **Budget reality check:** agency keywords cost money. "Google ads agency" can be $8–20 a click, while trade-specific ones ("google ads for appliance repair") are usually cheaper because fewer agencies bid on them. At $12/day expect roughly 2–5 clicks a day. That's why the plan puts most of the budget on trade-specific keywords and caps CPCs.
 
+**Realistic expectations (market data, checked Oct 2026):** WordStream/LocaliQ's 2026 benchmark across 13,474 US search campaigns reports averages of a $5.42 CPC, an 8.18% conversion rate and $66.69 per lead, as quoted by secondary sites. At $12/day (~$360/month) that's about **5 leads a month** at average performance. With a ~20–30% close rate, that's about **1 new client a month**. One client at $697 setup + $597/mo pays for the ad spend several times over, so the campaign can work. It's a monthly engine, not a this-week one.
+
 ## Ad groups, keywords and max CPC
 Start with ad groups 1 and 2. Turn on 3 only if 1 and 2 don't spend the budget.
 

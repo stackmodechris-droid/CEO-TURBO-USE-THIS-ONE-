@@ -3,8 +3,8 @@
 import { ArrowRight, Check, Phone } from "lucide-react";
 import { BookButton } from "@/components/cta/Actions";
 import { CallLink } from "@/components/site/CallLink";
-import { AdResultsGrid, GoogleAdProof } from "@/components/blocks/Proof";
-import { BookingSection, Founder } from "@/components/blocks/Sales";
+import { GoogleAdProof } from "@/components/blocks/Proof";
+import { InlineBooking } from "@/components/booking/InlineBooking";
 import { FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { LOCAL_GOOGLE_ADS_FAQS } from "@/content/faqs";
 import { price } from "@/content/pricing";
@@ -49,15 +49,6 @@ export default function GoogleAdsLocal() {
         </div>
       </section>
 
-      <section className="section border-t border-border" aria-labelledby="proof">
-        <div className="container-x">
-          <SectionHeader title={<span id="proof">More home-service results</span>} lede="Unedited Meta Ads Manager dashboards from service businesses we run ads for." />
-          <div className="mt-10">
-            <AdResultsGrid keys={["appliance-king", "mor-handy-carpet", "stackmode-repair"]} />
-          </div>
-        </div>
-      </section>
-
       <section className="section border-t border-border" aria-labelledby="how">
         <div className="container-x">
           <SectionHeader title={<span id="how">How it works</span>} lede="You keep running jobs. We handle the ads." />
@@ -83,14 +74,15 @@ export default function GoogleAdsLocal() {
         </div>
       </section>
 
-      <section className="section border-t border-border" aria-label="Founder">
-        <div className="container-x">
-          <Founder />
+      {/* The calendar itself, no quiz in front of it: pick a time, or call. */}
+      <section id="book" className="section scroll-mt-16 border-t border-border" aria-labelledby="pick">
+        <div className="container-x max-w-3xl">
+          <SectionHeader title={<span id="pick">Pick a time for your free call</span>} lede={`30 minutes with ${SITE.founder.name}. Or call ${SITE.phone.display} now.`} />
+          <InlineBooking source={`${SOURCE} — calendar`} className="mt-8" />
         </div>
       </section>
 
       <FAQList faqs={LOCAL_GOOGLE_ADS_FAQS} title="Quick answers" />
-      <BookingSection note={`${SOURCE} — booking section`} title="Pick a time for your free call." />
     </>
   );
 }
