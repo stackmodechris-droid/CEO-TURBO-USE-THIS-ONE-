@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Globe, Mail, MapPin, Megaphone, Search, UserRound, Music2 } from "lucide-react";
+import { ArrowRight, Check, Globe, Mail, MapPin, Megaphone, MessageSquare, Search, UserRound, Music2 } from "lucide-react";
+import { CallLink } from "@/components/site/CallLink";
 import { SERVICES, type Service } from "@/content/services";
 import { AUDIENCES } from "@/content/audiences";
 import { clientsIn } from "@/content/clients";
@@ -214,12 +215,21 @@ export function BookingSection({
                 </li>
               ))}
             </ul>
-            <p className="mt-8 text-sm text-muted-foreground">
-              Prefer to skip ahead?{" "}
-              <BookButton note={`${note ?? "Booking section"} — skip quiz`} prefill={prefill} variant="link">
-                Pick a time now
-              </BookButton>
-            </p>
+            <div className="panel mt-8 p-5">
+              <p className="font-semibold">Rather talk now?</p>
+              <p className="mt-1 text-sm text-muted-foreground">Call or text {SITE.phone.display}, or skip the questions and pick a time.</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <CallLink location={`${note ?? "Booking section"} — call`} icon className="btn-ignite !px-4 !py-2.5 !text-sm">
+                  Call now
+                </CallLink>
+                <a href={`sms:${SITE.phone.e164}`} onClick={() => track("text_click", { source: note ?? "Booking section" })} className="btn-chrome inline-flex items-center gap-1.5 !px-4 !py-2.5 !text-sm">
+                  <MessageSquare className="h-4 w-4" aria-hidden /> Text us
+                </a>
+                <BookButton note={`${note ?? "Booking section"} — skip quiz`} prefill={prefill} variant="chrome" className="!px-4 !py-2.5 !text-sm">
+                  Pick a time now
+                </BookButton>
+              </div>
+            </div>
           </div>
           <BrandBoostQuiz source={note ?? "Booking section"} prefill={prefill} primary={primary} />
         </div>

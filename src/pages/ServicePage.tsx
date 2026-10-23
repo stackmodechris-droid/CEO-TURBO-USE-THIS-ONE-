@@ -7,6 +7,7 @@ import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/block
 import { BookButton, InstallBookButton, TextQuoteButton } from "@/components/cta/Actions";
 import { SCENES, SearchScene } from "@/components/visuals/Scenes";
 import { SITE } from "@/config/site";
+import { CallLink } from "@/components/site/CallLink";
 import { ADS } from "@/content/ads";
 import { AUDIENCES } from "@/content/audiences";
 import { clientBySlug } from "@/content/clients";
@@ -143,9 +144,9 @@ export default function ServicePage() {
                     <BookButton note={note} prefill={prefill}>
                       Book a free call about {s.short}
                     </BookButton>
-                    <a href="#included" className="btn-chrome">
-                      What's included
-                    </a>
+                    <CallLink location={`${s.slug} hero`} icon className="btn-chrome">
+                      Call {SITE.phone.display}
+                    </CallLink>
                   </div>
                 )}
               </div>

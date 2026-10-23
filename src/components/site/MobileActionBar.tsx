@@ -90,13 +90,14 @@ export function MobileActionBar() {
   return (
     <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
       <div className="flex gap-2">
-        <BookButton note={pathname === "/" ? "Home mobile bar" : "Mobile bar"} className="flex-1 !py-3.5 !text-base">
-          Book my free call
-        </BookButton>
-        <CallLink location="mobile bar" className="grid w-12 shrink-0 place-items-center rounded-2xl text-foreground ring-1 ring-white/15 hover:bg-white/5">
-          <Phone className="h-5 w-5" aria-hidden />
-          <span className="sr-only">Call {SITE.name} at {SITE.phone.display}</span>
+        <CallLink location="mobile bar" className="btn-chrome inline-flex flex-1 items-center justify-center gap-1.5 !px-3 !py-3.5 !text-base">
+          <Phone className="h-5 w-5 shrink-0 text-turbo" aria-hidden />
+          Call now
+          <span className="sr-only"> {SITE.name} at {SITE.phone.display}</span>
         </CallLink>
+        <BookButton note={pathname === "/" ? "Home mobile bar" : "Mobile bar"} className="flex-1 !px-3 !py-3.5 !text-base">
+          Book a time
+        </BookButton>
       </div>
     </div>
   );

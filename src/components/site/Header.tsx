@@ -124,8 +124,8 @@ export function Header({ focus = false }: { focus?: boolean }) {
         )}
 
         <div className="flex items-center gap-2">
-          <CallLink location={focus ? "ad page header" : "header"} icon className="hidden min-h-[44px] px-2 text-sm font-semibold text-chrome transition-colors hover:text-foreground xl:inline-flex" />
-          <CallLink location={focus ? "ad page header icon" : "header icon"} className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-foreground ring-1 ring-white/10 hover:bg-white/5 xl:hidden">
+          <CallLink location={focus ? "ad page header" : "header"} icon className="hidden min-h-[44px] px-2 text-sm font-semibold text-chrome transition-colors hover:text-foreground lg:inline-flex" />
+          <CallLink location={focus ? "ad page header icon" : "header icon"} className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-foreground ring-1 ring-white/10 hover:bg-white/5 lg:hidden">
             <Phone className="h-[18px] w-[18px]" aria-hidden />
             <span className="sr-only">Call {SITE.name} at {SITE.phone.display}</span>
           </CallLink>
