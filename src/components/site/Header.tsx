@@ -85,8 +85,9 @@ export function Header({ focus = false }: { focus?: boolean }) {
               Get cards<span className="hidden sm:inline"> · {fromPriceLabel}</span>
             </a>
           ) : (
-            <BookButton note={focus ? "Ad page header" : "Header"} className={cn("!px-4 !py-2.5 !text-sm", focus ? "inline-flex" : "hidden sm:inline-flex")}>
-              Book a free call
+            <BookButton note={focus ? "Ad page header" : "Header"} className="inline-flex !px-3 !py-2.5 !text-[13px] sm:!px-4 sm:!text-sm">
+              <span className="min-[400px]:hidden">Book a call</span>
+              <span className="hidden min-[400px]:inline">Book a free call</span>
             </BookButton>
           )}
           {!focus && (
