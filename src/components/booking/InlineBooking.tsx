@@ -9,8 +9,11 @@ import { cn } from "@/lib/utils";
 
 type Status = "loading" | "ready" | "slow" | "failed";
 
-export function InlineBooking({ ns = BOOKING.namespace, source, prefill, person, fields, meta, className }: Prefill & { ns?: string; className?: string }) {
+export function InlineBooking({ ns: baseNs = BOOKING.namespace, source, prefill, person, fields, meta, className }: Prefill & { ns?: string; className?: string }) {
   const calId = `cal-inline-${useId().replace(/:/g, "")}`;
+  // Cal keeps one inline embed per namespace and ignores a second mount ("Inline embed already exists"), which left the
+  // popup blank whenever the page already had its own calendar. One namespace per mounted calendar keeps each independent.
+  const ns = `${baseNs}-${calId}`;
   const [status, setStatus] = useState<Status>("loading");
   const pageUrl = bookingPageUrl(prefill, person, fields, { source: `${source ?? "site"} — direct page`, meta });
   const directClick = () => track("booking_open", { source: `${source ?? "site"} — direct page` });

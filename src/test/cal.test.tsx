@@ -58,6 +58,21 @@ describe("Cal.com embed loader", () => {
     expect(await mounted).toBe("failed");
   });
 
+  it("gives every mounted calendar its own namespace, so a popup calendar isn't ignored when the page already has one", async () => {
+    const { InlineBooking } = await import("@/components/booking/InlineBooking");
+    const { unmount } = render(
+      <>
+        <InlineBooking source="page" />
+        <InlineBooking source="popup" />
+      </>,
+    );
+    embeds()[0].dispatchEvent(new Event("load"));
+    await new Promise((r) => setTimeout(r, 0));
+    const own = Object.keys((window.Cal as unknown as { ns: Record<string, unknown> }).ns).filter((n) => n.startsWith("ceoturbo-brandboost-cal-inline-"));
+    expect(own).toHaveLength(2);
+    unmount();
+  });
+
   it("resolves true once the calendar shows times", async () => {
     document.body.innerHTML = '<div id="cal-test"></div>';
     const { mountInlineBooking, QUIZ_NS } = await import("@/lib/cal");
