@@ -9,7 +9,7 @@ Every headline, description, sitelink and callout below is within Google's limit
 ## How this campaign avoids paying for junk clicks
 1. **Only buyer searches.** Every keyword names a trade, or says hire, agency, company, management or marketing. No "how to", "what is" or "tips" searches, because those are people who want to learn, not hire.
 2. **Exact and phrase match only.** No broad match.
-3. **The ad filters people out before they click.** "Setup From $697" and "For Service Businesses" are in the ads, so job seekers, students and bargain hunters skip it.
+3. **The ad filters people out before they click.** "Full Setup Just $297" and "For Service Businesses" are in the ads, so job seekers, students and bargain hunters skip it.
 4. **A big negative list** (below), plus a search-terms check every 3–4 days.
 5. **Search only.** No Display Network, no Search Partners, and not Performance Max.
 6. **Shown only when you can answer the phone.**
@@ -43,7 +43,7 @@ Every headline, description, sitelink and callout below is within Google's limit
 
 **Budget reality check:** agency keywords cost money. "Google ads agency" can be $8–20 a click, while trade-specific ones ("google ads for appliance repair") are usually cheaper because fewer agencies bid on them. At $12/day expect roughly 2–5 clicks a day. That's why the plan puts most of the budget on trade-specific keywords and caps CPCs.
 
-**Realistic expectations (market data, checked Oct 2026):** WordStream/LocaliQ's 2026 benchmark across 13,474 US search campaigns reports averages of a $5.42 CPC, an 8.18% conversion rate and $66.69 per lead, as quoted by secondary sites. At $12/day (~$360/month) that's about **5 leads a month** at average performance. With a ~20–30% close rate, that's about **1 new client a month**. One client at $697 setup + $597/mo pays for the ad spend several times over, so the campaign can work. It's a monthly engine, not a this-week one.
+**Realistic expectations (market data, checked Oct 2026):** WordStream/LocaliQ's 2026 benchmark across 13,474 US search campaigns reports averages of a $5.42 CPC, an 8.18% conversion rate and $66.69 per lead, as quoted by secondary sites. At $20/day (~$600/month) that's about **9 leads a month** at average performance. With a ~20–30% close rate, that's about **2–3 new clients a month**. At $297 setup + $97/mo, you need about 2 new clients a month to cover the ad spend, so the monthly plans are where the profit builds up. It's a monthly engine, not a this-week one.
 
 ## Ad groups, keywords and max CPC
 Start with ad groups 1 and 2. Turn on 3 only if 1 and 2 don't spend the budget.
@@ -115,7 +115,7 @@ The last line keeps out homeowners looking for a plumber or a repair. They are n
 8. Pay for Calls, Not Junk Clicks
 9. No Long-Term Contracts
 10. You Own the Ad Account
-11. Setup From $697
+11. Full Setup Just $297
 12. Free 30-Min Strategy Call
 13. Talk to the Founder Free
 14. Call (470) 502-9543
@@ -127,7 +127,7 @@ Headline 14 is allowed as a headline; the call asset adds the actual call button
 1. We build your Google search campaign and track every call and form. Free 30-min call.
 2. For appliance repair, HVAC, plumbing and cleaning businesses. No long-term contract.
 3. Real result: 3 conversions at $16.89 each in a client's first week on Google Search.
-4. Setup from $697, then $597/mo managed weekly. Ad spend goes straight to Google.
+4. Full setup $297, then ads managed weekly for $97/mo. Ad spend goes straight to Google.
 
 The $16.89 figure is Appliance King's Google Ads dashboard (Oct 16–22, 2026), shown on the landing page, which backs the claim. Description 4 shows the price on purpose, so people who can't afford it don't click.
 
@@ -139,7 +139,7 @@ The $16.89 figure is Appliance King's Google Ads dashboard (Oct 16–22, 2026), 
 |---|---|---|---|
 | Book a Free Call | 30 min with the founder | Pick a time that suits you | /google-ads-for-local-business#book |
 | Real Results | Unedited ad dashboards | Google and Meta numbers | /results |
-| Pricing | Setup from $697 | Monthly plans, no contract | /pricing |
+| Pricing | Full setup just $297 | Monthly from $35, no contract | /pricing |
 | Google Ads Service | Search campaigns for trades | Every call and form tracked | /services/google-ads |
 
 **Don't use the ChatGPT article as a sitelink in this campaign.** Its readers want to learn, not hire, and a sitelink to an article pulls clicks away from booking or calling. Its impressions are from organic search, which is free traffic. Make that traffic convert instead: the article should have a "Want us to do it for you?" call and booking button near the top and at the end. You could test it later in a separate low-budget campaign aimed at "AI search" keywords, but not here.
@@ -157,7 +157,7 @@ Google Search Ads · Call Tracking · Google Business Profile · Conversion Trac
 
 **Call asset:** (470) 502-9543, Google forwarding number on, scheduled for the same hours as the campaign.
 
-**Price asset (optional):** Turbo Start $697 · Turbo Growth $597/mo · Conversion Rescue $497. All three link to /pricing.
+**Price asset:** Turbo Start $297 · Turbo Launch $347 · Conversion Rescue $147 · Tracking Watch $25/mo. All four link to /pricing.
 
 **Business name and logo:** CEO Turbo, plus the CT logo already uploaded at account level.
 
