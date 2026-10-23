@@ -26,7 +26,7 @@ export type PriceItem = {
 
 export const PRICING_TERMS = {
   contract: "No long-term contracts. Monthly plans are month to month — cancel with 30 days' notice.",
-  payment: "Setup fees are paid 50% to start and 50% at launch. Monthly plans are billed on the same day each month.",
+  payment: "Setup is paid up front. Monthly plans are billed on the same day each month.",
   adSpend: "Ad spend is paid by you, directly to Google, Microsoft, Meta, TikTok, X, Reddit or LinkedIn, from your own ad account — we never mark it up.",
   ownership: "You own your website, domain, ad accounts, pixel data, content and email list. If you leave, it all stays yours.",
   results: "SEO, AEO and GEO compound: most clients see movement in 30–90 days and the biggest gains after 3–6 months — and every month builds on the last.",
@@ -36,7 +36,7 @@ export const PACKAGES: PriceItem[] = [
   {
     id: "pkg-start",
     name: "Turbo Start",
-    price: 697,
+    price: 297,
     billing: "once",
     service: "google-business-profile",
     summary: "Keep the site you have. We fix everything around it so Google, Bing and AI can find you and your ads can be measured.",
@@ -55,7 +55,7 @@ export const PACKAGES: PriceItem[] = [
   {
     id: "pkg-launch",
     name: "Turbo Launch — the whole package",
-    price: 1697,
+    price: 347,
     billing: "once",
     service: "website-design",
     summary: "A new website built for Google, Bing and AI answers, every profile set up, every tag tracking, and ads switched on. Done for you.",
@@ -76,7 +76,7 @@ export const PACKAGES: PriceItem[] = [
   {
     id: "pkg-dominate",
     name: "Turbo Dominate",
-    price: 3497,
+    price: 997,
     billing: "once",
     service: "website-design",
     summary: "For businesses and brands ready to own their market: more pages, more keywords, more platforms.",
@@ -287,7 +287,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "gbp-setup",
     name: "Google Business Profile setup & optimization",
-    price: 297,
+    price: 97,
     billing: "once",
     service: "google-business-profile",
     summary: "Your free Google listing, set up to win the map pack and turn searches into calls.",
@@ -297,7 +297,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "social-setup",
     name: "Social profile setup & optimization",
-    price: 197,
+    price: 67,
     billing: "once",
     service: "social-media-optimization",
     summary: "Up to 3 profiles (Instagram, Facebook, TikTok, YouTube or LinkedIn) that make people trust you and click.",
@@ -306,7 +306,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "visibility-foundation",
     name: "SEO, AEO & GEO foundation",
-    price: 497,
+    price: 147,
     billing: "once",
     service: "seo-aeo-geo",
     summary: "The technical groundwork that lets Google and Bing rank you and ChatGPT, Claude, Gemini and Perplexity name you.",
@@ -315,7 +315,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "conversion-rescue",
     name: "Conversion Rescue",
-    price: 497,
+    price: 147,
     billing: "once",
     service: "conversion-tracking",
     summary: "Find out why your ads aren't converting, then fix it: every tag, pixel and conversion audited, repaired, valued and tested.",
@@ -331,7 +331,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "tracking-setup",
     name: "Ads & tracking setup",
-    price: 397,
+    price: 97,
     billing: "once",
     service: "meta-ads",
     summary: "Ad accounts and conversion tracking set up right, so every dollar is measured and the platforms learn who buys.",
@@ -340,7 +340,7 @@ export const SETUP: PriceItem[] = [
   {
     id: "email-setup",
     name: "Email & SMS setup",
-    price: 497,
+    price: 147,
     billing: "once",
     service: "email-marketing",
     summary: "An email/SMS system that brings customers back and asks for reviews on autopilot.",
@@ -352,7 +352,7 @@ export const WEBSITES: PriceItem[] = [
   {
     id: "site-artist",
     name: "Artist website",
-    price: 997,
+    price: 297,
     billing: "once",
     service: "website-design",
     summary: "A home for your music that grows your fanbase — not just a link in bio.",
@@ -361,7 +361,7 @@ export const WEBSITES: PriceItem[] = [
   {
     id: "site-launch",
     name: "Launch website",
-    price: 1497,
+    price: 297,
     billing: "once",
     service: "website-design",
     summary: "A fast, mobile-first site for local service businesses that makes the phone ring.",
@@ -371,7 +371,7 @@ export const WEBSITES: PriceItem[] = [
   {
     id: "site-growth",
     name: "Growth website",
-    price: 2497,
+    price: 497,
     billing: "once",
     service: "website-design",
     summary: "For businesses ready to dominate their area: more pages, more keywords, more leads.",
@@ -380,7 +380,7 @@ export const WEBSITES: PriceItem[] = [
   {
     id: "site-shopify",
     name: "Shopify store",
-    price: 2997,
+    price: 697,
     billing: "once",
     service: "website-design",
     summary: "A Shopify store built to convert, with the tracking ads need to scale.",
@@ -392,35 +392,35 @@ export const MONTHLY: PriceItem[] = [
   {
     id: "care",
     name: "Turbo Care",
-    price: 197,
+    price: 35,
     billing: "month",
     service: "website-design",
-    summary: "Your site stays fast, secure, up to date and tracking correctly — and keeps up with the latest SEO and AI search changes.",
-    includes: ["Hosting management and SSL", "Security and software updates, daily backups, uptime monitoring", "Latest SEO, AEO & GEO changes applied (schema, AI crawlers, indexing)", "Tracking health checks: tags, pixels and Conversions API", "2 Google Business Profile posts a month", "1 email campaign to your list a month", "Monthly report + 1 hour of edits"],
+    summary: "Your site and tracking stay fast, secure and working, for about the price of a lunch a week.",
+    includes: ["Hosting management and SSL", "Security and software updates, backups, uptime monitoring", "Tracking health checks: tags, pixels and Conversions API", "1 Google Business Profile post a month", "Monthly report"],
   },
   {
     id: "growth",
     name: "Turbo Growth",
-    price: 597,
+    price: 97,
     billing: "month",
     service: "meta-ads",
-    summary: "Care plus ads managed every week and fresh content for Google and AI answers. The plan most clients pick.",
-    includes: ["Everything in Turbo Care", "Ads managed weekly on 1 platform", "4 new ad creatives a month", "2 answer-ready articles or service pages a month", "2 email campaigns a month", "Weekly Google Business Profile posts", "Monthly plain-English results call"],
+    summary: "Care plus your ads managed every week. The plan most clients pick.",
+    includes: ["Everything in Turbo Care", "Ads managed weekly on 1 platform", "Search terms checked and junk clicks blocked", "2 new ad creatives a month", "Monthly plain-English results call"],
     popular: true,
   },
   {
     id: "scale",
     name: "Turbo Scale",
-    price: 1197,
+    price: 297,
     billing: "month",
     service: "seo-aeo-geo",
     summary: "For competitive markets, multiple locations, stores and artists pushing releases on several platforms.",
-    includes: ["Everything in Turbo Growth", "Ads managed on up to 3 platforms", "4 articles or landing pages a month", "Link building and digital PR", "Up to 3 locations", "Competitor tracking"],
+    includes: ["Everything in Turbo Growth", "Ads managed on up to 3 platforms", "2 articles or landing pages a month", "Up to 3 locations", "Competitor tracking"],
   },
   {
     id: "tracking-watch",
     name: "Tracking Watch",
-    price: 97,
+    price: 25,
     billing: "month",
     service: "conversion-tracking",
     summary: "The small monthly plan that keeps your tracking honest and your ad spend from leaking. Already included in Turbo Care, Growth and Scale.",
@@ -429,7 +429,7 @@ export const MONTHLY: PriceItem[] = [
   {
     id: "ads-additional",
     name: "Each additional ad platform",
-    price: 197,
+    price: 47,
     billing: "month",
     service: "google-ads",
     summary: "Add Google, Microsoft, Meta, TikTok, X, Reddit, LinkedIn or Spotify on top of your plan.",
@@ -504,5 +504,5 @@ export const PRICING_FAQS = [
   { q: "How do you compare to other agencies?", a: `Most small-business agencies quote thousands for a website alone, then charge separately for SEO, ads management and maintenance. Turbo Launch includes the website, SEO/AEO/GEO, tracking, profiles, email and ad setup for ${price("pkg-launch")} one-time, and Turbo Growth (${price("growth")}/mo) includes ads management, content and care — no contract.` },
   { q: "Is SEO, AEO and GEO worth it for a small business?", a: `If one new customer is worth $300 to you, Turbo Growth (${price("growth")}/mo) pays for itself with two extra customers a month — and unlike ads, rankings keep bringing customers after you've earned them. ${PRICING_TERMS.results}` },
   { q: "Who owns the website and accounts?", a: PRICING_TERMS.ownership },
-  { q: "Can I start small?", a: `Yes. Turbo Start (${price("pkg-start")}) fixes your Google profile, socials, indexing and tracking without a new website. Or start with a few review cards, see the results, then add more. Book a free Brand Boost call and we'll tell you the one thing to start with.` },
+  { q: "Can I start small?", a: `Yes. Turbo Start (${price("pkg-start")}) fixes your Google profile, socials, indexing and tracking without a new website. Or start with a few review cards, see the results, then add more. Book a free call and we'll tell you the one thing to start with.` },
 ];
