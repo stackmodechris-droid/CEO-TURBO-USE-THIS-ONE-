@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, Check, Landmark, CreditCard } from "lucide-react";
 import { BookButton } from "@/components/cta/Actions";
 import { CLIENTS, CATEGORY_LABEL, domainOf, type Category, type Client } from "@/content/clients";
-import { AD_RESULTS, AD_TOTALS, GSC, APPLIANCE_KING_PAGE, FEATURED_RESULT, STRIPE, money, type AdResult } from "@/content/results";
+import { AD_RESULTS, AD_TOTALS, GSC, APPLIANCE_KING_PAGE, FEATURED_RESULT, GOOGLE_AD_RESULT, STRIPE, money, type AdResult } from "@/content/results";
 import type { AdCreative } from "@/content/ads";
 import { cn } from "@/lib/utils";
 import { CountUp } from "@/components/visuals/CountUp";
@@ -137,6 +137,53 @@ export function ResultCard({ r }: { r: AdResult }) {
       </div>
       <a href={r.image} target="_blank" rel="noopener" className="mt-auto block border-t border-border bg-white/[0.02]">
         <img src={r.image.replace(".webp", "-600.webp")} srcSet={`${r.image.replace(".webp", "-600.webp")} 600w, ${r.image} 1100w`} sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 92vw" alt={`Meta Ads Manager dashboard: ${r.client} ${r.campaign}, ${r.count} ${r.metric.toLowerCase()} at ${money(r.costPer)} each`} loading="lazy" decoding="async" width={600} height={545} className="h-auto w-full" />
+        <span className="flex min-h-[44px] items-center gap-1 px-5 py-2.5 text-xs text-muted-foreground">
+          View the full dashboard <ArrowUpRight className="h-3 w-3" />
+        </span>
+      </a>
+    </article>
+  );
+}
+
+/** Appliance King's Google Search campaign: the screenshot plus the three numbers that matter. */
+export function GoogleAdProof({ compact = false }: { compact?: boolean }) {
+  const g = GOOGLE_AD_RESULT;
+  const stats = [
+    { v: String(g.conversions), l: "conversions" },
+    { v: money(g.costPer), l: "per conversion" },
+    { v: money(g.spent), l: "spent" },
+  ];
+  return (
+    <article className={cn("panel overflow-hidden", !compact && "grid items-center lg:grid-cols-[0.8fr_1.2fr]")}>
+      <div className="p-5 sm:p-6">
+        <p className="text-sm font-medium text-turbo">
+          Google Ads · <Link to={`/portfolio/${g.clientSlug}`} className="underline-offset-4 hover:underline">{g.client}</Link>
+        </p>
+        <h3 className="mt-1 font-display text-lg font-bold sm:text-xl">First week on Google Search: {g.conversions} conversions at {money(g.costPer)} each.</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {g.campaign} · {g.period} · {g.clicks} clicks, {g.ctr} click rate. Conversions as reported by Google Ads.
+        </p>
+        <dl className="mt-4 grid grid-cols-3 gap-3">
+          {stats.map((x) => (
+            <div key={x.l}>
+              <dd className="font-display text-2xl font-bold text-chrome-grad sm:text-3xl">{x.v}</dd>
+              <dt className="mt-0.5 text-xs text-muted-foreground">{x.l}</dt>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <a href={g.image} target="_blank" rel="noopener" className={cn("block bg-white/[0.02]", compact ? "border-t border-border" : "border-t border-border lg:border-l lg:border-t-0")}>
+        <img
+          src={g.image.replace(".webp", "-900.webp")}
+          srcSet={`${g.image.replace(".webp", "-900.webp")} 900w, ${g.image} 2000w`}
+          sizes="(min-width: 1024px) 640px, 92vw"
+          alt={`Google Ads dashboard: ${g.client} ${g.campaign}, ${g.conversions} conversions at ${money(g.costPer)} each, ${money(g.spent)} spent`}
+          loading="lazy"
+          decoding="async"
+          width={900}
+          height={396}
+          className="h-auto w-full"
+        />
         <span className="flex min-h-[44px] items-center gap-1 px-5 py-2.5 text-xs text-muted-foreground">
           View the full dashboard <ArrowUpRight className="h-3 w-3" />
         </span>

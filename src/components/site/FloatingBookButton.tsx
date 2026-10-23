@@ -8,7 +8,7 @@ import { SHOP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH } from "@/content/company-shirts";
 import { ARTIST_MERCH_PATH } from "@/content/artist-merch";
 
-const HIDDEN = new Set(["/book", "/booked", SHOP_PATH, SHIRTS_PATH, ARTIST_MERCH_PATH]);
+const HIDDEN = new Set(["/book", "/booked", "/google-ads-for-local-business", SHOP_PATH, SHIRTS_PATH, ARTIST_MERCH_PATH]);
 
 export function FloatingBookButton() {
   const { pathname } = useLocation();

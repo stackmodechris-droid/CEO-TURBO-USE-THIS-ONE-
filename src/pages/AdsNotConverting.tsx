@@ -7,7 +7,7 @@ import { ALL_PRICES, price } from "@/content/pricing";
 import { PriceCard } from "@/components/blocks/PriceBlocks";
 import { AD_TOTALS, money } from "@/content/results";
 import { WasteCalculator } from "@/components/blocks/WasteCalculator";
-import { AdResultsGrid } from "@/components/blocks/Proof";
+import { AdResultsGrid, GoogleAdProof } from "@/components/blocks/Proof";
 import { BookingSection } from "@/components/blocks/Sales";
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { BookButton } from "@/components/cta/Actions";
@@ -142,6 +142,9 @@ export default function AdsNotConverting() {
             lede={`Across ${AD_TOTALS.campaigns} recent lead campaigns we ran for clients, tracked end to end: ${AD_TOTALS.leads} leads for ${money(AD_TOTALS.leadSpend)} in ad spend, about ${money(AD_TOTALS.avgCpl)} a lead. Results vary by business, and tracking is what lets you see yours.`}
           />
           <div className="mt-10">
+            <GoogleAdProof />
+          </div>
+          <div className="mt-8">
             <AdResultsGrid />
           </div>
         </div>

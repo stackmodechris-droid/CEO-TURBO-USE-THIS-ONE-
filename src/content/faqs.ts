@@ -31,6 +31,13 @@ export const BOOK_FAQS: FAQ[] = [
   { q: "What should I have ready for the call?", a: "Just your website or social links and an idea of how many more customers or listeners you want. We do the digging." },
 ];
 
+export const LOCAL_GOOGLE_ADS_FAQS: FAQ[] = [
+  { q: "How much does it cost?", a: `Setup is ${price("pkg-start")} one-time: your search campaign, call and form tracking, and your Google Business Profile. Then Turbo Growth is ${price("growth")}/mo with your ads managed every week. Your ad spend is separate and goes straight to Google from your own card.` },
+  { q: "Is there a contract?", a: "No long-term contract. Stay because the phone rings, not because you signed something." },
+  { q: "Who owns the ad account?", a: "You do. The campaign runs in your own Google Ads account and you can remove our access any time." },
+  { q: "Can you guarantee calls?", a: "No honest agency can. What you get is a campaign aimed at people searching for your service right now, every call and form tracked, and a clear view of what each dollar brought in." },
+];
+
 export const ADS_NOT_CONVERTING_FAQS: FAQ[] = [
   { q: "Why aren't my ads converting?", a: "Usually it's measurement, not the ad itself: conversions that aren't tracked or are counted twice, broken pixels or Conversions API events, every conversion treated as equal value, and junk search terms nobody excluded. The audit shows which ones apply to you." },
   { q: "What is Conversion Rescue?", a: `A one-time audit and fix (${price("conversion-rescue")}) of GA4, Google Tag Manager, Microsoft Clarity, Meta Pixel and Conversions API, Google Ads and Microsoft conversions and Merchant Center. You get real conversion values, every event tested live, a written wasted-spend fix list and a 30-minute walkthrough.` },

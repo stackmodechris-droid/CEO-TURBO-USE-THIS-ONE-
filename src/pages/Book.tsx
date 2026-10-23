@@ -8,7 +8,7 @@ import { BOOK_FAQS } from "@/content/faqs";
 import { AD_TOTALS, money } from "@/content/results";
 import { CLIENTS } from "@/content/clients";
 import { BrandBoostSteps, Founder, VideoPitch } from "@/components/blocks/Sales";
-import { AdResultsGrid, StripeProof, WorkGrid } from "@/components/blocks/Proof";
+import { AdResultsGrid, GoogleAdProof, StripeProof, WorkGrid } from "@/components/blocks/Proof";
 import { FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { BoostHero, FitCheck, PriceTeaser, WalkAway } from "@/components/blocks/Boost";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
@@ -47,6 +47,9 @@ export default function Book() {
         <div className="container-x">
           <SectionHeader title={<span id="proof">Does this actually work?</span>} lede={`These are unedited Meta Ads Manager dashboards from client campaigns: ${AD_TOTALS.leads} leads for ${money(AD_TOTALS.leadSpend)} total.`} />
           <div className="mt-12">
+            <GoogleAdProof />
+          </div>
+          <div className="mt-8">
             <AdResultsGrid keys={["ryan-pool", "stackmode-repair", "bigzo"]} />
           </div>
           <h3 className="mt-16 text-2xl font-bold">Sites we built that bring in customers</h3>

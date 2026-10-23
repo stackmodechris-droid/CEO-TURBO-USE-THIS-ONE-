@@ -1,7 +1,7 @@
 import { Breadcrumbs, DirectAnswer, FAQList, SectionHeader } from "@/components/blocks/Basics";
 import { OfficeIntake } from "@/components/blocks/OfficeIntake";
 import { PriceBox } from "@/components/blocks/PriceBlocks";
-import { AdGallery, AdResultsGrid, WorkGrid } from "@/components/blocks/Proof";
+import { AdGallery, AdResultsGrid, GoogleAdProof, WorkGrid } from "@/components/blocks/Proof";
 import { Reveal } from "@/components/blocks/Reveal";
 import { BookingSection, ReviewCardPromo, ServiceGrid } from "@/components/blocks/Sales";
 import { BookButton, InstallBookButton, TextQuoteButton } from "@/components/cta/Actions";
@@ -292,6 +292,11 @@ export default function ServicePage() {
         <section className="section border-t border-border" aria-labelledby="proof">
           <div className="container-x">
             <SectionHeader title={<span id="proof">Proof</span>} lede={s.proof?.resultKeys ? "Real dashboards from client campaigns." : "Client sites where this work is live."} />
+            {(s.slug === "google-ads" || s.slug === "conversion-tracking") && (
+              <div className="mt-10">
+                <GoogleAdProof />
+              </div>
+            )}
             <div className="mt-10">{s.proof?.resultKeys ? <AdResultsGrid keys={s.proof.resultKeys} /> : <WorkGrid clients={work} />}</div>
             {s.slug === "meta-ads" && (
               <div className="mt-14">

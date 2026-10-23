@@ -22,7 +22,7 @@ const variantClass: Record<Variant, string> = {
  * once booked, book_call. Real href so it still works without JS and is crawlable.
  */
 export function BookButton({
-  children = "Book a free Brand Boost call",
+  children = "Book a free 30-min call",
   note,
   prefill,
   variant = "ignite",

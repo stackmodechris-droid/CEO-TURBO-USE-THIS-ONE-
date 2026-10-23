@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { AD_RESULTS, AD_TOTALS, money } from "@/content/results";
 import { ADS } from "@/content/ads";
-import { AdResultsGrid, AdGallery, GSCProof, FeaturedResult, StripeProof } from "@/components/blocks/Proof";
+import { AdResultsGrid, AdGallery, GSCProof, FeaturedResult, GoogleAdProof, StripeProof } from "@/components/blocks/Proof";
 import { BookingSection } from "@/components/blocks/Sales";
 import { SectionHeader, Breadcrumbs, DirectAnswer } from "@/components/blocks/Basics";
 import { BookButton } from "@/components/cta/Actions";
@@ -34,6 +34,9 @@ export default function Results() {
       <section className="pb-4" aria-label="Featured client result">
         <div className="container-x">
           <FeaturedResult />
+          <div className="mt-12">
+            <GoogleAdProof />
+          </div>
         </div>
       </section>
 

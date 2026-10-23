@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { BookButton, InstallBookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { BookButton, InstallBookButton } from "@/components/cta/Actions";
 import { CALL_FIRST_SLUGS } from "@/content/services";
 import { Calendar, MessageSquare, Phone } from "lucide-react";
 import { SITE, fromPriceLabel } from "@/config/site";
@@ -86,27 +86,13 @@ export function MobileActionBar() {
         </div>
       </div>
     );
-  // Homepage and guides sell the card first; the call is the step after.
-  if (pathname === "/" || pathname.startsWith("/guides/"))
-    return (
-      <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
-        <div className="flex gap-2">
-          <ShopCardsButton className="flex-1 !py-3.5 !text-base">Get review cards · {fromPriceLabel}</ShopCardsButton>
-          <BookButton note="Home mobile bar" variant="chrome" className="!px-3 !py-3.5 !text-sm">
-            Free call
-          </BookButton>
-        </div>
-      </div>
-    );
+  // Everywhere else the booked call is the money action, with the phone one tap away.
   return (
     <div className="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 px-3 pt-3 backdrop-blur-xl sm:hidden">
       <div className="flex gap-2">
-        <BookButton note="Mobile bar" className="flex-1 !py-3.5 !text-base">
+        <BookButton note={pathname === "/" ? "Home mobile bar" : "Mobile bar"} className="flex-1 !py-3.5 !text-base">
           Book my free call
         </BookButton>
-        <ShopCardsButton variant="chrome" className="hidden !px-3 !py-3.5 !text-sm xs:flex">
-          Cards {fromPriceLabel}
-        </ShopCardsButton>
         <CallLink location="mobile bar" className="grid w-12 shrink-0 place-items-center rounded-2xl text-foreground ring-1 ring-white/15 hover:bg-white/5">
           <Phone className="h-5 w-5" aria-hidden />
           <span className="sr-only">Call {SITE.name} at {SITE.phone.display}</span>

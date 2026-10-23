@@ -153,6 +153,24 @@ export const APPLIANCE_KING_PAGE = {
   image: "/img/results/appliance-king-page.webp",
 };
 
+/**
+ * Appliance King Google Ads (Search), read from the Ads screenshot, Oct 16–22 2026. Keep exact.
+ * Conversions are as reported by Google Ads. Kept out of AD_RESULTS so the Meta AD_TOTALS stay Meta-only.
+ */
+export const GOOGLE_AD_RESULT = {
+  client: "Appliance King",
+  clientSlug: "appliance-king",
+  campaign: "Appliance repair, Macon GA: Google Search",
+  period: "Oct 16–22, 2026",
+  clicks: 18,
+  ctr: "8.78%",
+  conversions: 3,
+  convRate: "16.67%",
+  costPer: 16.89,
+  spent: 50.66,
+  image: "/img/results/appliance-king-google.webp",
+};
+
 /** Featured proof. The revenue line is the owner's own statement, not a dashboard number. */
 export const FEATURED_RESULT = {
   clientSlug: "appliance-king",
