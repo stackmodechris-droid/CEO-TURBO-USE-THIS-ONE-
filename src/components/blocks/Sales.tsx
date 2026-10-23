@@ -3,6 +3,7 @@ import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Globe, Mail, MapPin, Megaphone, MessageSquare, Search, UserRound, Music2 } from "lucide-react";
 import { CallLink } from "@/components/site/CallLink";
+import { InlineBooking } from "@/components/booking/InlineBooking";
 import { SERVICES, type Service } from "@/content/services";
 import { AUDIENCES } from "@/content/audiences";
 import { clientsIn } from "@/content/clients";
@@ -12,7 +13,6 @@ import { SCENES } from "@/components/visuals/Scenes";
 import { ReviewCard3D } from "@/components/visuals/ReviewVisuals";
 import { SETUP_PATH, SHOP_PATH } from "@/content/review-cards";
 import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
-import { BrandBoostQuiz } from "@/components/quiz/BrandBoostQuiz";
 import { track } from "@/lib/track";
 
 const SERVICE_ICON: Record<Service["icon"], typeof Globe> = {
@@ -185,17 +185,16 @@ export function Founder() {
   );
 }
 
-/** Closing CTA: the Brand Boost quiz (a few taps → plan → prefilled calendar) next to what the call covers. */
+/** Closing CTA: the booking calendar itself (no questions in front of it) next to what the call covers, plus call/text. */
 export function BookingSection({
-  title = "Get your free plan, then pick a time.",
+  title = "Pick a time for your free call.",
   note,
   prefill,
-  primary = false,
 }: {
   title?: string;
   note?: string;
   prefill?: string;
-  /** This page's main quiz: "Book" buttons scroll here instead of opening the quiz dialog. */
+  /** Unused since the quiz left this section; kept so existing call sites still compile. */
   primary?: boolean;
 }) {
   return (
@@ -204,9 +203,9 @@ export function BookingSection({
       <div className="container-x relative">
         <div className="grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div className="lg:sticky lg:top-28">
-            <p className="text-sm font-medium text-ignite">Free Brand Boost call · {BOOKING.length}</p>
+            <p className="text-sm font-medium text-ignite">Free call · {BOOKING.length}</p>
             <h2 className="h-section mt-2">{title}</h2>
-            <p className="lede">Answer a few quick taps about your business. You'll see your #1 money move right away, then pick a time — your details are already filled in.</p>
+            <p className="lede">Pick any open time. {SITE.founder.name} looks at your ads, Google profile and website with you, live.</p>
             <ul className="mt-6 space-y-3 text-[15px]">
               {["A live look at your site, Google profile, socials and ads", "The one change that would bring the most customers fastest", "A fixed price if you want us to do it — no obligation"].map((t) => (
                 <li key={t} className="flex gap-3">
@@ -217,7 +216,7 @@ export function BookingSection({
             </ul>
             <div className="panel mt-8 p-5">
               <p className="font-semibold">Rather talk now?</p>
-              <p className="mt-1 text-sm text-muted-foreground">Call or text {SITE.phone.display}, or skip the questions and pick a time.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Call or text {SITE.phone.display}.</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <CallLink location={`${note ?? "Booking section"} — call`} icon className="btn-ignite !px-4 !py-2.5 !text-sm">
                   Call now
@@ -225,13 +224,10 @@ export function BookingSection({
                 <a href={`sms:${SITE.phone.e164}`} onClick={() => track("text_click", { source: note ?? "Booking section" })} className="btn-chrome inline-flex items-center gap-1.5 !px-4 !py-2.5 !text-sm">
                   <MessageSquare className="h-4 w-4" aria-hidden /> Text us
                 </a>
-                <BookButton note={`${note ?? "Booking section"} — skip quiz`} prefill={prefill} variant="chrome" className="!px-4 !py-2.5 !text-sm">
-                  Pick a time now
-                </BookButton>
               </div>
             </div>
           </div>
-          <BrandBoostQuiz source={note ?? "Booking section"} prefill={prefill} primary={primary} />
+          <InlineBooking source={note ?? "Booking section"} prefill={prefill} />
         </div>
       </div>
     </section>

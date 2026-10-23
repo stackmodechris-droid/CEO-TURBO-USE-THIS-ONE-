@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Phone, PhoneCall, Search, BarChart3, Star } from "lucide-react";
+import { ArrowRight, Check, MapPin, Megaphone, Phone, PhoneCall, Search, BarChart3, Star } from "lucide-react";
 import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
 import { CallLink } from "@/components/site/CallLink";
 import { ProofStats, WorkGrid, StripeProof, FeaturedResult, AdResultsGrid, GoogleAdProof } from "@/components/blocks/Proof";
@@ -25,16 +25,16 @@ export default function Home() {
         <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[1100px] -translate-x-1/2 glow-turbo" aria-hidden />
         <div className="container-x relative grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-12">
           <div className="hero-rise relative z-10 min-w-0">
-            <p className="chip">Google Ads for local service businesses</p>
+            <p className="chip">For local service businesses</p>
             <h1 id="hero" className="mt-4 text-[34px] font-bold leading-[1.05] sm:mt-5 sm:text-5xl md:text-6xl lg:text-[60px]">
-              <span className="text-chrome-grad">Google Ads that</span> <span className="text-turbo-grad">make your phone ring.</span>
+              <span className="text-chrome-grad">More calls and bookings</span> <span className="text-turbo-grad">for your business.</span>
             </h1>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
-              For appliance repair, HVAC, plumbing, cleaning and handyman businesses. We build your Google search campaign, track every call and form, and show you the real numbers.
+              We run your Google, Microsoft and Meta ads, set up your Google Business Profile and social media, and track every call and booking.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <BookButton className="btn-shine" note="Home hero — ads call">
-                Book my free 30-min ads call <ArrowRight className="h-4 w-4" aria-hidden />
+                Book my free 30-min call <ArrowRight className="h-4 w-4" aria-hidden />
               </BookButton>
               <CallLink location="home hero" className="btn-chrome">
                 <Phone className="h-4 w-4" aria-hidden /> Call {SITE.phone.display}
@@ -66,19 +66,23 @@ export default function Home() {
         <div className="container-x">
           <SectionHeader
             kicker="What we do for you"
-            title={<span id="get">More calls from people already searching for you.</span>}
-            lede="When someone's oven breaks or their AC dies, they search Google and call one of the first businesses they see. We make sure that's you, and we prove it with numbers."
+            title={<span id="get">Everything that makes your phone ring, done for you.</span>}
+            lede="People search, scroll and compare before they call. We put you in front of them on Google, Bing, Facebook and Instagram, and count every call and booking."
           />
-          <ul className="mt-10 grid gap-4 md:grid-cols-3">
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {[
-              { icon: Search, t: "A search campaign built for calls", b: "Keywords people type when they need you today, in the towns you serve, with junk searches blocked so you don't pay for them." },
-              { icon: PhoneCall, t: "Every call and form counted", b: "Call, form and booking tracking set up properly, so you know exactly which dollars brought in which customers." },
-              { icon: BarChart3, t: "Managed every week", b: "We check and tune your ads every week, and walk you through the spend, the calls and the leads in plain English." },
+              { icon: Search, t: "Google Ads", b: "Search ads for people who need you today, with junk searches blocked.", to: "/services/google-ads" },
+              { icon: BarChart3, t: "Microsoft Ads", b: "Bing and Microsoft search: cheaper clicks, many business owners.", to: "/services/google-ads" },
+              { icon: Megaphone, t: "Meta Ads", b: "Facebook and Instagram lead ads with real-time leads to your phone.", to: "/services/meta-ads" },
+              { icon: MapPin, t: "Google Business Profile", b: "Set up and optimized so you show up in Google Maps.", to: "/services/google-business-profile" },
+              { icon: PhoneCall, t: "Social media", b: "Profiles cleaned up so people who check you out call you.", to: "/services/social-media-optimization" },
             ].map((x) => (
-              <li key={x.t} className="panel p-6">
-                <x.icon className="h-5 w-5 text-turbo" aria-hidden />
-                <h3 className="mt-3 font-display text-lg font-bold">{x.t}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">{x.b}</p>
+              <li key={x.t}>
+                <Link to={x.to} className="panel block h-full p-5 transition hover:ring-1 hover:ring-turbo/40">
+                  <x.icon className="h-5 w-5 text-turbo" aria-hidden />
+                  <h3 className="mt-3 font-display text-lg font-bold">{x.t}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{x.b}</p>
+                </Link>
               </li>
             ))}
           </ul>
@@ -89,7 +93,7 @@ export default function Home() {
             </Link>
           </p>
           <div className="mt-6">
-            <BookButton note="Home — what you get">Book my free 30-min ads call</BookButton>
+            <BookButton note="Home — what you get">Book my free 30-min call</BookButton>
           </div>
         </div>
       </section>
@@ -145,7 +149,7 @@ export default function Home() {
           <div>
             <SectionHeader kicker="Watch first · 82 seconds" title={<span id="why">Why aren't more customers calling you?</span>} lede="People search, compare and decide before they ever call. If you're not at the top when they search, the business down the street gets the job. Christopher explains how to fix it." />
             <div className="mt-8">
-              <BookButton note="Home video section">Book my free 30-min ads call</BookButton>
+              <BookButton note="Home video section">Book my free 30-min call</BookButton>
             </div>
           </div>
           <VideoPitch note="Home video" />
@@ -189,7 +193,7 @@ export default function Home() {
             <p className="lede mx-auto max-w-2xl">Book a free 30-minute call. You'll leave with a clear plan, whether you hire us or not.</p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <BookButton note="Home — final CTA" className="btn-shine">
-                Book my free 30-min ads call
+                Book my free 30-min call
               </BookButton>
               <CallLink location="home final CTA" className="btn-chrome">
                 <Phone className="h-4 w-4" aria-hidden /> Call {SITE.phone.display}
@@ -200,7 +204,7 @@ export default function Home() {
       </section>
 
       <FAQList faqs={HOME_FAQS} title="Questions before you call?" />
-      <BookingSection note="Home — booking section" title="Want more calls from Google? Pick a time." />
+      <BookingSection note="Home — booking section" title="Want more calls and bookings? Pick a time." />
     </>
   );
 }

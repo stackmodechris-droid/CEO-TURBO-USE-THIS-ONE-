@@ -68,6 +68,10 @@ export function Footer({ focus = false }: { focus?: boolean }) {
           <FooterCol
             title="Who we help"
             links={[
+              { to: "/restaurants", label: "Restaurants" },
+              { to: "/salons", label: "Salons" },
+              { to: "/barbershops", label: "Barbershops" },
+              { to: "/app-marketing", label: "Software & app developers" },
               { to: "/artist", label: "Artists" },
               { to: "/producers", label: "Producers & beatmakers" },
               { to: "/visual-artists", label: "Painters & visual artists" },
@@ -89,7 +93,7 @@ export function Footer({ focus = false }: { focus?: boolean }) {
               { to: "/portfolio", label: "Portfolio" },
               { to: "/results", label: "Results" },
               { to: "/about", label: "About Christopher" },
-              { to: "/brand-boost", label: "Brand Boost call" },
+              { to: "/book", label: "Book a free call" },
               { to: "/pricing", label: "Pricing" },
               { to: "/contact", label: "Contact" },
               { to: "/promptshop", label: "Prompt Shop" },

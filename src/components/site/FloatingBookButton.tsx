@@ -1,4 +1,4 @@
-// Bottom-right "Chat With Us" button on tablets and desktops (phones have the sticky action bar). It opens
+// Bottom-right "Book a free call" button on tablets and desktops (phones have the sticky action bar). It opens
 // the same tracked Cal.com inline calendar dialog as every other booking button.
 import { useLocation } from "react-router-dom";
 import { CalendarDays, MessageSquare } from "lucide-react";
@@ -33,7 +33,7 @@ export function FloatingBookButton() {
     <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
       <BookButton note="Floating chat button" className="!rounded-full !px-5 !py-3 !text-sm">
         <CalendarDays className="h-4 w-4" aria-hidden />
-        Chat With Us
+        Book a free call
       </BookButton>
     </div>
   );

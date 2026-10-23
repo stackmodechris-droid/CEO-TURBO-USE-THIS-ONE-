@@ -367,12 +367,13 @@ describe("custom company shirt pricing", () => {
 });
 
 describe("artist merch page", () => {
-  it("is routed, in the sitemap pages and linked from the nav and the artist page", async () => {
+  it("is routed, in the sitemap pages and linked from the footer and the artist page", async () => {
     const { PAGES } = await import("@/seo/pages");
     const page = PAGES.find((p) => p.path === "/artist-merch");
     expect(page?.title).toMatch(/merch/i);
     expect(JSON.stringify(page?.schema)).toContain("CT-MERCH-SS");
-    for (const f of ["../App.tsx", "../components/site/Header.tsx", "../components/site/Footer.tsx", "../content/audiences.ts"])
+    // The header only carries the core services; side products are linked from the footer.
+    for (const f of ["../App.tsx", "../components/site/Footer.tsx", "../content/audiences.ts"])
       expect(readFileSync(path.resolve(__dirname, f), "utf8"), f).toMatch(/artist-merch|ARTIST_MERCH_PATH/);
   });
 });

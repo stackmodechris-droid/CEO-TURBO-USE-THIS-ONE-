@@ -28,7 +28,8 @@ const markSeen = () => {
 export function FreeCheckPopup() {
   const { pathname } = useLocation();
   const [show, setShow] = useState(false);
-  const skip = SKIP.includes(pathname);
+  // Ready buyers (pricing, results, any service page) never get pulled away from booking.
+  const skip = SKIP.includes(pathname) || pathname === "/pricing" || pathname === "/results" || pathname.startsWith("/services");
 
   useEffect(() => {
     if (skip || seen()) return;

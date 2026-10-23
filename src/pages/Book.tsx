@@ -2,78 +2,76 @@
 // Focus layout: no menu, no footer links — every click goes to the calendar.
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CalendarCheck } from "lucide-react";
+import { CalendarCheck, Check } from "lucide-react";
 import { SITE } from "@/config/site";
 import { BOOK_FAQS } from "@/content/faqs";
 import { AD_TOTALS, money } from "@/content/results";
-import { CLIENTS } from "@/content/clients";
-import { BrandBoostSteps, Founder, VideoPitch } from "@/components/blocks/Sales";
-import { AdResultsGrid, GoogleAdProof, StripeProof, WorkGrid } from "@/components/blocks/Proof";
+import { Founder, VideoPitch } from "@/components/blocks/Sales";
+import { AdResultsGrid, GoogleAdProof, StripeProof } from "@/components/blocks/Proof";
 import { FAQList, SectionHeader } from "@/components/blocks/Basics";
-import { BoostHero, FitCheck, PriceTeaser, WalkAway } from "@/components/blocks/Boost";
-import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { FitCheck } from "@/components/blocks/Boost";
+import { ShopCardsButton } from "@/components/cta/Actions";
+import { InlineBooking } from "@/components/booking/InlineBooking";
+import { CallLink } from "@/components/site/CallLink";
 import { trackBooked } from "@/lib/track";
 
-const SHOWCASE = ["mor-handy", "kingstone-landscaping", "bigzo"];
 const SOURCE = "Ad page";
 
 export default function Book() {
   return (
     <>
-      <BoostHero
-        source={SOURCE}
-        title={
-          <>
-            <span className="text-chrome-grad">Want more customers, reviews or listeners</span> <span className="text-turbo-grad">in the next 30 days?</span>
-          </>
-        }
-        lede={
-          <>
-            Answer 6 quick questions and see your #1 money move instantly.<span className="hidden sm:inline"> Then grab a free 30-minute call — {SITE.founder.name} looks at your website, Google profile, reviews and ads with you, live.</span>
-          </>
-        }
-      />
-
-      <WalkAway />
-
-      <section className="pb-16" aria-label="Payments to CEO Turbo">
-        <div className="container-x">
-          <StripeProof compact />
+      {/* Ad traffic lands on the calendar itself: pick a time or call, nothing to fill in first. */}
+      <section className="relative overflow-clip pt-24 sm:pt-28" aria-labelledby="hero">
+        <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[1100px] -translate-x-1/2 glow-turbo" aria-hidden />
+        <div className="container-x relative grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="hero-rise min-w-0 lg:sticky lg:top-28">
+            <p className="chip">Free 30-minute call</p>
+            <h1 id="hero" className="mt-4 text-[34px] font-bold leading-[1.05] sm:text-5xl">
+              <span className="text-chrome-grad">More calls and bookings</span> <span className="text-turbo-grad">for your business.</span>
+            </h1>
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Pick a time. {SITE.founder.name} looks at your ads, Google profile and website with you, live, and tells you what would bring in more customers. No pressure.
+            </p>
+            <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+              {["Google, Microsoft & Meta ads", "Google Business Profile & social media", "Every call and booking tracked"].map((t) => (
+                <li key={t} className="flex items-center gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                  {t}
+                </li>
+              ))}
+            </ul>
+            <CallLink location="book page hero" icon className="btn-chrome mt-6">
+              Or call {SITE.phone.display}
+            </CallLink>
+          </div>
+          <div id="book" className="min-w-0 scroll-mt-20">
+            <InlineBooking source={`${SOURCE} — hero calendar`} />
+          </div>
         </div>
       </section>
 
 
       <section id="results" className="section scroll-mt-20 border-t border-border" aria-labelledby="proof">
         <div className="container-x">
-          <SectionHeader title={<span id="proof">Does this actually work?</span>} lede={`These are unedited Meta Ads Manager dashboards from client campaigns: ${AD_TOTALS.leads} leads for ${money(AD_TOTALS.leadSpend)} total.`} />
+          <SectionHeader title={<span id="proof">Does this actually work?</span>} lede={`Unedited ad dashboards from client campaigns. On Meta alone: ${AD_TOTALS.leads} leads for ${money(AD_TOTALS.leadSpend)} total.`} />
           <div className="mt-12">
             <GoogleAdProof />
           </div>
           <div className="mt-8">
-            <AdResultsGrid keys={["ryan-pool", "stackmode-repair", "bigzo"]} />
+            <AdResultsGrid keys={["appliance-king", "mor-handy-carpet", "stackmode-repair"]} />
           </div>
-          <h3 className="mt-16 text-2xl font-bold">Sites we built that bring in customers</h3>
-          <div className="mt-8">
-            <WorkGrid clients={CLIENTS.filter((c) => SHOWCASE.includes(c.slug))} />
+          <div className="mt-12">
+            <StripeProof compact />
           </div>
           <div className="mt-12 text-center">
-            <BookButton note="Ad page after proof" className="btn-shine">
-              I want results like these
-            </BookButton>
+            <a href="#book" className="btn-ignite btn-shine">
+              Pick my call time
+            </a>
           </div>
         </div>
       </section>
 
       <FitCheck />
-
-      <section className="section border-t border-border" aria-labelledby="next">
-        <div className="container-x">
-          <SectionHeader title={<span id="next">What happens after you book?</span>} />
-          <div className="mt-10">
-            <BrandBoostSteps />
-          </div>
-        </div>
-      </section>
 
       <section className="section border-t border-border" aria-label="Founder">
         <div className="container-x grid items-center gap-10 md:grid-cols-[auto_1fr]">
@@ -82,17 +80,21 @@ export default function Book() {
         </div>
       </section>
 
-      <PriceTeaser source={SOURCE} />
       <FAQList faqs={BOOK_FAQS} title="Still on the fence?" />
 
       <section className="section pt-0">
         <div className="container-x">
           <div className="cta-glow rounded-3xl p-8 text-center sm:p-12">
-            <h2 className="h-section">Your plan is 30 seconds away.</h2>
-            <p className="lede mx-auto">Five taps, your #1 money move, then a time that suits you.</p>
-            <BookButton note="Ad page — final CTA" className="btn-shine mt-8 !px-8 !py-4 !text-base">
-              Start my free plan
-            </BookButton>
+            <h2 className="h-section">Ready for more calls?</h2>
+            <p className="lede mx-auto">Pick a time, or call {SITE.phone.display} now.</p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <a href="#book" className="btn-ignite btn-shine !px-8 !py-4 !text-base">
+                Pick my call time
+              </a>
+              <CallLink location="book page final" icon className="btn-chrome">
+                Call {SITE.phone.display}
+              </CallLink>
+            </div>
           </div>
         </div>
       </section>

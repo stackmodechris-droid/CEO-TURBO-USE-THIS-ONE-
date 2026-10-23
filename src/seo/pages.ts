@@ -41,9 +41,9 @@ function build(): PageMeta[] {
 
   pages.push({
     path: "/",
-    title: "Google Ads for Local Service Businesses | CEO Turbo",
+    title: "More Calls & Bookings for Local Businesses | CEO Turbo",
     description:
-      "Google Ads that make your phone ring: search campaigns for appliance repair, HVAC, plumbing and cleaning, with every call tracked. Free 30-min call.",
+      "Google, Microsoft and Meta ads, Google Business Profile and social media setup for local service businesses, with every call tracked. Free 30-min call.",
     priority: 1,
     changefreq: "weekly",
     group: "Core",
@@ -312,7 +312,7 @@ function build(): PageMeta[] {
     { path: "/get-more-reviews", title: "How to Get More Google Reviews (One Tap) | CEO Turbo", description: `Why reviews decide who gets the call on Google, Maps and ChatGPT — and the NFC card that turns “I'll review you later” into a review. From ${fromPriceLabel}.`, ogImage: "/og/get-more-reviews.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     // Google Search ad landing for the local-service offer; noindex so it doesn't compete with / and /services/google-ads.
     { path: "/google-ads-for-local-business", title: "Get More Calls From Google Ads | CEO Turbo", description: `Get more calls from people searching Google. Search campaigns for appliance repair, HVAC, plumbing and cleaning, every call tracked. Setup ${price("pkg-start")}.`, noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
-    { path: "/book", title: "Book Your Free Brand Boost Call | CEO Turbo", description: "Free 30-minute Brand Boost call with Christopher Robinson: see what's costing you customers and get a fixed plan to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
+    { path: "/book", title: "Book Your Free 30-Minute Call | CEO Turbo", description: "Pick a time for a free 30-minute call with Christopher Robinson: what's costing you calls and bookings, and a fixed price to fix it.", ogImage: "/og/brand-boost.jpg", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     { path: "/booked", title: "You're Booked | CEO Turbo", description: "Your Brand Boost call is booked. Here's how to get the most from it.", noindex: true, priority: 0.1, changefreq: "yearly", group: "Core", schema: base() },
     {
       path: RESTAURANTS_PATH,
