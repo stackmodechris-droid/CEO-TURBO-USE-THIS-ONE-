@@ -306,10 +306,11 @@ describe("phone + social", () => {
 });
 
 describe("Google Tag Manager containers", () => {
-  it("loads both containers from code and has a noscript fallback for each", () => {
-    expect(GTM_IDS).toEqual(["GTM-KRPRZ67Z", "GTM-KH6BCWD3"]);
+  // Their Google tag (GT-5R7RRFRL) took over AW-18468746701 and swallowed every Google Ads conversion.
+  it("stays off so the direct Google tag keeps the Google Ads destination", () => {
+    expect(GTM_IDS).toEqual([]);
     const html = readFileSync(path.resolve(__dirname, "../../index.html"), "utf8");
-    for (const id of GTM_IDS) expect(html).toContain(`ns.html?id=${id}`);
+    expect(html).not.toContain("googletagmanager.com/ns.html");
   });
 });
 

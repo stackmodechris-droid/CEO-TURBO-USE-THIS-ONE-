@@ -5,13 +5,18 @@
 import { gaPageView } from "@/lib/ga";
 
 export const GTM_ID = "GTM-KRPRZ67Z";
-/** Second container (GTM-KH6BCWD3) runs beside the first; both read the same dataLayer. Keep tags unique per container (no duplicate GA4/Ads/Meta/UET tags) or conversions double count. */
-export const GTM_IDS = [GTM_ID, "GTM-KH6BCWD3"] as const;
+/**
+ * Both containers (GTM-KRPRZ67Z, GTM-KH6BCWD3) are switched OFF. A Google tag inside them (GT-5R7RRFRL) claimed
+ * the Google Ads destination AW-18468746701, so the conversions sent from src/lib/ga.ts (bookings, leads, calls)
+ * were silently dropped. GA4, Google Ads, Meta, UET and Clarity all fire from code; add an id back here only
+ * if its container has no Google tag for G-XDWPSVBW53 or AW-18468746701.
+ */
+export const GTM_IDS: readonly string[] = [];
 
 export function startGtm() {
   if (typeof window === "undefined") return;
   const w = window as unknown as { dataLayer?: unknown[]; __gtm?: boolean };
-  if (w.__gtm) return;
+  if (w.__gtm || GTM_IDS.length === 0) return;
   w.__gtm = true;
   w.dataLayer = w.dataLayer || [];
   // Push gtm.start ONCE — pushing once per container causes double session counting
