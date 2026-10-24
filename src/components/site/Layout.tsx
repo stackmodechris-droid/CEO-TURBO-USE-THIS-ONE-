@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileActionBar } from "./MobileActionBar";
@@ -17,6 +18,9 @@ import { startUet } from "@/lib/uet";
 import { startTiktok, tiktokPageView } from "@/lib/tiktok";
 import { startReddit, redditPageView } from "@/lib/reddit";
 import { startClarity } from "@/lib/clarity";
+
+/** Pages that use the friendly light look (the home page wraps its own sections). */
+const SOFT = /^\/(pricing|services(\/.*)?|google-review-cards|results|about|restaurants|salons|barbershops)\/?$/;
 
 export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
@@ -71,7 +75,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <>
       <Header />
       {/* overflow-x-clip: edge-sliding animations (the review-card phone) never make phones scroll sideways; clip keeps sticky working. */}
-      <main id="main" className="overflow-x-clip">
+      <main id="main" className={cn("overflow-x-clip", SOFT.test(pathname) && "theme-soft")}>
         {children}
       </main>
       <Footer />

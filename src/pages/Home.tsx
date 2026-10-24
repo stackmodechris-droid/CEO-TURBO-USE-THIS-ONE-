@@ -194,8 +194,10 @@ export default function Home() {
         </div>
       </section>
 
+      <div className="theme-soft">
       <FAQList faqs={HOME_FAQS} title="Questions before you call?" />
       <BookingSection note="Home — booking section" title="Want more calls and bookings? Pick a time." />
+      </div>
     </>
   );
 }
