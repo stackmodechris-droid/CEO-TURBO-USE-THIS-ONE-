@@ -3,33 +3,79 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { BookButton } from "@/components/cta/Actions";
+import { SERVICES } from "@/content/services";
 import { SITE, fromPriceLabel } from "@/config/site";
 import { CallLink } from "./CallLink";
-import { REVIEWS_AD_PATH } from "@/content/review-cards";
+import { REVIEWS_AD_PATH, SHOP_PATH, SETUP_PATH } from "@/content/review-cards";
+import { SHIRTS_PATH, shirtFromLabel } from "@/content/company-shirts";
+import { ARTIST_MERCH_PATH, artistFromLabel } from "@/content/artist-merch";
 import { cn } from "@/lib/utils";
 
 type Item = { to: string; label: string; sub?: string; group?: string };
+
+const SERVICE_GROUPS: Record<string, string> = {
+  "home-office-setup": "Office & workspace",
+  "office-transformation": "Office & workspace",
+  "apartment-home-office-setup": "Office & workspace",
+  "school-computer-room-setup": "Office & workspace",
+  "computer-build-setup": "Tech & equipment",
+  "dj-studio-setup": "Tech & equipment",
+  "pos-system-setup": "Tech & equipment",
+};
+const groupOf = (slug: string) => SERVICE_GROUPS[slug] ?? "Marketing & growth";
+const GROUP_ORDER = ["Start here", "Office & workspace", "Tech & equipment", "Marketing & growth"];
 type Menu = { label: string; to: string; items: Item[]; wide?: boolean };
 
-// Two dropdowns plus Pricing: the five things we sell, and the proof. Everything else lives in the footer.
-const CORE_SERVICES: Item[] = [
-  { to: "/services/google-ads", label: "Google & Microsoft Ads", sub: "Search ads that make the phone ring" },
-  { to: "/services/meta-ads", label: "Meta Ads", sub: "Facebook & Instagram lead ads" },
-  { to: "/services/google-business-profile", label: "Google Business Profile", sub: "Show up in Google Maps" },
-  { to: "/services/social-media-optimization", label: "Social media", sub: "Profiles that turn lookers into callers" },
-  { to: "/services/conversion-tracking", label: "Call & booking tracking", sub: "Know which ads bring customers" },
-  { to: "/book", label: "Free 30-min call", sub: "Pick a time, no forms first" },
-];
-
+// Home first, then three dropdowns, then the two money links. Fewer choices = more clicks on the ones that pay.
 const MENUS: Menu[] = [
-  { label: "Services", to: "/services", items: CORE_SERVICES },
+  {
+    label: "Who we help",
+    to: "/local-business",
+    items: [
+      { to: "/restaurants", label: "Restaurants", sub: "DoorDash, TV menus, Maps & table review cards" },
+      { to: "/salons", label: "Salons", sub: "Google profile, bookings & station review cards" },
+      { to: "/barbershops", label: "Barbershops", sub: "Walk-ins, Google profile & chair review cards" },
+      { to: "/local-business", label: "Local businesses", sub: "More calls, more 5-star reviews" },
+      { to: "/artist", label: "Artists", sub: "More listeners, shows, features and merch" },
+      { to: "/producers", label: "Producers & beatmakers", sub: "Sell more beats, custom tracks and sessions" },
+      { to: "/visual-artists", label: "Painters & visual artists", sub: "Sell originals, prints and commissions" },
+      { to: "/shopify", label: "Shopify & online stores", sub: "More traffic that actually buys" },
+      { to: "/atlanta", label: "Atlanta businesses", sub: "Local, founder-led growth" },
+      { to: "/app-marketing", label: "Software & app developers", sub: "More users & installs, zero fluff" },
+    ],
+  },
+  {
+    label: "Services",
+    to: "/services",
+    wide: true,
+    items: [
+      { to: "/brand-boost", label: "Brand Boost call", sub: "Free 30-min growth plan — start here", group: "Start here" },
+      { to: "/pricing", label: "Pricing", sub: "Clear prices — setup once, monthly only where it pays", group: "Start here" },
+      { to: SHIRTS_PATH, label: "Custom company t-shirts", sub: `Upload your logo, preview it, order — from ${shirtFromLabel}`, group: "Start here" },
+      { to: "/restaurants", label: "Restaurant growth", sub: "DoorDash & Uber Eats setup, TV menus, Maps, table review cards", group: "Start here" },
+      { to: "/app-marketing", label: "Software & app distribution", sub: "Engineered growth for developers & SaaS", group: "Start here" },
+      ...SERVICES.map((s) => ({ to: `/services/${s.slug}`, label: s.short, sub: s.outcome, group: groupOf(s.slug) })),
+    ].sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group)),
+  },
   {
     label: "Results",
     to: "/results",
     items: [
-      { to: "/results", label: "Ad results", sub: "Real dashboards, real cost per lead" },
       { to: "/portfolio", label: "Our work", sub: "Live client websites we built" },
+      { to: "/results", label: "Ad results", sub: "Real dashboards, real cost per lead" },
+      { to: "/guides", label: "Free guides", sub: "Straight answers on growth" },
       { to: "/about", label: "About Christopher", sub: "Who you'll work with" },
+    ],
+  },
+  {
+    label: "Review stands & cards",
+    to: SHOP_PATH,
+    items: [
+      { to: SHOP_PATH, label: "Shop review stands & cards", sub: `Tap-to-review NFC cards — from ${fromPriceLabel}` },
+      { to: SHIRTS_PATH, label: "Company t-shirts", sub: `Your logo on short & long sleeves — from ${shirtFromLabel}, no minimum` },
+      { to: ARTIST_MERCH_PATH, label: "Artist merch", sub: `Your cover art & tour dates on a tee — from ${artistFromLabel}, no minimum` },
+      { to: SETUP_PATH, label: "Card setup guide", sub: "Program your card in 5 minutes" },
+      { to: "/how-to-get-more-google-reviews", label: "Get more Google reviews", sub: "The playbook that works" },
     ],
   },
 ];
@@ -56,7 +102,7 @@ export function Header({ focus = false }: { focus?: boolean }) {
   }, [open]);
 
   return (
-    <header className={cn("fixed inset-x-0 top-0 z-50 transition-colors duration-300", open ? "bg-background" : scrolled ? "bg-background/95 backdrop-blur-xl shadow-[0_1px_0_hsl(var(--border))]" : "bg-gradient-to-b from-background/90 to-transparent")}>
+    <header className={cn("fixed inset-x-0 top-0 z-50 transition-colors duration-300", open ? "bg-background" : scrolled ? "bg-background/95 backdrop-blur-xl shadow-[0_1px_0_hsl(var(--border))]" : "bg-background/95 backdrop-blur-xl")}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2">
         Skip to content
       </a>
@@ -70,6 +116,9 @@ export function Header({ focus = false }: { focus?: boolean }) {
             ))}
             <NavLink to="/pricing" className={linkCls}>
               Pricing
+            </NavLink>
+            <NavLink to="/free-audit" className={linkCls}>
+              Free check <span className="ml-1 rounded-full bg-turbo/15 px-1.5 py-0.5 text-[10px] font-semibold text-turbo">FREE</span>
             </NavLink>
           </nav>
         )}
@@ -112,9 +161,18 @@ export function Header({ focus = false }: { focus?: boolean }) {
               Book a free 30-min call
               <span aria-hidden>›</span>
             </Link>
-            <CallLink location="mobile menu" icon className="panel flex items-center gap-2 px-4 py-4 text-lg font-semibold">
-              Call {SITE.phone.display}
-            </CallLink>
+            <Link to="/free-audit" onClick={() => setOpen(false)} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
+              Free Brand Visibility Check
+              <span className="text-turbo" aria-hidden>›</span>
+            </Link>
+            <Link to={SHOP_PATH} onClick={() => setOpen(false)} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
+              Review stands & cards — from {fromPriceLabel}
+              <span className="text-turbo" aria-hidden>›</span>
+            </Link>
+            <Link to="/services/home-office-setup" onClick={() => setOpen(false)} className="panel flex items-center justify-between px-4 py-4 text-lg font-semibold">
+              Office setup
+              <span className="text-turbo" aria-hidden>›</span>
+            </Link>
           </div>
           <Link to="/" onClick={() => { setOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="mt-6 block px-1 py-2 text-base font-medium">
             Home

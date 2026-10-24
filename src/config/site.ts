@@ -145,6 +145,16 @@ export const REVIEW_CARD = {
   returnDays: 5,
 } as const;
 
+/** The acrylic counter stand: NFC tap + QR code in one L-shaped display. Request-only until a Shopify product exists. */
+export const REVIEW_STAND = {
+  name: "Google Review Counter Stand",
+  image: "/img/review-cards/stand.png",
+  w: 620,
+  h: 696,
+  tagline: "Tap your phone or scan the QR code. Both go straight to your review form.",
+  /** null until priced; the page shows "Get a quote" and takes a request instead of checkout. */
+  price: null as number | null,
+} as const;
 
 export const fromPrice = Math.min(...REVIEW_CARD.packs.map((p) => p.price));
 export const fromPriceLabel = `$${fromPrice.toFixed(2)}`;

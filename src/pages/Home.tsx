@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, MapPin, Megaphone, Phone, PhoneCall, Search, BarChart3, Star } from "lucide-react";
-import { BookButton, ShopCardsButton } from "@/components/cta/Actions";
+import { ArrowRight, Check, Laptop, MapPin, Megaphone, Phone, PhoneCall, Search, BarChart3, Star } from "lucide-react";
+import { BookButton } from "@/components/cta/Actions";
 import { CallLink } from "@/components/site/CallLink";
 import { ProofStats, WorkGrid, StripeProof, FeaturedResult, AdResultsGrid, GoogleAdProof } from "@/components/blocks/Proof";
 import { Founder, BookingSection, VideoPitch } from "@/components/blocks/Sales";
@@ -8,7 +8,8 @@ import { SectionHeader, FAQList } from "@/components/blocks/Basics";
 import { HOME_FAQS } from "@/content/faqs";
 import { CLIENTS } from "@/content/clients";
 import { price } from "@/content/pricing";
-import { SITE, fromPriceLabel } from "@/config/site";
+import { SITE } from "@/config/site";
+import { ReviewDuo } from "@/components/blocks/ReviewDuo";
 
 /**
  * Money model, top to bottom:
@@ -19,6 +20,7 @@ import { SITE, fromPriceLabel } from "@/config/site";
 export default function Home() {
   return (
     <>
+      <div className="theme-soft">
       {/* HERO — who it's for, what they get, one button. */}
       <section className="relative overflow-clip pt-24 sm:pt-28 lg:pt-32" aria-labelledby="hero">
         <div className="pointer-events-none absolute inset-0 bg-grid" aria-hidden />
@@ -69,12 +71,13 @@ export default function Home() {
             title={<span id="get">Everything that makes your phone ring, done for you.</span>}
             lede="People search, scroll and compare before they call. We put you in front of them on Google, Bing, Facebook and Instagram, and count every call and booking."
           />
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { icon: Search, t: "Google Ads", b: "Search ads for people who need you today, with junk searches blocked.", to: "/services/google-ads" },
               { icon: BarChart3, t: "Microsoft Ads", b: "Bing and Microsoft search: cheaper clicks, many business owners.", to: "/services/google-ads" },
               { icon: Megaphone, t: "Meta Ads", b: "Facebook and Instagram lead ads with real-time leads to your phone.", to: "/services/meta-ads" },
               { icon: MapPin, t: "Google Business Profile", b: "Set up and optimized so you show up in Google Maps.", to: "/services/google-business-profile" },
+              { icon: Laptop, t: "Office setup", b: "We set up your computers, Wi-Fi, desk and cameras so the workspace just works.", to: "/services/home-office-setup" },
               { icon: PhoneCall, t: "Social media", b: "Profiles cleaned up so people who check you out call you.", to: "/services/social-media-optimization" },
             ].map((x) => (
               <li key={x.t}>
@@ -97,6 +100,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <ReviewDuo />
 
       {/* HOW IT WORKS — low effort for the owner. */}
       <section className="section border-t border-border" aria-labelledby="how">
@@ -168,21 +173,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ADD-ON — review cards help Maps rankings; they have their own store. */}
-      <section className="pb-16" aria-labelledby="addon">
-        <div className="container-x">
-          <div className="panel flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-medium text-turbo">Add-on</p>
-              <h2 id="addon" className="mt-1 font-display text-xl font-bold">Google review cards: one tap opens your review form.</h2>
-              <p className="mt-1 text-sm text-muted-foreground">More 5-star reviews help you rank in Google Maps. From {fromPriceLabel}, ships from Atlanta.</p>
-            </div>
-            <ShopCardsButton variant="chrome" className="shrink-0">
-              See review cards
-            </ShopCardsButton>
-          </div>
-        </div>
-      </section>
+      </div>
 
       {/* FINAL CTA */}
       <section className="section border-t border-border" aria-labelledby="final">

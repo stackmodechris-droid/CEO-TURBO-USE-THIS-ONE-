@@ -10,6 +10,10 @@ import { BookButton } from "@/components/cta/Actions";
 import { COMPARE, RULES, SETUP_PATH, SHOP_FAQS, SHOP_PATH, USES } from "@/content/review-cards";
 import { NFC_APP, fromPriceLabel } from "@/config/site";
 import { recallBusiness } from "@/lib/review-link";
+import { StandHero } from "@/components/blocks/ReviewDuo";
+import { StandRequest } from "@/components/shop/StandRequest";
+import { REVIEW_STAND } from "@/config/site";
+import { cn } from "@/lib/utils";
 
 const STEPS = [
   { icon: Smartphone, title: "Customer taps", body: "They hold their phone near the card at checkout. No app, no camera, no searching." },
@@ -20,6 +24,8 @@ const STEPS = [
 export default function ReviewCards() {
   const [business, setBusiness] = useState("");
   useEffect(() => setBusiness((b) => b || recallBusiness()), []);
+  const [tab, setTab] = useState<"stand" | "cards">(() => (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("pack") ? "cards" : "stand"));
+  const [standOpen, setStandOpen] = useState(false);
 
   return (
     <>
@@ -28,7 +34,37 @@ export default function ReviewCards() {
         <div className="pointer-events-none absolute -top-40 right-0 h-[520px] w-[820px] glow-turbo" aria-hidden />
         <div className="container-x relative">
           <Breadcrumbs items={[{ name: "Google review cards", path: SHOP_PATH }]} />
-          <BuyBox business={business} onBusiness={setBusiness} />
+          <div role="tablist" aria-label="Choose a product" className="mt-4 inline-flex rounded-2xl bg-white/5 p-1 ring-1 ring-white/10">
+            {([["stand", "Counter stand"], ["cards", "Tap cards"]] as const).map(([k, label]) => (
+              <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors", tab === k ? "bg-turbo text-white" : "text-muted-foreground hover:text-foreground")}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {tab === "cards" ? (
+            <BuyBox business={business} onBusiness={setBusiness} />
+          ) : (
+            <div className="mt-8 grid items-center gap-8 pb-10 md:grid-cols-2">
+              <StandHero />
+              <div>
+                <h1 className="font-display text-3xl font-bold sm:text-4xl">{REVIEW_STAND.name}</h1>
+                <p className="mt-3 text-muted-foreground">{REVIEW_STAND.tagline} It sits on your counter and works with iPhone and Android, no app for customers.</p>
+                <ul className="mt-5 grid gap-2 text-sm">
+                  {["White acrylic L-stand, built for a front counter", "NFC tap and QR code in one display", "Opens your Google review form in seconds", "Not affiliated with or endorsed by Google"].map((t) => (
+                    <li key={t} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 shrink-0 text-turbo" aria-hidden />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+                <button type="button" onClick={() => setStandOpen(true)} className="btn-ignite btn-shine mt-6 w-full sm:w-auto">
+                  Get my stand <ArrowRight className="h-4 w-4" aria-hidden />
+                </button>
+                <p className="mt-3 text-xs text-muted-foreground">We reply with the price and a secure payment link. Nothing is charged now.</p>
+              </div>
+            </div>
+          )}
+          <StandRequest open={standOpen} onOpenChange={setStandOpen} business={business} />
         </div>
       </section>
 
